@@ -1,0 +1,186 @@
+{{extend 'plantilla.html'}}
+{{block head}}
+		<link rel="stylesheet" href="{{=URL('static', 'leaflet/leaflet.css')}}" />
+        <link rel="stylesheet" href="{{=URL('static', 'leaflet_geoman/leaflet-geoman.css')}}" />
+        <style>
+            #map_id{
+                height: 100vh;
+                z-index: 0;
+            }
+        </style>
+{{end head}}
+
+{{block body_end}}
+<div id="create_area_modal" class="modal fade">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content" style="width: 400px">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Editar área</h5>
+                                    <button type="button" class="close xButton"><span>&times;</span></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="name">Nombre:</label>
+                                        <input type="text" class="form-control" id="name">
+                                        <div id="error-box"></div>
+                                    </div>
+                                    <label for="area_type_select">Tipo de área:</label>
+                                    <select class="form-control" id="area_type_select" style="padding-bottom: 10px;padding-top: 8px;">
+                                        {{for a_type in area_types:}}
+                                            <option value={{=a_type.id}}>{{=a_type.name}}</option>
+                                        {{pass}}
+                                    </select>
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="closeButton" type="button" class="btn btn-danger">Cerrar</button>
+                                    <button id="acceptButton" type="button" class="btn btn-success">Aceptar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+    <div id="no_edit_info_modal" class="modal" tabindex="-1" role="dialog">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-body">
+                <p>Todavía no puedes modificar este elemento, espera unos segundos.</p>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Aceptar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+{{end body_end}}
+
+{{block page_js}}
+    <script type="text/javascript" src="{{=URL('static', 'leaflet/leaflet.js')}}"></script>
+    <script type="text/javascript" src="{{=URL('static', 'leaflet_geoman/leaflet-geoman.min.js')}}"></script>
+    <script>
+
+    let mymap = L.map('map_id').setView(
+           [ 21.941415395551573,-78.66101966354675], 9);
+    L.tileLayer('{{=URL('static','CubaOSM/{z}/{x}/{y}.png',url_encode=False)}}',{ maxZoom: 12 }).addTo(mymap);
+
+    mymap.pm.setLang('es', null, 'en');//Setting to spanish language
+
+        mymap.pm.addControls({
+          position: 'topleft',
+            drawPolygon: false,
+            drawCircle: false,
+            drawMarker: false,
+            drawCircleMarker: false,
+            drawPolyline: false,
+            drawRectangle: false,
+            cutPolygon: false,
+            editMode: false,
+            rotateMode: false,
+        });
+
+    let overlayMaps = {};
+    let layerGroup;
+    let area_layer;
+
+        {{for area_type in areas:}}//Loop for all the area types
+        //areas has the form of {'area_type':[{'area':[id_area, [area_borders]}, areaType_color, areaType_description],}
+            layerGroup = []
+            {{for area in areas[area_type][0]:}}
+                    area_layer = L.polygon({{=areas[area_type][0][area][1]}},
+                            {color: '{{=areas[area_type][1]}}'}).on('mouseover', e => {
+                           let selected_area = e.target;
+                           axios.get('{{=URL('map', 'area_mouseover')}}',{
+                            params: {
+                                id: {{=areas[area_type][0][area][0]}},// Area_id
+                            }})
+                            .then(response => {
+                                selected_area.bindPopup(`<b>Nombre</b>: ${response.data.area.name} ${response.data.area.sub_name ? ('('+response.data.area.sub_name+')') : ''}<br>
+                                                           <b>Descripción</b>: ${response.data.area.description ? response.data.area.description : ''}`);
+                                selected_area.openPopup();
+                            })
+                            .catch(error => {
+                                console.log(error)
+                            })
+                    }).on('click', () => { //Perhaps need to bind the off('click') method
+                            //Click event handler to edit an area
+                        $("#create_area_modal").modal();// open modal
+
+                        // Setting input default values of selected area
+                        $("#create_area_modal #name").val("{{=area}}");
+                        // $("#create_area_modal #area_type_select").val("{{=area_type}}")
+                        //     .find("option[value=" + {{=areas[area_type][0][area][2]}} +"]").attr('selected', 'selected');
+
+                        //Modal click event handlers
+                        $('#create_area_modal #acceptButton').off().on('click', () => {
+                            let errBox = $("#error-box");
+                            let name = $('#create_area_modal #name').val().trim()
+                            if (name.length === 0) {
+                                // if name input is empty
+                                errBox.text("Este campo no puede estar vacío");
+                                errBox.addClass('visible');
+                                window.setTimeout(function () {
+                                      errBox.removeClass('visible');
+                                }, 5000)
+                            } else {
+                                $("#create_area_modal").modal('toggle');
+
+                                let area_type_id = $("#create_area_modal #area_type_select option:selected").val()
+
+                                // request to edit_area_api to edit the information but not the location
+                                axios.post('{{=URL('map', 'edit_area_api')}}', {
+                                    area_id: {{=areas[area_type][0][area][0]}},
+                                    name: name,
+                                    id_area_type: area_type_id,
+                                })
+                                .then(response => {
+                                    // console.log(response.data);
+                                    showMyNotification('success', "El área se ha editado correctamente");
+                                })
+                                .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+                        }
+                    })
+                })
+                        .on('pm:edit', function(event) {
+                        let points = event.target._latlngs;
+                        axios.post('{{=URL('map', 'edit_area_api')}}',{
+                            area_id: {{=areas[area_type][0][area][0]}},
+                            points: points,
+                        })
+                        .then(response => {
+                            showMyNotification('success', "El área se ha editado correctamente");
+                        })
+                        .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+                    }).on('pm:remove', function (x) {
+                        // request to remove_area API
+                        axios.post('{{=URL('map', 'remove_area_api')}}', {
+                                area_id: {{=areas[area_type][0][area][0]}},
+                            })
+                            .then(response => {
+                                showMyNotification('success', "El área se ha eliminado correctamente");
+                            })
+                            .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+                    })
+
+
+                    area_layer.setStyle({pmIgnore: false});
+                    layerGroup.push(area_layer);
+            {{pass}}
+            overlayMaps["{{=area_type}}"] = L.layerGroup(layerGroup);
+        {{pass}}
+
+        overlayMaps["Municipios"].addTo(mymap);
+        overlayMaps["Cuencas"].addTo(mymap);
+        overlayMaps["Provincias"].addTo(mymap);
+        overlayMaps["Sector Hidrogeológico"].addTo(mymap);
+        let control = L.control.layers(null, overlayMaps).addTo(mymap);
+
+
+        $('#create_area_modal #closeButton').off().on('click', () => {
+                $("#create_area_modal").modal('toggle');
+        })
+
+        $('#create_area_modal .xButton').off().on('click', () => {
+                $("#create_area_modal").modal('toggle');
+        })
+
+
+		</script>
+{{end page_js}}

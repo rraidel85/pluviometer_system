@@ -1,0 +1,111 @@
+<!-- Toastr -->
+<link rel="stylesheet" href="{{=URL('static','plugin_toastr_message/css/toastr.min.css')}}">
+<link rel="stylesheet" href="{{=URL('static','plugin_toastr_message/css/custom.css')}}">
+<script src="{{=URL('static','plugin_toastr_message/js/toastr.min.js')}}"></script>
+
+{{if session.plugin_toastr_message_msg:}}
+
+{{if session.plugin_toastr_message_success: }}
+<script>
+    $(document).ready(function () {
+        toastr.success('{{=session.plugin_toastr_message_msg}}', 'Notificación', {
+            timeOut: 3000,
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "500",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "tapToDismiss": true
+
+        })
+    });
+</script>
+{{session.plugin_toastr_message_success=False}}
+
+{{elif session.plugin_toastr_message_error:}}
+<script>
+    $(document).ready(function () {
+        toastr.error('{{=session.plugin_toastr_message_msg}}', 'Error', {
+            timeOut: 3000,
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "500",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "tapToDismiss": true
+
+        })
+    });
+</script>
+{{session.plugin_toastr_message_error=False}}
+
+{{elif session.plugin_toastr_message_warning:}}
+<script>
+    $(document).ready(function () {
+        toastr.warning('{{=session.plugin_toastr_message_msg}}', 'Advertencia', {
+            timeOut: 3000,
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "500",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "tapToDismiss": true
+
+        })
+    });
+</script>
+{{session.plugin_toastr_message_warning=False}}
+
+{{elif session.plugin_toastr_message_info:}}
+<script>
+    $(document).ready(function () {
+        toastr.info('{{=session.plugin_toastr_message_msg}}', 'Información', {
+            timeOut: 3000,
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "500",
+            //"extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "tapToDismiss": true
+
+        })
+    });
+</script>
+{{session.plugin_toastr_message_info=False}}
+{{pass}}
+
+{{session.plugin_toastr_message_msg=""}}
+{{pass}}

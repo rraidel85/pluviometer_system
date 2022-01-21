@@ -1,0 +1,224 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+   <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{=URL('static/plantilla','assets/images/icon/favicon.ico')}}" rel="stylesheet"/>
+    <link href="{{=URL('static/plantilla','assets/css/bootstrap.min.css')}}" rel="stylesheet"/>
+    <link href="{{=URL('static/plantilla','assets/css/font-awesome.min.css')}}" rel="stylesheet"/>
+
+    <!-- Toastr Notifications Plugin -->
+    <link rel="stylesheet" href="{{=URL('static','plugin_toastr_message/css/toastr.min.css')}}">
+    <link rel="stylesheet" href="{{=URL('static','plugin_toastr_message/css/custom.css')}}">
+
+    <!-- Web2py -->
+    <link rel="stylesheet" href="{{=URL('static', 'css/web2py.css')}}">
+    <link rel="stylesheet" href="{{=URL('static', 'css/web2py-bootstrap4.css')}}">
+    <link rel="stylesheet" href="{{=URL('static', 'css/calendar.css')}}">
+    <script src="{{=URL('static','js/modernizr-2.8.3.min.js')}}"></script>
+
+     {{include 'web2py_ajax.html'}}
+
+    <style>
+         body{
+            margin:0;
+            color:#6a6f8c;
+            /*background:#5970a2;*/
+             background:url({{=URL('static','images/water.webp')}}) no-repeat center;
+            background-size: cover;
+            font:600 16px/18px 'Open Sans',sans-serif;
+        }
+        *,:after,:before{box-sizing:border-box}
+        .clearfix:after,.clearfix:before{content:'';display:table}
+        .clearfix:after{clear:both;display:block}
+        a{color:inherit;text-decoration:none}
+
+        .login-wrap{
+            width:100%;
+            margin:auto;
+            max-width:525px;
+            height:100vh;
+            position:relative;
+
+            box-shadow:0 12px 15px 0 rgba(0,0,0,.24),0 17px 50px 0 rgba(0,0,0,.19);
+        }
+        .login-html{
+            width:100%;
+            height:100%;
+            position:absolute;
+            padding:20px 70px 50px 70px;
+            background:rgba(8, 13, 26, 0.9);
+        }
+
+        .login-html .sign-in,
+        .login-html .sign-up,
+        .login-form .group .check{
+            display:none;
+        }
+        .login-html .tab,
+        .login-form .group .label,
+        .login-form .group .button{
+            text-transform:uppercase;
+        }
+        .login-html .tab{
+            font-size:22px;
+            margin-right:15px;
+            padding-bottom:5px;
+            margin:0 15px 10px 0;
+            display:inline-block;
+            border-bottom:2px solid transparent;
+        }
+        .login-html .sign-in:checked + .tab,
+        .login-html .sign-up:checked + .tab{
+            color:#fff;
+            border-color:#1161ee;
+        }
+        .login-form{
+            min-height:345px;
+            position:relative;
+            perspective:1000px;
+            transform-style:preserve-3d;
+        }
+        .login-form .group{
+            margin-bottom:15px;
+        }
+        .login-form .group .label,
+        .login-form .group .input,
+        .login-form .group .button{
+            width:100%;
+            display:block;
+        }
+        .login-form .group .input,
+        .login-form .group .button,
+        input, input[type="password"]{
+            border:none;
+            padding:15px 20px;
+            border-radius:12px;
+            background: #fff;
+            /*background:rgba(255,255,255,.1);*/
+        }
+
+        .login-form .group input[data-type="password"]{
+            text-security:circle;
+            -webkit-text-security:circle;
+        }
+        .login-form .group .label{
+            color: #c3dbef;
+            font-size: 16px;
+            text-transform: none;
+            margin-left: 9px;
+            margin-bottom: 10px;
+        }
+        .login-form .group .button{
+            background:#1161ee;
+            color: white;
+            margin-top: 70px;
+        }
+        .login-form .group label .icon{
+            width:15px;
+            height:15px;
+            border-radius:2px;
+            position:relative;
+            display:inline-block;
+            background:rgba(255,255,255,.1);
+        }
+        .login-form .group label .icon:before,
+        .login-form .group label .icon:after{
+            content:'';
+            width:10px;
+            height:2px;
+            background:#fff;
+            position:absolute;
+            transition:all .2s ease-in-out 0s;
+        }
+        .login-form .group label .icon:before{
+            left:3px;
+            width:5px;
+            bottom:6px;
+            transform:scale(0) rotate(0);
+        }
+        .login-form .group label .icon:after{
+            top:6px;
+            right:0;
+            transform:scale(0) rotate(0);
+        }
+
+        .hr{
+            height:2px;
+            margin:40px 0 30px 0;
+            background:rgba(255,255,255,.2);
+        }
+
+        /*Mis estilos*/
+         .foot-lnk{
+            display: flex;
+            justify-content: space-between;
+        }
+        .foot-lnk .register{
+            font-size: 18px;
+        }
+        #tab-1-label, #tab-2-label{
+            text-transform: none;
+        }
+        .login-form .group .button:hover{
+            background: #3979ea;
+         }
+        .login-html img{
+            max-width: 150px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 15px;
+        }
+        .welcome{
+            color: #90afde;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        /*Sobrescribiendo estilos por defecto*/
+        [type="text"], [type="password"], select{
+            width: 100%;
+        }
+        .form-control{
+            padding: 15px 20px;
+            line-height: inherit;
+            border: none;
+            border-radius: 12px;
+        }
+        a:hover{
+            text-decoration: none;
+        }
+    </style>
+    {{block head}}{{end}}
+</head>
+<body>
+	<div class="login-wrap">
+        <div class="login-html">
+            <img src="{{=URL('static','images/logo_inrh.png')}}" alt="Instituto nacional de Recursos Hidráulicos">
+            {{include}}
+        </div>
+    </div>
+
+    <!-- Plugin Mensajes Toastr -->
+            {{=plugin_toastr_message()}}
+                <div id="plugin-toastr-message"></div>
+            <!-- END Plugin Mensajes Toastr -->
+
+    <!-- Web2py -->
+    <script src="{{=URL('static','js/web2py.js')}}"></script>
+    <script src="{{=URL('static','js/web2py-bootstrap4.js')}}"></script>
+    <!--Toastr Notifications Plugin-->
+    <script src="{{=URL('static','plugin_toastr_message/js/toastr.min.js')}}"></script>
+
+
+<!-- jquery latest version -->
+<script src="{{=URL('static/plantilla','assets/js/vendor/jquery-2.2.4.min.js')}}"></script>
+<!-- bootstrap 4 js -->
+<script src="{{=URL('static/plantilla','assets/js/popper.min.js')}}"></script>
+<script src="{{=URL('static/plantilla','assets/js/bootstrap.min.js')}}"></script>
+
+{{block page_js}}{{end page_js}}
+</body>

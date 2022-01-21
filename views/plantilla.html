@@ -1,0 +1,457 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{=URL('static/plantilla','assets/images/icon/favicon.ico')}}" rel="stylesheet"/>
+    <link href="{{=URL('static/plantilla','assets/css/bootstrap.min.css')}}" rel="stylesheet"/>
+    <link href="{{=URL('static/plantilla','assets/css/font-awesome.min.css')}}" rel="stylesheet"/>
+    <link href="{{=URL('static/plantilla','assets/css/themify-icons.css')}}" rel="stylesheet"/>
+    <link href="{{=URL('static/plantilla','assets/css/metisMenu.css')}}" rel="stylesheet"/>
+    <link href="{{=URL('static/plantilla','assets/css/owl.carousel.min.css')}}" rel="stylesheet"/>
+    <link href="{{=URL('static/plantilla','assets/css/owl.carousel.min.css')}}" rel="stylesheet"/>
+    <link href="{{=URL('static/plantilla','assets/css/typography.css')}}" rel="stylesheet"/>
+    <link href="{{=URL('static/plantilla','assets/css/default-css.css')}}" rel="stylesheet"/>
+    <link href="{{=URL('static/plantilla','assets/css/styles.css')}}" rel="stylesheet"/>
+    <link href="{{=URL('static/plantilla','assets/css/responsive.css')}}" rel="stylesheet"/>
+    <!-- modernizr css -->
+    <script src="{{=URL('static/plantilla','assets/js/vendor/modernizr-2.8.3.min.js')}}"></script>
+
+    <!-- Toastr Notifications Plugin -->
+    <link rel="stylesheet" href="{{=URL('static','plugin_toastr_message/css/toastr.min.css')}}">
+    <link rel="stylesheet" href="{{=URL('static','plugin_toastr_message/css/custom.css')}}">
+
+    <!-- Sweetalert -->
+	<link rel="stylesheet" type="text/css" href="{{=URL('static','sweetalert2/sweetalert.css')}}">
+
+    <!-- Web2py -->
+    <link rel="stylesheet" href="{{=URL('static', 'css/web2py.css')}}">
+    <link rel="stylesheet" href="{{=URL('static', 'css/web2py-bootstrap4.css')}}">
+    <link rel="stylesheet" href="{{=URL('static', 'css/calendar.css')}}">
+    <script src="{{=URL('static','js/modernizr-2.8.3.min.js')}}"></script>
+
+    {{include 'web2py_ajax.html'}}
+    <!-- this includes jquery.js, calendar.js/.css and web2py.js -->
+    {{block head}}{{end}}
+
+    <style>
+        body{
+            margin-bottom: 0;
+        }
+        .logo img{
+            max-width: 150px;
+            position: relative;
+            right: 22px;
+        }
+        .sidebar-menu{
+            background-color: #2c3648;
+        }
+        .sidebar-header{
+            padding: 7px 32px 10px;
+            background-color: #2c3648;
+        }
+        #menu{
+            margin-left: 10px;
+        }
+        #menu a{
+            font-family: sans-serif, auto;
+            padding: 15px 15px 15px 11px;
+            text-transform: none;
+            color: #e8e7e7;
+        }
+        #menu a:hover{
+            text-decoration: none;
+        }
+        #menu i{
+            color: #4996db;
+        }
+        #sub_menu a{
+            padding: 7px 15px 7px 11px!important;
+            font-family: Lato, sans-serif, auto;
+            font-size: 17px;
+        }
+        .metismenu >li >a{
+            padding-left: 17px !important;
+            font-size: 18px !important;
+        }
+        .metismenu li a:after{
+            /*The position absolute property is in styles.css file*/
+            right: 12px;
+        }
+        .metismenu > li:hover > a, .metismenu > li.active > a{
+            background: #292e37;
+        }
+         #sub_menu li:hover{
+            background: #292e37;
+        }
+        .dataTables_wrapper{
+            padding-top: 40px;
+            font-family: Poppins, Lato, sans-serif;
+        }
+        .dataTables_wrapper a{
+            margin: 3px auto 3px;
+        }
+        .dataTables_wrapper .dropdown-item{
+            font-family: sans-serif;
+        }
+        th{
+            text-align: center;
+        }
+        #example_filter{
+            margin-bottom: 13px;
+        }
+        #example_length select{
+            border: 1px solid darkgray;
+        }
+        #example_info{
+            margin-top: 21px;
+        }
+        input[type="search"]{
+            border: 1px solid darkgray;
+            border-radius: 5px;
+            padding: 3px;
+        }
+        input[type="search"]:focus{
+            color: #495057;
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
+        }
+        tbody .btn{
+            padding: 9px 13px;
+        }
+        .main-content-inner{
+            height: 100vh;
+        }
+        .nav-btn{
+            margin-bottom: 14px;
+        }
+        .header-area{
+            padding: 7px 30px;
+        }
+        footer{
+            border-top: 1px solid #d8e3e7;
+            background: #fff;
+        }
+        footer span{
+            margin: auto;
+            color: #174980;
+        }
+        .botones-iconos{
+            margin-right: 2px !important;
+            padding: 9px 13px !important;
+            border: none !important;
+        }
+        .botones-iconos i{
+            font-size: 20px;
+        }
+        #profileDropdown{
+            padding: 0;
+        }
+        #profileDropdown:after{
+            color: #4a4a4a;
+        }
+        #profileDropdown img{
+            width: 32px;
+            height: 32px;
+            border-radius: 100%;
+        }
+        #profileDropdown i{
+            color: #4a4a4a;
+        }
+        #profileDropdown .nav-profile-name{
+            margin-left: .5rem;
+            margin-right: .5rem;
+            color: #4a4a4a;
+            font-weight: 600;
+            font-family: sans-serif;
+        }
+        .navbar-dropdown{
+            left: 20px;
+            width: calc(100% - 40px);
+        }
+        .navbar-dropdown .dropdown-item{
+            margin-bottom: 0;
+            padding: .65rem 1.5rem;
+            cursor: pointer;
+            font-family: sans-serif;
+        }
+        .navbar-dropdown .dropdown-item i{
+            margin-right: 2px;
+        }
+        .encabezado{
+            font-size: 24px;
+            font-weight: 600;
+            color: #174980;
+        }
+    </style>
+</head>
+
+<body>
+    <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+    <!-- preloader area start -->
+    <div id="preloader">
+        <div class="loader"></div>
+    </div>
+    <!-- preloader area end -->
+    <!-- page container area start -->
+    <div class="page-container">
+        <!-- sidebar menu area start -->
+        <div class="sidebar-menu">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <a href="{{=URL('default','index')}}"><img src="{{=URL('static','images/logo_inrh.png')}}" alt="logo"></a>
+                </div>
+            </div>
+            <div class="main-menu">
+                <div class="menu-inner">
+                    <nav>
+                        <ul class="metismenu" id="menu">
+                            {{for _item in response.menu or []:}}
+                            {{if len(_item)<5 or not _item[4]:}}
+                                <li {{if _item[1]:}}class="active"{{pass}}>
+                                    <a href="{{=_item[2]}}"><i class="{{=_item[3]}}"></i> <span>{{=_item[0]}}</span></a>
+                                </li>
+                            {{else:}}
+                            <li {{if _item[1]:}}class="active"{{pass}}>
+                                <a href="{{=_item[2]}}" aria-expanded="true"><i class="{{=_item[3]}}"></i><span>{{=_item[0]}}</span></a>
+                                <ul id="sub_menu" style="margin-left:10px;" class="collapse {{if _item[1]:}}active show{{pass}}">
+                                    {{for _subitem in _item[4]:}}
+                                    <li class="{{if _subitem[1]:}}active show{{pass}}"><a href="{{=_subitem[2]}}">{{=_subitem[0]}}</a></li>
+                                    {{pass}}
+                                </ul>
+                            </li>
+                            {{pass}}
+                            {{pass}}
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <!-- sidebar menu area end -->
+        <!-- main content area start -->
+        <div class="main-content">
+            <!-- header area start -->
+            <div class="header-area">
+                <div class="row align-items-center">
+                    <!-- nav and search button -->
+                    <div class="col-md-6 col-sm-8 clearfix">
+                        <div class="nav-btn pull-left">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+
+                    </div>
+                    <!-- profile info & task notification -->
+                    <div class="col-md-6 col-sm-4 clearfix">
+                        <ul class="notification-area pull-right">
+
+                            <li class="nav-item nav-profile dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+                                    <img src="{{=URL('static', 'images/user.jpg')}}" alt="profile" />
+                                    <span class="nav-profile-name">{{=auth.user.username if auth.user else "Invitado"}}</span>
+                                   <i class="fa fa-angle-down"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right navbar-dropdown notify-item"
+                                    aria-labelledby="profileDropdown" style="right:0px !important; top:40px !important;">
+                                    <a href="{{=URL('user', 'logout')}}"  class="dropdown-item">
+                                        <i class="fa fa-sign-out text-primary"></i>
+                                        Cerrar Sesión
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- header area end -->
+
+            <div class="main-content-inner" id="map_id">
+                {{include}}
+            </div>
+        <!-- main content area end -->
+             <!-- Plugin Mensajes Toastr -->
+            {{=plugin_toastr_message()}}
+                <div id="plugin-toastr-message"></div>
+            <!-- END Plugin Mensajes Toastr -->
+
+            {{block body_end}}<!--Here goes modals-->{{end body_end}}
+
+        <!-- footer area start-->
+            <footer>
+                    <div class="footer-copyright text-center py-3">
+                        <span class="text-center text-sm-left d-block d-sm-inline-block">Copyright © 2021 <a>Facultad de Informática y Ciencias Exactas UNICA.</a></span>
+                    </div>
+                </footer>
+
+        <!-- footer area end-->
+        </div>
+
+    </div>
+    <!-- page container area end -->
+
+    <!-- jquery latest version -->
+    <script src="{{=URL('static/plantilla','assets/js/vendor/jquery-2.2.4.min.js')}}"></script>
+    <!-- bootstrap 4 js -->
+    <script src="{{=URL('static/plantilla','assets/js/popper.min.js')}}"></script>
+    <script src="{{=URL('static/plantilla','assets/js/bootstrap.min.js')}}"></script>
+    <script src="{{=URL('static/plantilla','assets/js/owl.carousel.min.js')}}"></script>
+    <script src="{{=URL('static/plantilla','assets/js/metisMenu.min.js')}}"></script>
+    <script src="{{=URL('static/plantilla','assets/js/jquery.slimscroll.min.js')}}"></script>
+    <script src="{{=URL('static/plantilla','assets/js/jquery.slicknav.min.js')}}"></script>
+
+    <!--Toastr Notifications Plugin-->
+    <script src="{{=URL('static','plugin_toastr_message/js/toastr.min.js')}}"></script>
+
+    <!-- Sweetalert -->
+    <script src="{{=URL('static','sweetalert2/sweetalert.min.js')}}"></script>
+
+    <!-- all line chart activation -->
+    <script src="{{=URL('static/plantilla','assets/js/line-chart.js')}}"></script>
+    <!-- all pie chart -->
+    <script src="{{=URL('static/plantilla','assets/js/pie-chart.js')}}"></script>
+    <!-- others plugins -->
+    <script src="{{=URL('static/plantilla','assets/js/plugins.js')}}"></script>
+    <script src="{{=URL('static/plantilla','assets/js/scripts.js')}}"></script>
+
+    <!--Axios-->
+    <script type="text/javascript" src="{{=URL('static','axios/axios.js')}}"></script>
+
+    <!-- Web2py -->
+    <script src="{{=URL('static','js/web2py.js')}}"></script>
+    <script src="{{=URL('static','js/web2py-bootstrap4.js')}}"></script>
+
+    <!-- DATATABLES -->
+  <link rel="stylesheet" type="text/css" href="{{=URL('static','datatables/datatables.min.css')}}"/>
+  <link rel="stylesheet" type="text/css" href="{{=URL('static','datatables/plugins/buttons.dataTables.min.css')}}"/>
+  <link rel="stylesheet" type="text/css" href="{{=URL('static','datatables/plugins/jquery.dataTables.min.css')}}"/>
+  <link rel="stylesheet" type="text/css" href="{{=URL('static','datatables/plugins/select.dataTables.min.css')}}"/>
+
+  <script type="text/javascript" src="{{=URL('static','datatables/datatables.min.js')}}"></script>
+  <script type="text/javascript" src="{{=URL('static','datatables/dataTables.responsive.min.js')}}"></script>
+  <script type="text/javascript" src="{{=URL('static','datatables/dataTables.rowGroup.min.js')}}"></script>
+
+  <script type="text/javascript" src="{{=URL('static','datatables/plugins/jquery.dataTables.min.js')}}"></script>
+
+  <script type="text/javascript" src="{{=URL('static','datatables/plugins/dataTables.buttons.min.js')}}"></script>
+  <script type="text/javascript" src="{{=URL('static','datatables/plugins/buttons.html5.min.js')}}"></script>
+  <script type="text/javascript" src="{{=URL('static','datatables/plugins/buttons.colVis.min.js')}}"></script>
+
+  <script type="text/javascript" src="{{=URL('static','datatables/plugins/dataTables.select.min.js')}}"></script>
+
+  <script type="text/javascript" src="{{=URL('static','js/myTools.js')}}"></script>
+
+
+    <script>
+        // Con este código se establece la configuración por defecto para todos los datatables
+    $.extend( $.fn.dataTable.defaults, {
+          "responsive": true,
+          "sScrollY": 350,
+          "sScrollX": "100%",
+          // select: true,
+          "scrollX": true,
+          "sScrollXInner": "110%",
+          // "order": [[0, 'asc']],
+          buttons: [
+          {
+              extend: 'pdfHtml5',
+              className: 'btn btn-primary',
+              text: '{{=T('Exportar a PDF')}}',
+              orientation: 'landscape',
+              pageSize: 'LEGAL',
+              download: 'open',
+              exportOptions: {
+                  modifier: {page: 'all'}
+              },
+          }, {extend:'colvis',
+                    text: '{{=T('Columnas Visibles')}}',
+              collectionLayout: 'fixed two-column'
+            }
+          ],
+
+          language: {
+              lengthMenu: "{{=T('Mostrar _MENU_ registros por página')}}",
+              zeroRecords: "{{=T('ningún registro encontrado')}}",
+              info: "{{=T('Mostrando página _PAGE_ de _PAGES_ páginas')}}",
+              infoEmpty: "{{=T('sin resultados')}}",
+              search: "{{=T('Buscar')}}",
+              infoFiltered: "{{=T('Resultados filtrados de _MAX_ registros')}}",
+              processing:     "{{=T('Procesando')}}",
+              infoPostFix:    "",
+              loadingRecords: "{{=T('cargando Registros')}}",
+              emptyTable:     "{{=T('tabla vacía')}}",
+              paginate: {
+                  first:      "{{=T('Primero')}}",
+                  previous:   "{{=T('anterior')}}",
+                  next:       "{{=T('siguiente')}}",
+                  last:       "{{=T('Último')}}"
+              },
+              aria: {
+                  sortAscending:  ": activar para ordenar elementos ascendentemente",
+                  sortDescending: ": activar para ordenar elementos descendentemente"
+              }
+          },
+      });
+
+    let data_table = $('table');
+     data_table.addClass('table table-hover');
+     {{block datatable}}{{end datatable}}
+
+  $('.web2py_console a, .dataTables_filter, .dataTables_paginate').addClass('toright');
+  $('.dataTables_filter').addClass('toright');
+
+    //--------------------------------------------------
+    // My helper code
+    //--------------------------------------------------
+
+        // Helper function to show Toastr notification in my javascript code
+        let showMyNotification = (type, message) =>{
+            //Toastr Options
+            let toastr_options = {
+            timeOut: 3000,
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "500",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "tapToDismiss": true
+        }
+            let notification_type = {
+            success: 'Notificación',
+            error: 'Error',
+            warning: 'Advertencia',
+            info: 'Información',
+        };
+            // jQuery('#plugin-toastr-message').get(0).reload();
+            toastr[type](message, notification_type[type], toastr_options); //show notification
+
+        }
+
+        // Helper function used in forms validation to show error messages
+        let showErrorDiv = (errorDiv, message) => {
+            errorDiv.text(message);
+            errorDiv.addClass('visible');
+            window.setTimeout(function () {
+                  errorDiv.removeClass('visible');
+            }, 5000)
+        }
+    </script>
+
+    {{block page_js}}{{end page_js}}
+</body>
+
+</html>

@@ -1,0 +1,63 @@
+{{extend 'plantilla.html'}}
+
+        {{=grid}}
+
+{{block page_js}}
+        <script>
+// Con este código se establece la configuración por defecto para todos los datatables
+    $.extend( $.fn.dataTable.defaults, {
+          "responsive": true,
+          "sScrollY": 350,
+          "sScrollX": "100%",
+          select: true,
+          "scrollX": true,
+          "sScrollXInner": "110%",
+          "order": [[2, 'asc']],
+          buttons: [
+          {
+              extend: 'pdfHtml5',
+              className: 'btn btn-primary',
+              text: '{{=T('Exportar a PDF')}}',
+              orientation: 'landscape',
+              pageSize: 'LEGAL',
+              download: 'open',
+              exportOptions: {
+                  modifier: {page: 'all'}
+              },
+          }, {extend:'colvis',
+                    text: '{{=T('Columnas Visibles')}}',
+              collectionLayout: 'fixed two-column'
+            }
+          ],
+
+          language: {
+              lengthMenu: "{{=T('Mostrar _MENU_ registros por página')}}",
+              zeroRecords: "{{=T('ningún registro encontrado')}}",
+              info: "{{=T('Mostrando página _PAGE_ de _PAGES_ páginas')}}",
+              infoEmpty: "{{=T('sin resultados')}}",
+              search: "{{=T('Buscar')}}",
+              infoFiltered: "{{=T('Resultados filtrados de _MAX_ registros')}}",
+              processing:     "{{=T('Procesando')}}",
+              infoPostFix:    "",
+              loadingRecords: "{{=T('cargando Registros')}}",
+              emptyTable:     "{{=T('tabla vacía')}}",
+              paginate: {
+                  first:      "{{=T('Primero')}}",
+                  previous:   "{{=T('anterior')}}",
+                  next:       "{{=T('siguiente')}}",
+                  last:       "{{=T('Último')}}"
+              },
+              aria: {
+                  sortAscending:  ": activar para ordenar elementos ascendentemente",
+                  sortDescending: ": activar para ordenar elementos descendentemente"
+              }
+          }
+      });
+    let data_table = $('table');
+     data_table.addClass('table table-hover');
+     data_table.DataTable();
+  $('.web2py_console a, .dataTables_filter, .dataTables_paginate').addClass('toright');
+  $('.dataTables_filter').addClass('toright');
+
+</script>
+{{end page_js}}

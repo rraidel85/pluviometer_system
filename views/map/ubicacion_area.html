@@ -1,0 +1,65 @@
+{{extend 'plantilla.html'}}
+
+       {{block head}}
+		<link rel="stylesheet" href="{{=URL('static', 'leaflet/leaflet.css')}}" />
+        <style>
+            #map_id{
+                height: 500px;
+                z-index: 0;
+            }
+        </style>
+{{end head}}
+
+{{block body_end}}
+            <div id="map_options_modal" class="modal fade">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Modal title</h5>
+                                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                </div>
+                                <div class="modal-body">
+                                    <!--Contenido dinámico aquí-->
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+{{end body_end}}
+        {{block page_js}}
+        <script type="text/javascript" src="{{=URL('static', 'leaflet/leaflet.js')}}"></script>
+    <script>
+
+    let mymap = L.map('map_id').setView(
+        //If not 'lat' or 'lon' is passed it paints a default value
+            {{=areas_dict[area.id][0]}}, 10);
+    L.tileLayer('{{=URL('static','CubaOSM/{z}/{x}/{y}.png',url_encode=False)}}',{ maxZoom: 12 }).addTo(mymap);
+
+
+    {{for area_dict_key in areas_dict:}}
+        L.polygon({{=areas_dict[area_dict_key]}},
+            {color: '{{=area.id_area_type.representation}}'}).on('click', e => {
+          let area_options = `
+            <a class="btn btn-flat btn-primary btn-lg mb-3" style="color:white;" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area',args=area.id)}}>Índice de concentración</a><br>
+            <a class="btn btn-flat btn-primary btn-lg mb-3" style="color:white;" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area_by_month',args=area.id)}}>Índice de concentración por mes</a><br>
+          `// Esto no pincha bien todavia porque en la bd no hay indice de concentracion para todas las areas
+          $(".modal-body").append(area_options);
+          $("#map_options_modal").modal();
+          }).on('mouseover', (e)=>{
+              e.target.bindPopup(`<b>Nombre</b>:{{=area.name}}<br>
+                        <b>Tipo de Área</b>:{{=area.id_area_type.name}}<br>
+                        <b>Descripción</b>:{{=area.description if area.description else ''}}<br>
+                                    `);
+              e.target.openPopup();
+        }).on('mouseout', e =>{e.target.closePopup()}).addTo(mymap);
+    {{pass}}
+
+    $(document).on('hide.bs.modal','#map_options_modal',() => {
+        $(".modal-body").empty();
+    });
+
+
+		</script>
+{{end page_js}}

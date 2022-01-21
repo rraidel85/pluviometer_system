@@ -1,0 +1,45 @@
+{{extend 'plantilla.html'}}
+        <h3 class="encabezado">Índice de concentración del área: {{=area_name}}</h3>
+        <table id="example" class="display" width="100%" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Area</th>
+                <th>Años considerados</th>
+                <th>Valor de "a"</th>
+                <th>Valor de "b"</th>
+                <th>R^2</th>
+                <th>Índice de concentración</th>
+                <th>Días con lluvia (total)</th>
+                <th>Total de precipitaciones registradas</th>
+                <th>Máxima precipitación registrada</th>
+                <th>mm de lluvia (promedio anual)</th>
+                <th>Días lluviosos (promedio anual)</th>
+                <th>Porciento de días lluviosos al año</th>
+            </tr>
+        </thead>
+            <tbody>
+            {{for area in areas:}}
+                <tr>
+                    <td>{{=area.id_area.name}}</td>
+                    <td>{{=area.years_considered}}</td>
+                    <td>{{=area.a_value}}</td>
+                    <td>{{=area.b_value}}</td>
+                    <td>{{=area.r_2_value}}</td>
+                    <td>{{=area.ci_value}}</td>
+                    <td>{{=area.rainy_days}}</td>
+                    <td>{{=area.total_rain_value}}</td>
+                    <td>{{=area.max_rain_value}}</td>
+                    <td>{{=area.rain_by_period_avg}}</td>
+                    <td>{{=area.rainy_days_by_period_avg}}</td>
+                    <td>{{=area.rainy_days_percent}}</td>
+                </tr>
+            {{pass}}
+            </tbody>
+</table>
+
+<script>
+    {{block datatable}}
+        data_table.DataTable();
+    {{end datatable}}
+
+</script>

@@ -1,0 +1,18 @@
+{{extend 'plantilla.html'}}
+       {{block head}}
+		<title>Seleccionar Pluviometro</title>
+
+        {{end head}}
+
+        <form class="form-inline" method="POST" action="{{=URL('precipitation_concentration_index','to_show_ci_for_selected_pluviometer_by_month')}}">
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="pluv_select">Seleccione un pluviometro:</label>
+                <select name="pluv_select" class="form-control" id="pluv_select" style="padding-bottom: 10px;padding-top: 8px;">
+                    {{for pluv in pluvs:}}
+                        <option value={{=pluv.id}}>{{=pluv.name}}</option>
+                    {{pass}}
+                </select>
+            </div>
+            <input type="submit" value="Aceptar" class="btn btn-primary"/>
+        </form>
+

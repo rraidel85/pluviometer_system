@@ -1,0 +1,64 @@
+{{extend 'plantilla.html'}}
+<h3 class="encabezado">Estadísticas anuales del pluviómetro: {{=pluv.name}}</h3>
+<table id="example" class="display" width="100%" cellspacing="0">
+        <thead>
+            <tr>
+                <!--<th>Id</th>-->
+                <th>id_pluviometer</th>
+                <th>year_number</th>
+                <th>total_precipit</th>
+                <th>max_registered_value</th>
+                <th>daily_mean</th>
+                <th>rainy_days_count</th>
+                <th>rainy_streak_count</th>
+                <th>rainy_streak_med_long</th>
+            </tr>
+        </thead>
+</table>
+<script>
+{{block datatable}}
+    data_table.DataTable({
+        //Adding server-side processing
+        serverSide: true,
+        processing: true,
+        ajax: function ( data, callback, settings ) {
+            console.log(data);
+            axios.get('{{=URL('yearStatistics', 'year_statistics_api')}}',{
+                params: {
+                    start: data.start,
+                    limit: data.length,
+                    search: data.search.value,
+                    order_column: data.columns[data.order[0].column].data,
+                    order_dir: data.order[0].dir,
+                    pluv_id: {{=pluv_id}}
+                }
+            }).then(res=>{
+                console.log(res)
+                callback({
+                   recordsTotal: res.data.length,
+                   recordsFiltered: res.data.length,
+                   data: res.data.stats
+                });
+            })
+            .catch(error => {
+                alert(error)
+            })
+        },
+        columns: [
+            // { data: "id" },
+            { data: "id_pluviometer" },
+            { data: "year_number" },
+            { data: "total_precipit"},
+            { data: "max_registered_value"},
+            { data: "daily_mean"},
+            { data: "rainy_days_count"},
+            { data: "rainy_streak_count"},
+            { data: "rainy_streak_med_long"},
+        ],
+    });
+{{end datatable}}
+
+</script>
+
+
+

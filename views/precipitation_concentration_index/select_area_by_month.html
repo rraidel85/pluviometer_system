@@ -1,0 +1,18 @@
+{{extend 'plantilla.html'}}
+       {{block head}}
+		<title>Seleccionar Area</title>
+
+        {{end head}}
+
+        <form class="form-inline" method="POST" action="{{=URL('precipitation_concentration_index','to_show_ci_for_selected_area_by_month')}}">
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="area_select">Seleccione un área:</label>
+                <select name="area_select" class="form-control" id="area_select" style="padding-bottom: 10px;padding-top: 8px;">
+                    {{for area in c_index_areas:}}
+                        <option value={{=area.id_area}}>{{=area.id_area.name}}</option>
+                    {{pass}}
+                </select>
+            </div>
+            <input type="submit" value="Aceptar" class="btn btn-primary"/>
+        </form>
+

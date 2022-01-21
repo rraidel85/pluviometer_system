@@ -1,0 +1,54 @@
+{{extend 'plantilla.html'}}
+
+<table id="example" class="display" width="100%" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Id_pluviometer_type</th>
+                <th>Name</th>
+                <th>Lat</th>
+                <th>Lon</th>
+            </tr>
+        </thead>
+    </table>
+
+<script>
+$(document).ready(function () {
+
+    let table = $('#example').DataTable({
+        serverSide: true,
+        processing: true,
+        ajax: function ( data, callback, settings ) {
+            console.log(data)
+            axios.get('{{=URL('default', 'pluvs')}}',{
+                params: {
+                    start: data.start,
+                    limit: data.length,
+                    search: data.search.value,
+                    order_column: data.columns[data.order[0].column].data,
+                    order_dir: data.order[0].dir
+                }
+            }).then(res=>{
+                console.log(res)
+                callback({
+                   recordsTotal: res.data.length,
+                   recordsFiltered: res.data.length,
+                   data: res.data.pluvs
+                });
+            })
+            .catch(error => {
+                alert(error)
+            })
+        },
+        columns: [
+            { data: "id" },
+            { data: "id_pluviometer_type" },
+            { data: "name" },
+            { data: "lat" },
+            { data: "lon" },
+        ]
+
+    });
+
+});
+</script>

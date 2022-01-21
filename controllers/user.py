@@ -1,0 +1,373 @@
+# Controlador para gestionar los usuarios y permisos
+
+# validadores y set de usuarios
+if auth.user:
+    usuarios = db(db.auth_user.id != auth.user.id)
+
+require_username = [IS_NOT_EMPTY(error_message="El campo Usuario no puede estar vacío"), IS_NOT_IN_DB(
+        db, "auth_user.username",error_message="Ese nombre de usuario ya existe"), IS_LENGTH(20,error_message="El usuario debe tener máximo 20 carácteres")]
+require_email = [IS_EMAIL(error_message="Correo inválido"), IS_NOT_IN_DB(db, "auth_user.email",error_message="Ese correo ya existe")]
+
+# devuelve formulario para iniciar sesion
+# def login():
+#     form = auth.login()
+#     print(f"Formulario vars:{form.vars}")
+#     print(f"Request vars:{request.vars}")
+#     # print(f"Form process:{form.process()}")
+#     if form.errors:
+#         print("Erroressss")
+#         form.errors.username = False
+#         form.errors.password = False
+#         plugin_toastr_message_config('error', T(
+#             'Usuario y/o contraseña incorrectos'))
+#         session.error = True
+#         session.msg = "Existen errores en el formulario"
+#     else:
+#         print("nadaaa")
+#
+#
+#     return dict(form=form)
+
+# def login():
+#     user = auth.login_bare(request.vars.username,request.vars.password)
+#     if not user:
+#         # plugin_toastr_message_config('error', 'Usuario y/o contraseña incorrectos')
+#         print("Usuario o contraseña incorrecto")
+#     else:
+#         redirect(URL('default', 'index'))
+#     return dict()
+
+def login():
+    form = SQLFORM.factory(
+        Field('username', requires=IS_NOT_EMPTY()),
+        Field('password', 'password', requires=[IS_NOT_EMPTY(), CRYPT()]),
+    )
+
+    if form.process(hideerror=True).accepted:
+        username = form.vars.username
+        password = form.vars.password
+        user = auth.login_bare(username, password)
+
+        if user:
+            plugin_toastr_message_config('success', T(
+                'Bienvenido al sistema: ' + username))
+            redirect(auth.settings.login_next)
+        else:
+            form.errors.credenciales = T('Credenciales incorrectas')
+            plugin_toastr_message_config('error', T(
+                'Usuario o contraseña incorrectos'))
+    elif form.errors:
+        plugin_toastr_message_config('error', T(
+            'Existen errores en el formulario'))
+
+    return dict(form=form)
+
+def registro():
+    form = SQLFORM.factory(
+        Field("first_name", requires=IS_NOT_EMPTY(error_message='El campo Nombre no puede estar vacio')),
+        Field("last_name", requires=IS_NOT_EMPTY(error_message='El campo Apellidos no puede estar vacio')),
+        Field("username", requires=require_username),
+        Field("email", requires=require_email),
+        Field("password", "password",
+              requires=[IS_NOT_EMPTY(error_message='El campo Contraseña no puede estar vacio'), CRYPT()]),
+        Field("repeat", "password",requires=[IS_EQUAL_TO(request.vars.password,
+                                                         error_message='Las contraseñas deben coincidir')]))
+
+    if form.process(hideerror=True).accepted:
+        user_id = db.auth_user.insert(**form.vars)
+        # db.auth_membership.insert(
+        #     user_id=user_id, group_id=form.vars.rol)
+        auth.login_bare(form.vars.username,form.vars.password)
+        plugin_toastr_message_config('success', T(
+            'Bienvenido al sistema: ' + auth.user.username))
+        redirect(auth.settings.login_next)
+    elif form.errors:
+        first_error = list(form.errors.values())[0]
+        plugin_toastr_message_config('error',first_error)
+
+    return dict(form=form)
+
+# Cierra la sesión del usuario dado
+@auth.requires_login()
+def logout():
+    auth.logout()
+    return dict()
+
+
+# Url para mostrar mensaje de NO autorizado
+@auth.requires_login()
+def no_autorizado():
+    return locals()
+
+# Opcion para editar perfil si el usuario no es admin
+@auth.requires_login()
+def editar_perfil():
+    registro = db.auth_user(auth.user.id) or redirect(URL('default', 'index'))
+
+    if registro.username == "admin":
+        session.status = True
+        session.msg = "El usuario admin no puede editar su perfil"
+        redirect(URL("default", "index"))
+
+    form = SQLFORM.factory(
+        Field("first_name", label=T("Nombre(s)"), default=registro.first_name, requires=IS_NOT_EMPTY()),
+        Field("last_name", label=T(
+            "Apellidos"), default=registro.last_name, requires=IS_NOT_EMPTY()),
+        Field("username", label=T("Nombre de usuario"),
+              default=registro.username, requires=require_username),
+        Field("email", label=T("Correo electrónico"),
+              default=registro.email, requires=require_email),
+        )
+
+    if form.validate():
+        db(db.auth_user.id == registro.id).update(**form.vars)
+        session.status = True
+        session.msg = 'Usuario actualizado correctamente'
+        redirect(URL("perfil"))
+    elif form.errors:
+        session.error = True
+        session.msg = 'El formulario tiene errores'
+    return dict(form=form)
+
+
+# -------------------------------------------------------------------------
+# Administrador
+# -------------------------------------------------------------------------
+
+# Devuelve listado de usuarios y su rol, excepto el admin
+@auth.requires_membership("Administrador")
+def administrar():
+    grid = db((db.auth_user.id != auth.user.id) & (db.auth_user.username != "admin")
+              & (db.auth_membership.user_id == db.auth_user.id)).select(db.auth_user.ALL, db.auth_membership.ALL)
+    return locals()
+
+
+# Devuelve informacion sobre el usuario logueado actualmente
+@auth.requires_login()
+def perfil():
+    usuario = db.auth_user(auth.user.id) or redirect(URL('default', 'index'))
+
+    rol = db(db.auth_membership.user_id ==
+             usuario.id).select().first().group_id.role
+
+    return locals()
+
+
+# Devuelve información sobre un usuario seleccionado por el admin
+@auth.requires_membership("Administrador")
+def detalles():
+    if not request.args(0):
+        redirect(URL('default', 'index'))
+
+    usuario = db.auth_user(request.args(0, cast=int)
+                           ) or redirect(URL('administrar'))
+
+    rol = db(db.auth_membership.user_id ==
+             usuario.id).select().first().group_id.role
+
+    return locals()
+
+# Crea un nuevo usuario
+@auth.requires_membership("Administrador")
+def crear():
+    usuarios = db(db.auth_user.id > 0)
+    require_username = [IS_NOT_EMPTY(), IS_NOT_IN_DB(
+        usuarios, "auth_user.username"), IS_LENGTH(20)]
+    require_email = [IS_NOT_EMPTY(), IS_EMAIL(
+    ), IS_NOT_IN_DB(usuarios, "auth_user.email")]
+
+    try:
+        form = SQLFORM.factory(Field("first_name", label=T("Nombre(s)"), requires=IS_NOT_EMPTY()),
+                               Field("last_name", label=T("Apellidos"),
+                                     requires=IS_NOT_EMPTY()),
+                               Field("username", label=T(
+                                   "Nombre de usuario"), requires=require_username),
+                               Field("email", label=T("Correo electrónico"),
+                                     requires=require_email),
+                               Field("password", "password", label=T(
+                                   "Contraseña"), requires=[IS_NOT_EMPTY(), CRYPT()]),
+                               Field("repeat", "password", label=T("Repetir contraseña"), requires=[
+                                   IS_EQUAL_TO(request.vars.password)]),
+                               # Field("rol", "reference auth_group", label=T("Rol de usuario"),
+                               #       requires=IS_IN_DB(db, 'auth_group.id', '%(role)s',zero=T('Seleccionar rol')))
+                               )
+
+        if form.validate():
+            user_id = db.auth_user.insert(**form.vars)
+            db.auth_membership.insert(
+                user_id=user_id, group_id=form.vars.rol)
+            raise TypeError
+        elif form.errors:
+            session.error = True
+            session.msg = 'El formulario tiene errores'
+    except TypeError:
+        session.status = True
+        session.msg = 'Usuario creado correctamente'
+        redirect(URL("usuario", "detalles", args=user_id))
+    except:
+        redirect(URL("crear"))
+
+    return dict(form=form)
+
+
+# Editar como admin un usuario dado
+@auth.requires_membership("Administrador")
+def editar():
+    if not request.args(0):
+        redirect(URL('index'))
+
+    registro = db.auth_user(request.args(0, cast=int)
+                            ) or redirect(URL('index'))
+
+    usuarios = db(db.auth_user.id != registro.id)
+    require_username = [IS_NOT_EMPTY(), IS_NOT_IN_DB(
+        usuarios, "auth_user.username"), IS_LENGTH(20)]
+    require_email = [IS_NOT_EMPTY(), IS_EMAIL(
+    ), IS_NOT_IN_DB(usuarios, "auth_user.email")]
+
+    try:
+        rol_id = db(db.auth_membership.user_id ==
+                    registro.id).select().first().group_id.id
+
+        form = SQLFORM.factory(
+            Field("first_name", label=T("Nombre(s)"), default=registro.first_name, requires=IS_NOT_EMPTY()),
+            Field("last_name", label=T(
+                "Apellidos"), default=registro.last_name, requires=IS_NOT_EMPTY()),
+            Field("username", label=T(
+                "Nombre de usuario"), default=registro.username, requires=require_username),
+            Field("email", label=T("Correo electrónico"),
+                  default=registro.email, requires=require_email),
+            Field("phone", label=T("Telefono"),
+                  default=registro.phone, requires=require_phone),
+            Field("rol", "reference auth_group", label=T("Rol de usuario"), default=rol_id,
+                  requires=IS_IN_DB(db, 'auth_group.id', '%(role)s',
+                                    zero=T('Seleccionar rol')))
+            )
+
+        if form.validate():
+            db(db.auth_user.id == registro.id).update(**form.vars)
+            db(db.auth_membership.user_id == registro.id).update(
+                group_id=form.vars.rol)
+            raise TypeError
+        elif form.errors:
+            session.error = True
+            session.msg = 'El formulario tiene errores'
+
+    except TypeError:
+        session.status = True
+        session.msg = 'Usuario actualizado correctamente'
+        redirect(URL("detalles", args=registro.id))
+    except:
+        redirect(URL("editar", args=registro.id))
+
+    return dict(form=form, registro=registro)
+
+
+# Actualiza la contraseña del usuario logueado
+@auth.requires_login()
+def cambiar_clave():
+    registro = db.auth_user(auth.user.id) or redirect(URL('default', 'index'))
+
+    form = SQLFORM.factory(
+        Field("password", "password", label=T("Nueva Contraseña"), requires=[IS_NOT_EMPTY(), CRYPT()]),
+        Field("repeat", "password", label=T("Repetir contraseña"), requires=[
+            IS_EQUAL_TO(request.vars.password)]),
+        )
+
+    if form.validate():
+        db(db.auth_user.id == registro.id).update(**form.vars)
+        session.status = True
+        session.msg = 'Contraseña actualizada correctamente'
+        redirect(URL("perfil", args=registro.id))
+    elif form.errors:
+        session.error = True
+        session.msg = 'El formulario tiene errores'
+
+    return dict(form=form, registro=registro)
+
+
+# Cambia como admin la contraseña de un usuario dado
+@auth.requires_membership("Administrador")
+def cambiar_clave_usuario():
+    if not request.args(0):
+        redirect(URL('default', 'index'))
+
+    registro = db.auth_user(request.args(0, cast=int)
+                            ) or redirect(URL('administrar'))
+
+    form = SQLFORM.factory(
+        Field("password", "password", label=T("Nueva Contraseña"), requires=[IS_NOT_EMPTY(), CRYPT()]),
+        Field("repeat", "password", label=T("Repetir contraseña"), requires=[
+            IS_EQUAL_TO(request.vars.password)]),
+        )
+
+    if form.validate():
+        db(db.auth_user.id == registro.id).update(**form.vars)
+        session.status = True
+        session.msg = 'Contraseña actualizada correctamente'
+        redirect(URL("detalles", args=registro.id))
+    elif form.errors:
+        session.error = True
+        session.msg = 'El formulario tiene errores'
+
+    return dict(form=form, registro=registro)
+
+
+# Elimina como admin un usuario dado
+@auth.requires_membership("Administrador")
+def eliminar():
+    if not request.args(0):
+        redirect(URL('administrar'))
+
+    registro = db.auth_user(request.args(0, cast=int)
+                            ) or redirect(URL('administrar'))
+    x = registro.id
+
+    if not registro.username == "admin":
+        db(db.auth_user.id == x).delete()
+        session.status = True
+        session.msg = 'Usuario eliminado correctamente'
+
+    redirect(URL("administrar"))
+
+    return dict()
+
+
+
+# def crear_administrador():
+#     if db(db.auth_user.id > 0).select():
+#         redirect(URL("iniciar_sesion"))
+#
+#     try:
+#         form = SQLFORM.factory(Field("first_name", label=T("Nombre(s)"), requires=IS_NOT_EMPTY()),
+#                                Field("last_name", label=T("Apellidos"),
+#                                      requires=IS_NOT_EMPTY()),
+#                                Field("username", label=T("Nombre de usuario"), default="superadmin",
+#                                      requires=require_username, writable=False),
+#                                Field("email", label=T("Correo electrónico"),
+#                                      requires=require_email),
+#                                Field("ci", label=T(
+#                                    "Carnet de identidad"), default="---------------", requires=[IS_NOT_EMPTY()]),
+#                                Field("cargo", label=T("Cargo"),
+#                                      requires=require_cargo),
+#                                Field("password", "password", label=T(
+#                                    "Contraseña"), requires=[IS_NOT_EMPTY(), CRYPT()]),
+#                                Field("repeat", "password", label=T("Repetir contraseña"), requires=[
+#                                    IS_EQUAL_TO(request.vars.password)]),
+#                                table_name='auth_user'
+#                                )
+#
+#         if form.validate():
+#             user_id = db.auth_user.insert(username="superadmin", **form.vars)
+#             db.auth_membership.insert(user_id=user_id, group_id=1)
+#             raise TypeError
+#
+#         elif form.errors:
+#             session.flash = 'El formulario tiene errores'
+#     except TypeError:
+#         session.flash = 'Usuario creado correctamente'
+#         redirect(URL("usuario", "iniciar_sesion"))
+#     except:
+#         redirect(URL("crear_administrador"))
+#
+#     return dict(form=form)

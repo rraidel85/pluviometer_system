@@ -1,0 +1,79 @@
+{{extend 'plantilla.html'}}
+{{block head}}
+    <style>
+        .dropdown-item:focus, .dropdown-item:hover{
+            background-color: #c5d6e6;
+        }
+    </style>
+{{end}}
+        <h3 class="encabezado">Áreas</h3>
+<table id="example" class="display" width="100%" cellspacing="0">
+        <thead>
+            <tr>
+                <!--<th>Id</th>-->
+                <th>Nombre</th>
+                <th>Tipo de área</th>
+                <th>Descripción</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{for area in areas:}}
+                <tr>
+                    <td>{{=area.name if area.name else '-'}}</td>
+                    <td>{{=area.id_area_type.name if area.id_area_type.name else '-'}}</td>
+                    <td>{{=area.description if area.description else '-'}}</td>
+                    <td>
+                        <a title="Ubicación" class="botones-iconos btn btn-info btn-rounded btn-icon" style="padding: 9px 14px !important;" href={{=URL('map','ubicacion_area',args=area.id)}}>
+                            <i class="fa fa-map-marker"></i>
+                        </a>
+                        <a title="Editar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #05e20c;" href={{=URL('map','ubicacion_area',args=area.id)}}>
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        <a title="Eliminar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #f84a4a;" href="#" onclick="eliminar('{{=area.id}}')">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                        <div class="dropdown show" style="display: inline;">
+                          <a title="Información" class="botones-iconos btn btn-info btn-rounded btn-icon dropdown-toggle" style="background-color: #0062cc;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-info"></i>
+                          </a>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="font-size: .5rem;">
+                            <a class="dropdown-item" href={{=URL('pluviometer','pluv_by_area',args=area.id)}} >Pluviometros</a>
+                            <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area',args=area.id)}}>Índice de concentracion</a>
+                            <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area_by_month',args=area.id)}}>Índice de concentracion por mes</a>
+                          </div>
+                        </div>
+                    </td>
+                </tr>
+            {{pass}}
+        </tbody>
+</table>
+<script>
+{{block datatable}}
+    data_table.DataTable();
+
+    function eliminar(id) {
+        swal({
+            title: "¿Está seguro de eliminar?",
+            text: "El area será eliminada completamente del sistema.",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Eliminar",
+            cancelButtonText: "Cancelar",
+            closeOnConfirm: true,
+            closeOnCancel: true
+        },
+            function (isConfirm) {
+                if (isConfirm) {
+                    let url = "{{=URL('area','remove_area')}}";
+                    location.href = url + "/" + id;
+                }
+            });
+    }
+{{end datatable}}
+
+</script>
+
+
+

@@ -1,0 +1,214 @@
+{{extend 'plantilla.html'}}
+
+       {{block head}}
+		<link rel="stylesheet" href="{{=URL('static', 'leaflet/leaflet.css')}}" />
+		<link rel="stylesheet" href="{{=URL('static', 'leaflet_geoman/leaflet-geoman.css')}}" />
+
+        <script type="text/javascript" src="{{=URL('static', 'leaflet/leaflet.js')}}"></script>
+        <script type="text/javascript" src="{{=URL('static', 'leaflet_geoman/leaflet-geoman.min.js')}}"></script>
+        <style>
+            #map_id{
+                height: 500px;
+                z-index: 0;
+            }
+            #create_area_modal input{
+                width: 100%;
+            }
+            #error-box{
+                color: red;
+                font-size: 14px;
+                transition: opacity 2s;
+                opacity: 0;
+                height: 0;
+                overflow: hidden;
+            }
+            #error-box.visible{
+                transition: opacity 2s;
+                 opacity: 1;
+                height: auto;
+            }
+
+            .xButton{
+                font-size: 18px;
+            }
+
+            #no_edit_info_modal .modal-body p{
+                font-size: 16px;
+            }
+            #no_edit_info_modal .modal-body button{
+                position: relative;
+                left: 80%;
+            }
+            #no_edit_info_modal .modal-dialog{
+                position: relative;
+                top: 120px;
+            }
+            #no_edit_info_modal .modal-content{
+                border-radius: 20px;
+            }
+        </style>
+{{end head}}
+
+
+    <div id="map_id"></div>
+
+
+
+
+{{block body_end}}
+    <div id="create_area_modal" class="modal fade">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content" style="width: 400px">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Crear área</h5>
+                                    <button type="button" class="close xButton"><span>&times;</span></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="name">Nombre:</label>
+                                        <input type="text" class="form-control" id="name">
+                                        <div id="error-box"></div>
+                                    </div>
+                                    <label for="area_type_select">Tipo de área:</label>
+                                    <select class="form-control" id="area_type_select" style="padding-bottom: 10px;padding-top: 8px;">
+                                        {{for a_type in area_types:}}
+                                            <option value={{=a_type.id}}>{{=a_type.name}}</option>
+                                        {{pass}}
+                                    </select>
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="closeButton" type="button" class="btn btn-danger">Cerrar</button>
+                                    <button id="acceptButton" type="button" class="btn btn-success">Aceptar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+    <div id="no_edit_info_modal" class="modal" tabindex="-1" role="dialog">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-body">
+                <p>Todavía no puedes modificar este elemento, espera unos segundos.</p>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Aceptar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+{{end body_end}}
+
+
+{{block page_js}}
+
+    <script>
+
+    let map = L.map('map_id').setView(
+           [ 21.941415395551573,-78.66101966354675], 9);
+    L.tileLayer('{{=URL('static','CubaOSM/{z}/{x}/{y}.png',url_encode=False)}}',{ maxZoom: 12 }).addTo(map);
+
+    map.pm.setLang('es', null, 'en');//Setting to spanish language
+
+    map.pm.addControls({
+        position: 'topleft',
+        drawCircle: false,
+        drawMarker: false,
+        drawCircleMarker: false,
+        drawPolyline: false,
+        drawRectangle: false,
+        cutPolygon: false,
+        rotateMode: false,
+    });
+    //Event handler for creating an area layer
+    map.on('pm:create', (e) => {
+        //Event listener trigered at the end of create area event
+        $("#create_area_modal").modal({backdrop: "static"});// open modal
+        let restorePosition = e.layer._latlngs;//original position when the area is created
+        $('#create_area_modal #acceptButton').off().on('click', () => {
+                let errBox = $("#error-box");
+                let name = $('#create_area_modal #name').val().trim()
+                if (name.length === 0) {
+                    // if name input is empty
+                    errBox.text("Este campo no puede estar vacío");
+                    errBox.addClass('visible');
+                    window.setTimeout(function () {
+                          errBox.removeClass('visible');
+                    }, 5000)
+                } else {
+                    $("#create_area_modal").modal('toggle');
+                    let points = e.layer._latlngs;
+
+                    let area_type_id = $("#create_area_modal #area_type_select option:selected").val()
+
+                    // request to save_area_api
+                    axios.post('{{=URL('map', 'save_area_api')}}', {
+                        name: name,
+                        area_type_id: area_type_id,
+                        points: points,
+                    })
+                    .then(response => {
+                        e.layer['myDatabaseId'] = response.data.areaId;
+                        showMyNotification('success', "El área se ha creado correctamente");
+                    })
+                    .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+                }
+
+        })
+
+        //Event handler for editing an area layer
+        e.layer.on('pm:edit', function(layer_event){
+            if (e.layer.myDatabaseId){
+                // Edit the layer only when is saved in db
+                let points = e.layer._latlngs;
+                restorePosition = points; //saved in outer variable the new points of the area
+
+                // request to edit_area API
+                axios.post('{{=URL('map', 'edit_area_api')}}', {
+                        area_id: e.layer.myDatabaseId,
+                        points: points,
+                    })
+                    .then(response => {
+                        showMyNotification('success', "El área se ha editado correctamente");
+                    })
+                    .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+            }else{
+                //This fires when the area is not saved in db yet
+                e.layer.setLatLngs(restorePosition); //Restore layer old position
+                e.layer.pm.disable(); //I wrote this because the docs recommend it
+                $('#no_edit_info_modal').modal(); //open no edit warning modal
+            }
+            })
+              .on('pm:remove', function (layer_event) {//Event handler for removing an area layer
+                  if (e.layer.myDatabaseId){
+                    // Remove the layer only when is saved in db
+
+                    // request to remove_area API
+                    axios.post('{{=URL('map', 'remove_area_api')}}', {
+                            area_id: e.layer.myDatabaseId,
+                        })
+                        .then(response => {
+                            showMyNotification('success', "El área se ha editado correctamente");
+                        })
+                        .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+                  }else{
+                    //This fires when the area is not saved in db yet
+                    e.layer.addTo(map); //Adding layer to map again after incorrect elimination
+                    e.layer.setLatLngs(restorePosition); //Restore layer old position
+                    $('#no_edit_info_modal').modal(); //open no edit warning modal
+            }
+          })
+
+
+        $('#create_area_modal #closeButton').off().on('click', () => {
+                e.layer.remove()
+                $("#create_area_modal").modal('toggle');
+        })
+
+        $('#create_area_modal .xButton').off().on('click', () => {
+                e.layer.remove();
+                $("#create_area_modal").modal('toggle');
+        })
+
+
+    });
+    </script>
+{{end page_js}}

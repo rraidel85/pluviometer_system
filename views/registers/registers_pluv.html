@@ -1,0 +1,64 @@
+{{extend 'plantilla.html'}}
+{{block head}}
+    <style>
+        .dropdown-item:focus, .dropdown-item:hover{
+            background-color: #c5d6e6;
+        }
+    </style>
+{{end}}
+<h3 class="encabezado">Registros del pluviómetro: {{=pluv_name}}</h3>
+<table id="example" class="display" width="100%" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Pluviómetro</th>
+                <th>Cantidad de lluvia</th>
+            </tr>
+        </thead>
+</table>
+<script>
+{{block datatable}}
+    data_table.DataTable({
+        //Adding server-side processing
+        serverSide: true,
+        processing: true,
+        ajax: function ( data, callback, settings ) {
+            // console.log(data);
+            axios.get('{{=URL('registers', 'registers_pluv_api')}}',{
+                params: {
+                    start: data.start,
+                    limit: data.length,
+                    search: data.search.value,
+                    order_column: data.columns[data.order[0].column].data,
+                    order_dir: data.order[0].dir,
+                    pluv_id: {{=pluv_id}}
+                }
+            }).then(res=>{
+                // console.log(res)
+                callback({
+                   recordsTotal: res.data.length,
+                   recordsFiltered: res.data.length,
+                   data: res.data.registers
+                });
+            })
+            .catch(error => {
+                alert(error)
+            })
+        },
+        columns: [
+            { data: "register_date" },
+            {
+                data: null,
+                render: function ( data, type, row, meta) {
+                    return "{{=pluv_name}}"
+                }
+            },
+            { data: "rain_value"},
+        ],
+    });
+{{end datatable}}
+
+</script>
+
+
+

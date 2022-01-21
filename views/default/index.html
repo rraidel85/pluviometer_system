@@ -1,0 +1,113 @@
+{{extend 'plantilla.html'}}
+
+{{block head}}
+<style>
+    .my-page-heading{
+        font-size: 37px;
+        font-weight: 500;
+    }
+    .big-box{
+        width: 94%;
+        margin: auto;
+    }
+    .my-card-parent{
+        border-radius: 15px;
+        margin: auto;
+        margin-top: 20px;
+    }
+    .my-card{
+        border-radius: 15px;
+        -webkit-box-shadow: 0 0 28px rgba(0,0,0,.08);
+        box-shadow: 0 0 28px rgba(0,0,0,.08);
+        height: 100%;
+        padding: 20px;
+        background-color: rgba(109, 186, 234, .8)
+    }
+    .my-card h2{
+        font-size: 35px;
+    }
+    .my-card p{
+        color: #000;
+        font-size: 19px;
+    }
+    .single-post{
+        align-items: center;
+        margin-bottom: 0;
+    }
+    .lts-thumb img{
+        height: 200px;
+        display: block;
+        margin: auto;
+    }
+    .area-card{
+        background: #79ab18;
+    }
+    .other-card{
+        background: #d25656;
+    }
+</style>
+{{end}}
+
+<div class="row">
+    <div class="big-box">
+        <h1 class="my-page-heading">Bienvenido, {{=auth.user.first_name}}!</h1>
+        <div class="card my-card-parent">
+            <div class="card-body my-card">
+                <div class="letest-news">
+                    <div class="single-post">
+                        <div class="lts-thumb">
+                            <img src="{{=URL('static','images/water_index.png')}}" alt="post thumb">
+                        </div>
+                        <div class="lts-content">
+                            <h2>Herramienta informática para la gestión de precipitaciones</h2>
+                            <p>
+                                Un sistema informático para el análisis descriptivo de precipitaciones diarias
+                                en la provincia de Ciego de Ávila, creado por la universidad "Máximo Gómez Báez"
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="second-box">
+            <div class="row">
+
+                <div class="col-md-4 mt-5 mb-3">
+                    <div class="card">
+                        <div class="seo-fact sbg1">
+                            <div class="p-4 pluv-card d-flex justify-content-between align-items-center">
+                                <div class="seofct-icon"><i class="fa fa-map-marker"></i>
+                                    Pluviómetros
+                                </div>
+                                <h2>{{=cant_pluvs}}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mt-5 mb-3">
+                    <div class="card">
+                        <div class="seo-fact sbg1">
+                            <div class="p-4 area-card d-flex justify-content-between align-items-center">
+                                <div class="seofct-icon"><i class="fa fa-map-marker"></i> Áreas</div>
+                                <h2>{{=cant_areas}}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mt-5 mb-3">
+                    <div class="card">
+                        <div class="seo-fact sbg1">
+                            <div class="p-4 other-card d-flex justify-content-between align-items-center">
+                                <div class="seofct-icon"><i class="fa fa-map-marker"></i> Pluviómetros</div>
+                                <h2>{{=cant_pluvs}}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

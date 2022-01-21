@@ -1,0 +1,67 @@
+{{extend 'plantilla_login.html'}}
+
+{{block head}}
+    <title>Registro</title>
+    <style>
+        .login-wrap{
+            height: 920px;
+        }
+        .login-form .group .input,
+        .login-form .group .button,
+        input, input[type="password"]{
+            border-radius: 12px;
+            padding: 13px 20px;
+        }
+        .welcome{
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        .form-control{
+            border-radius: 12px;
+            padding: 13px 20px;
+        }
+        .foot-lnk{
+            justify-content: center;
+        }
+    </style>
+{{end}}
+        <div class="welcome">
+            <h4>Resgístrate</h4>
+        </div>
+        <div class="login-form">
+        {{=form.custom.begin}}
+            <div class="sign-up-htm">
+				<div class="group">
+					<label for="name" class="label">Nombre:</label>
+					{{=form.custom.widget.first_name}}
+				</div>
+                <div class="group">
+					<label for="last" class="label">Apellidos:</label>
+					{{=form.custom.widget.last_name}}
+				</div>
+                <div class="group">
+					<label for="user" class="label">Usuario:</label>
+					{{=form.custom.widget.username}}
+				</div>
+                <div class="group">
+					<label for="email" class="label">Correo:</label>
+					{{=form.custom.widget.email}}
+				</div>
+				<div class="group">
+					<label for="pass" class="label">Contraseña:</label>
+					{{=form.custom.widget.password}}
+				</div>
+				<div class="group">
+					<label for="pass" class="label">Repetir contraseña:</label>
+					{{=form.custom.widget.repeat}}
+				</div>
+				<div class="group">
+					<input type="submit" class="button" value="Aceptar">
+				</div>
+                <div class="hr"></div>
+                    <div class="foot-lnk">
+                        <a class="login-link" href="{{=URL('user','login')}}">Iniciar Sesión</a>
+                </div>
+			</div>
+            {{=form.custom.end}}
+        </div>

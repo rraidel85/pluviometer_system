@@ -1,0 +1,33 @@
+{{extend 'plantilla_login.html'}}
+    {{block head}}
+        <title>Iniciar Sesión</title>
+    {{end}}
+        <div class="welcome">
+            <h4>Bienvenido(a)!</h4>
+            <h6 class="font-weight-light">Sistema para el manejo de pluviómetros </h6>
+        </div>
+		<div class="login-form">
+            {{=form.custom.begin}}
+                <!-- <form method="POST" action="{{=URL('user','login')}}">-->
+                <div class="sign-in-htm">
+                    <div class="group">
+                        <label for="username" class="label">Usuario:</label>
+                        {{=form.custom.widget.username}}
+                        <!-- <input id="username" type="text" name="username" class="input">-->
+                    </div>
+                    <div class="group">
+                        <label for="password" class="label">Contraseña:</label>
+                        {{=form.custom.widget.password}}
+                        <!--<input id="pass" type="password" name="password" class="input" data-type="password">-->
+                    </div>
+                    <div class="group">
+                        <button class="button" type="submit">Aceptar</button>
+                    </div>
+                    <div class="hr"></div>
+                    <div class="foot-lnk">
+                        <a href="#">Olvidaste tu contraseña?</a>
+                        <a class="register" href="{{=URL('user','registro')}}">Regístrate</a>
+                    </div>
+                </div>
+            {{=form.custom.end}}
+		</div>

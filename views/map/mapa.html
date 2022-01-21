@@ -1,0 +1,208 @@
+{{extend 'plantilla.html'}}
+{{block head}}
+		<link rel="stylesheet" href="{{=URL('static', 'leaflet/leaflet.css')}}" />
+        <style>
+            #map_id{
+                height: 100vh;
+                z-index: 0;
+            }
+        </style>
+{{end head}}
+{{block body_end}}
+                    <div id="map_options_modal" class="modal fade">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Modal title</h5>
+                                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                </div>
+                                <div class="modal-body">
+                                    <!--Contenido dinámico aquí-->
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+{{end body_end}}
+{{block page_js}}
+    <script type="text/javascript" src="{{=URL('static', 'leaflet/leaflet.js')}}"></script>
+    <script>
+
+
+    let mymap = L.map('map_id').setView(
+           [ 21.941415395551573,-78.66101966354675], 10);
+    L.tileLayer('{{=URL('static','CubaOSM/{z}/{x}/{y}.png',url_encode=False)}}',{ maxZoom: 12 }).addTo(mymap);
+
+    $(window).on('map-container-resize', function () {
+            mymap.invalidateSize();
+
+        }).trigger('resize');
+    //------------------------------------------------
+    // Capas
+    //------------------------------------------------
+    //Nuevo metodo modificado para comprobar cuales capas estan activas
+    L.Control.Layers.include({
+                getActiveOverlays: function() {
+                /*
+                Devuelve un array con los nombres de las capas activas
+                */
+                let control, layers;
+                layers = [];
+                control = this;
+
+                // loop through all layers in control
+                control._layers.forEach(function(obj) {
+                  let layerName;
+
+                  // check if layer is an overlay
+                  if (obj.overlay) {
+                    // get name of overlay
+                    layerName = obj.name;
+
+                    // check if layer is active on the map and save the name
+                    if(control._map.hasLayer(obj.layer)){
+                        layers.push(layerName);
+                    }
+                  }
+                });
+
+                return layers;
+              }
+            });
+
+    let overlayMaps = {};
+    let layerGroup;
+
+        {{for area_type in areas:}}
+        //areas has the form of {'area_type':[{'area':[id_area, [area_borders]}, areaType_color, areaType_description],}
+        //Loop for all the area types
+            layerGroup = []
+            {{for area in areas[area_type][0]:}}
+                    layerGroup.push(L.polygon({{=areas[area_type][0][area][1]}},
+                            {color: '{{=areas[area_type][1]}}'}).on('click', e => {
+                          let pluv_options = `
+                            <a class="btn btn-flat btn-primary btn-lg mb-3" style="color:white;" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area',args=areas[area_type][0][area][0])}}>Calcular indice del area</a><br>
+                          `
+                          $(".modal-body").append(pluv_options);
+                          $("#map_options_modal").modal();
+                          }
+                    ))
+            {{pass}}
+            overlayMaps["{{=area_type}}"] = L.layerGroup(layerGroup);
+        {{pass}}
+
+        overlayMaps["Municipios"].addTo(mymap);
+        let control = L.control.layers(null, overlayMaps).addTo(mymap);
+
+
+
+        //------------------------------------------------
+        // Pluviometros
+        //------------------------------------------------
+        {{for pluv in pluvs:}}
+        L.marker([{{=pluv.lat}}, {{=pluv.lon}}]).addTo(mymap).on('mouseover', e => {
+            let marker = e.target; // pluviometro seleccionado
+            let active_layers = control.getActiveOverlays() // tipos de area activas en el mapa
+            axios.get('{{=URL('map', 'marker_mouseover')}}',{
+                params: {
+                    id: {{=pluv.id}},
+                    layers: active_layers,
+                }
+            })
+                .then(response => {
+                    marker.bindPopup(`<b>Nombre</b>:{{=pluv.station_name}} ({{=pluv.name}})<br>
+                                    <b>Areas</b>: ${response.data.areas.map(area => { //response.data.areas es [areaObject, areaObject,] o [' - ']
+                                        //Comprueba si area es un string y si lo es lo devuelve, sino comprueba si el area tiene un sub_name sino envia el area.name
+                                        return typeof area === "string" ? area : area.sub_name ? area.sub_name : area.name
+                                    }).join(", ")}<br>
+                                    <b>Año de inicio</b>:${response.data.min}<br>
+                                    <b>Año de fin</b>:${response.data.max}<br>
+                                    <b>Años activo</b>:${response.data.total_years}<br>
+                                    <b>MSNM</b>:{{=pluv.msnm}}<br>
+                                    `);
+                    marker.openPopup();
+                })
+                .catch(error => {
+                    alert(error)
+                })
+        }).on('mouseout', e =>{e.target.closePopup();})
+          .on('click', e => {
+              let pluv_options = `
+                <a class="btn btn-flat btn-primary btn-lg mb-3" style="color:white;" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_pluviometer',args=pluv.id)}}>Calcular indice</a><br>
+                <a class="btn btn-flat btn-primary btn-lg mb-3" style="color:white;" href={{=URL('registers','registers_pluv',args=pluv.id)}}>Registros</a><br>
+              `
+              $(".modal-body").append(pluv_options);
+              $("#map_options_modal").modal();
+          })
+        /*.on('dragend', e => {
+            let location = e.target.getLatLng()
+            axios.post('{{=URL('map', 'marker_dragg')}}',{
+                id: {{=pluv.id}},
+                lat: location.lat,
+                lon: location.lng
+            }).then(e => {
+                console.log('Updated successfully');
+            })
+        })*/
+        {{pass}}
+
+        // Para limpiar el modal luego de que se cierre
+        $(document).on('hide.bs.modal','#map_options_modal',() => {
+            $(".modal-body").empty();
+        });
+
+
+
+
+
+        //-------------------------------------------------
+        // Polygon representation on map
+        //-------------------------------------------------
+        // zoom the map to the polygon
+        // mymap.fitBounds(polyline.getBounds());
+        //-------------------------------------------------
+        // Layer Groups and Layer Controls
+        //-------------------------------------------------
+        // var baseMaps = {
+        //     "Grayscale": grayscale,
+        //     "Streets": streets
+        // };
+        // Layer Group
+        // let municipios = L.layerGroup([polyline_baragua, polyline_ciego,
+        // polyline_pina,polyline_florencia,polyline_majagua,polyline_violeta,
+        // polyline_venezuela,polyline_bolivia,polyline_moron
+        // ]).addTo(mymap);
+        //
+        // let baseMaps = {
+        //     "Municipios": municipios,
+        //     "Chambas": polyline_chambas
+        // };
+        //
+        // L.control.layers(baseMaps).addTo(mymap);
+     //        L.Control.Layers.include({
+     //            getOverlays: function() {
+     //            // create hash to hold all layers
+     //            let control, layers;
+     //            layers = {};
+     //            control = this;
+     //
+     //            // loop thru all layers in control
+     //            control._layers.forEach(function(obj) {
+     //              let layerName;
+     //
+     //              // check if layer is an overlay
+     //              if (obj.overlay) {
+     //                // get name of overlay
+     //                layerName = obj.name;
+     //                // store whether it's present on the map or not
+     //                return layers[layerName] = control._map.hasLayer(obj.layer);
+     //              }
+     //            });
+     //
+     //            return layers;
+     //          }
+     //        });
+		</script>
+{{end page_js}}

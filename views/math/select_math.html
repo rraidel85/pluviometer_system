@@ -1,0 +1,266 @@
+{{extend 'plantilla.html'}}
+
+{{block head}}
+    <style>
+.dashboard-cards {
+  position: relative;
+  padding-bottom: 50px;
+  margin: 0 !important;
+}
+.dashboard-cards .card {
+  background: #ffffff;
+  display: inline-block;
+  z-index: 20;
+  padding: 0 !important;
+  margin: 5px 5px 40px 5px;
+  position: relative;
+  text-align: left;
+  -webkit-transition: all 0.3s 0s ease-in;
+  transition: all 0.3s 0s ease-in;
+  z-index: 1;
+  width: calc(33.33333333% - 10px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #dedbdb;
+}
+.dashboard-cards .card:hover {
+      box-shadow: 0 15px 10px -10px rgba(31, 31, 31, 0.5);
+  transition: all 0.3s ease;
+}
+.dashboard-cards .card .card-title {
+  background: #ffffff;
+  padding: 20px 15px;
+  position: relative;
+  z-index: 0;
+  border-radius: 15px;
+}
+.dashboard-cards .card .card-title h2 {
+  font-size: 24px;
+  letter-spacing: -0.05em;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+.dashboard-cards .card .card-title h2 small {
+  display: block;
+  font-size: 14px;
+  margin-top: 8px;
+  letter-spacing: -0.025em;
+}
+.dashboard-cards .card .card-description {
+  position: relative;
+  font-size: 14px;
+  border-top: 1px solid #ddd;
+  padding: 10px 15px 0 15px;
+}
+.dashboard-cards .card .card-actions {
+  box-shadow: 0 2px 0px 0 rgba(0, 0, 0, 0.075);
+  padding: 10px;
+  text-align: center;
+}
+.dashboard-cards .card .card-flap {
+  background: #d9d9d9;
+  position: absolute;
+  width: 100%;
+  -webkit-transform-origin: top;
+          transform-origin: top;
+  -webkit-transform: rotateX(-90deg);
+          transform: rotateX(-90deg);
+}
+.dashboard-cards .card .flap1 {
+  -webkit-transition: all 0.3s 0.3s ease-out;
+  transition: all 0.3s 0.3s ease-out;
+  z-index: -1;
+}
+.dashboard-cards .card .flap2 {
+  -webkit-transition: all 0.3s 0s ease-out;
+  transition: all 0.3s 0s ease-out;
+  z-index: -2;
+}
+.dashboard-cards.showing .card {
+  cursor: pointer;
+  opacity: 0.6;
+  -webkit-transform: scale(0.88);
+          transform: scale(0.88);
+}
+.dashboard-cards .no-touch .dashboard-cards.showing .card:hover {
+  opacity: 0.94;
+  -webkit-transform: scale(0.92);
+          transform: scale(0.92);
+}
+.dashboard-cards .card.d-card-show {
+  opacity: 1 !important;
+  -webkit-transform: scale(1) !important;
+          transform: scale(1) !important;
+}
+.dashboard-cards .card.d-card-show .card-flap {
+  background: #ffffff;
+  -webkit-transform: rotateX(0deg);
+          transform: rotateX(0deg);
+}
+.dashboard-cards .card.d-card-show .flap1 {
+  -webkit-transition: all 0.3s 0s ease-out;
+  transition: all 0.3s 0s ease-out;
+}
+.dashboard-cards .card.d-card-show .flap2 {
+  -webkit-transition: all 0.3s 0.2s ease-out;
+  transition: all 0.3s 0.2s ease-out;
+}
+
+.dashboard-cards .task-list {
+	padding: 0 !important;
+}
+.dashboard-cards .task-list li {
+  margin: 3px 0;
+	list-style-type: none;
+  border-bottom: 1px solid #e9ebed;
+  border-left: 3px solid #167cdc;
+  transition: all .2s ease;
+}
+.dashboard-cards .task-list li a {
+    text-decoration: none;
+    color: #111111;
+     display: block;
+     width: 100%;
+     height: 100%;
+     padding: 10px 0 10px 10px;
+
+}
+.dashboard-cards .task-list li:hover {
+  background: #ecf0f1;
+  transition: all .2s ease;
+}
+.dashboard-cards .card-actions .btn {
+	color: #131111;
+    background: transparent;
+}
+.dashboard-cards .card-actions .btn:hover {
+	color: #ef273f;
+}
+h1{
+    text-align: center;
+    font-size: 45px;
+}
+    </style>
+{{end head}}
+  <h1>Selecciona la operación a realizar</h1>
+  <div class='row dashboard-cards justify-content-around'>
+      <div class='card col-md-5'>
+        <div class='card-title'>
+          <h2>
+            Índice de concentración de precipitaciones
+          </h2>
+        </div>
+        <div class='card-flap flap1'>
+          <div class='card-description'>
+            <ul class='task-list'>
+
+              <li>
+                  <a href="{{=URL('precipitation_concentration_index', 'select_area')}}">Por áreas</a>
+              </li>
+
+              <li>
+                <a href="{{=URL('precipitation_concentration_index', 'select_pluviometer')}}">Por pluviómetros</a>
+              </li>
+              <li>
+                <a href="{{=URL('precipitation_concentration_index', 'select_area_by_month')}}">Por área por meses</a>
+              </li>
+
+              <li>
+                <a href="{{=URL('precipitation_concentration_index', 'select_pluviometer_by_month')}}">Por pluviómetro por meses</a>
+              </li>
+            </ul>
+          </div>
+          <div class='card-flap flap2'>
+            <div class='card-actions'>
+              <button class='btn' href='#'>Cerrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class='card col-md-5'>
+        <div class='card-title'>
+          <h2>
+            Otra cosa a calcular
+          </h2>
+        </div>
+        <div class='card-flap flap1'>
+          <div class='card-description'>
+            <ul class='task-list'>
+
+              <li>
+                  <a href="{{=URL('precipitation_concentration_index', 'select_area')}}">Por áreas</a>
+              </li>
+
+              <li>
+                <a href="{{=URL('precipitation_concentration_index', 'select_pluviometer')}}">Por pluviómetros</a>
+              </li>
+              <li>
+                <a href="{{=URL('precipitation_concentration_index', 'select_area_by_month')}}">Por área por meses</a>
+              </li>
+
+              <li>
+                <a href="{{=URL('precipitation_concentration_index', 'select_pluviometer_by_month')}}">Por pluviómetro por meses</a>
+              </li>
+            </ul>
+          </div>
+          <div class='card-flap flap2'>
+            <div class='card-actions'>
+              <button class='btn' href='#'>Cerrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+</div>
+{{block page_js}}
+        <script>
+    $(document).ready(function(){
+  let zindex = 10;
+
+  $("div.card").click(function(e){
+    if(e.target.tagName !== "A"){
+        e.preventDefault();
+
+        let isShowing = false;
+
+        if ($(this).hasClass("d-card-show")) {
+          isShowing = true
+        }
+
+        if ($("div.dashboard-cards").hasClass("showing")) {
+          // a card is already in view
+          $("div.card.d-card-show")
+            .removeClass("d-card-show");
+
+          if (isShowing) {
+            // this card was showing - reset the grid
+            $("div.dashboard-cards")
+              .removeClass("showing");
+          } else {
+            // this card isn't showing - get in with it
+            $(this)
+              .css({zIndex: zindex})
+              .addClass("d-card-show");
+
+          }
+
+          zindex++;
+
+        } else {
+          // no dashboard-cards in view
+          $("div.dashboard-cards")
+            .addClass("showing");
+          $(this)
+            .css({zIndex:zindex})
+            .addClass("d-card-show");
+
+          zindex++;
+            }
+    }
+
+  });
+});
+    </script>
+{{end page_js}}

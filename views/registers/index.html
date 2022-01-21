@@ -1,0 +1,53 @@
+{{extend 'plantilla.html'}}
+<h3 class="encabezado">Registros</h3>
+<table id="example" class="display" width="100%" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Pluviometer</th>
+                <th>Register_date</th>
+                <th>Rain_value</th>
+            </tr>
+        </thead>
+</table>
+<script>
+{{block datatable}}
+    data_table.DataTable({
+        //Adding server-side processing
+        serverSide: true,
+        processing: true,
+        ajax: function ( data, callback, settings ) {
+            // console.log(data);
+            axios.get('{{=URL('registers', 'registers_api')}}',{
+                params: {
+                    start: data.start,
+                    limit: data.length,
+                    search: data.search.value,
+                    order_column: data.columns[data.order[0].column].data,
+                    order_dir: data.order[0].dir
+                }
+            }).then(res=>{
+                // console.log(res)
+                callback({
+                   recordsTotal: res.data.length,
+                   recordsFiltered: res.data.length,
+                   data: res.data.registers
+                });
+            })
+            .catch(error => {
+                alert(error)
+            })
+        },
+        columns: [
+            { data: "id" },
+            { data: "id_pluviometer" },
+            { data: "register_date" },
+            { data: "rain_value"},
+        ],
+    });
+{{end datatable}}
+
+</script>
+
+
+

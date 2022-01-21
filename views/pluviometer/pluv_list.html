@@ -1,0 +1,113 @@
+{{extend 'plantilla.html'}}
+
+{{block head}}
+    <style>
+        .dropdown-item:focus, .dropdown-item:hover{
+            background-color: #c5d6e6;
+        }
+    </style>
+{{end}}
+<h3 class="encabezado">Pluviómetros</h3>
+<table id="example" class="display" width="100%" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Estación</th>
+                <th>Latitud</th>
+                <th>Longitud</th>
+                <th title="Metros sobre el nivel del mar">MSNM</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+</table>
+<script>
+{{block datatable}}
+    data_table.DataTable({
+        //Adding server-side processing
+        serverSide: true,
+        processing: true,
+        ajax: function ( data, callback, settings ) {
+            // console.log(data)
+            axios.get('{{=URL('pluviometer', 'pluvs')}}',{
+                params: {
+                    start: data.start,
+                    limit: data.length,
+                    search: data.search.value,
+                    order_column: data.columns[data.order[0].column].data,
+                    order_dir: data.order[0].dir
+                }
+            }).then(res=>{
+                // console.log(res)
+                callback({
+                   recordsTotal: res.data.length,
+                   recordsFiltered: res.data.length,
+                   data: res.data.pluvs
+                });
+            })
+            .catch(error => {
+                alert(error)
+            })
+        },
+        columns: [
+            // { data: "id" },
+            { data: "name", defaultContent: "-"},
+            { data: "station_name", defaultContent: "-" },
+            { data: "lat", defaultContent: "-"},
+            { data: "lon", defaultContent: "-"},
+            { data: "msnm", defaultContent: "-"},
+            {
+              data: null,
+              // defaultContent: "<a href={{=URL('default','mapa')}} class='btn btn-primary'>Mapa</a>",
+              "render": function ( data, type, row, meta ) {
+                  return `
+                  <a title="Ubicación" style="padding: 9px 14px !important;" href={{=URL('map','ubicacion_pluv')}}/${row.id} class="botones-iconos btn btn-info btn-rounded btn-icon">
+                    <i class="fa fa-map-marker"></i>
+                  </a>
+                  <a title="Editar" style="background-color: #05e20c;" href={{=URL('pluviometer','edit_pluv')}}/${row.id} class="botones-iconos btn btn-info btn-rounded btn-icon">
+                    <i class="fa fa-pencil"></i>
+                  </a>
+                  <a title="Eliminar" style="background-color: #f84a4a;" href="#" onclick="eliminar(${row.id})" class="botones-iconos btn btn-info btn-rounded btn-icon">
+                    <i class="fa fa-trash"></i>
+                  </a>
+                  <div class="dropdown show" style="display: inline;">
+                      <a title="Información" class="botones-iconos btn btn-info btn-rounded btn-icon dropdown-toggle" style="background-color: #0062cc;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-info"></i>
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="font-size: .5rem;">
+                      <a href={{=URL('registers','registers_pluv')}}/${row.id} class='dropdown-item'>Registros</a>
+                        <a href={{=URL('yearStatistics','yearStatistics')}}/${row.id} class='dropdown-item'>Estadísticas anuales</a>
+                        <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_pluviometer')}}/${row.id}>Índice de concentracion</a>
+                        <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_pluviometer_by_month')}}/${row.id}>Índice de concentracion por mes</a>
+                      </div>
+                    </div>
+                  `;
+                }
+            }
+        ],
+    });
+
+    function eliminar(id) {
+        swal({
+            title: "¿Está seguro de eliminar?",
+            text: "El pluviómetro será eliminado completamente del sistema.",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Eliminar",
+            cancelButtonText: "Cancelar",
+            closeOnConfirm: true,
+            closeOnCancel: true
+        },
+            function (isConfirm) {
+                if (isConfirm) {
+                    let url = "{{=URL('pluviometer','remove_pluv')}}";
+                    location.href = url + "/" + id;
+                }
+            });
+    }
+{{end datatable}}
+
+</script>
+
+
+
