@@ -7,6 +7,16 @@
                 height: 500px;
                 z-index: 0;
             }
+            .option-modal-btn{
+                color: white !important;
+                border-radius: 7px;
+                font-size: 15px;
+                background-color: #4944bd;
+                padding: 13px 18px;
+            }
+            .modal-backdrop {
+                z-index: -1;
+            }
         </style>
 {{end head}}
 
@@ -14,7 +24,7 @@
                         <div class="modal-dialog modal-sm">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">Modal title</h5>
+                                    <h5 class="modal-title">Opciones de pluviómetro d</h5>
                                     <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                                 </div>
                                 <div class="modal-body">
@@ -58,8 +68,8 @@
         }).on('mouseout', e =>{e.target.closePopup();})
         .on('click', e => {
               let pluv_options = `
-                <a class="btn btn-flat btn-primary btn-lg mb-3" style="color:white;" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_pluviometer',args=pluv.id)}}>Calcular indice</a><br>
-                <a class="btn btn-flat btn-primary btn-lg mb-3" style="color:white;" href={{=URL('registers','registers_pluv',args=pluv.id)}}>Registros</a><br>
+                <a class="option-modal-btn btn btn-flat btn-primary btn-lg mb-3";" href={{=URL('registers','registers_pluv',args=pluv.id)}}>Registros</a><br>
+                <a class="option-modal-btn btn btn-flat btn-primary btn-lg mb-3";" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_pluviometer',args=pluv.id)}}>Calcular índice</a><br>
               `
               $(".modal-body").append(pluv_options);
               $("#map_options_modal").modal();
