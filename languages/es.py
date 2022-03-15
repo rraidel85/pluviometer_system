@@ -56,6 +56,7 @@
 'Back': 'Back',
 'Bienvenido al sistema: admin': 'Bienvenido al sistema: admin',
 'Bienvenido al sistema: rai': 'Bienvenido al sistema: rai',
+'Bienvenido al sistema: raide': 'Bienvenido al sistema: raide',
 'Buscar': 'Buscar',
 "Buy web2py's book": 'Compra el libro de web2py',
 'cache': 'caché',

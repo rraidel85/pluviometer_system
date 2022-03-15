@@ -21,7 +21,10 @@
         box-shadow: 0 0 28px rgba(0,0,0,.08);
         height: 100%;
         padding: 20px;
-        background-color: rgba(109, 186, 234, .8)
+        background: #2980B9;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #7faff9, #6DD5FA, #1e7cb9);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #7faff9, #6DD5FA, #1e7cb9); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
     }
     .my-card h2{
         font-size: 35px;
@@ -73,7 +76,7 @@
         <div class="second-box">
             <div class="row">
 
-                <div class="col-md-4 mt-5 mb-3">
+                <div class="col-md-6 mt-5 mb-3">
                     <div class="card">
                         <div class="seo-fact sbg1">
                             <div class="p-4 pluv-card d-flex justify-content-between align-items-center">
@@ -86,7 +89,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 mt-5 mb-3">
+                <div class="col-md-6 mt-5 mb-3">
                     <div class="card">
                         <div class="seo-fact sbg1">
                             <div class="p-4 area-card d-flex justify-content-between align-items-center">
@@ -97,16 +100,16 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 mt-5 mb-3">
+               <!-- <div class="col-md-4 mt-5 mb-3">
                     <div class="card">
                         <div class="seo-fact sbg1">
                             <div class="p-4 other-card d-flex justify-content-between align-items-center">
                                 <div class="seofct-icon"><i class="fa fa-map-marker"></i> Pluviómetros</div>
-                                <h2>{{=cant_pluvs}}</h2>
+                                <h2>Aquí va el dato</h2>
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>-->
             </div>
         </div>
     </div>
