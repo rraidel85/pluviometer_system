@@ -3,14 +3,12 @@
 <table id="example" class="display" width="100%" cellspacing="0">
         <thead>
             <tr>
-                <!--<th>Id</th>-->
-                <th>id_pluviometer</th>
-                <th>year_number</th>
-                <th>total_precipit</th>
-                <th>max_registered_value</th>
-                <th>daily_mean</th>
-                <th>rainy_days_count</th>
-                <th>rainy_streak_count</th>
+                <th>Año</th>
+                <th>Precipitación total</th>
+                <th>Máximo valor</th>
+                <th>Media diaria</th>
+                <th>Cantidad de días lluviosos</th>
+                <th>Cantidad de rachas lluviosas</th>
                 <th>rainy_streak_med_long</th>
             </tr>
         </thead>
@@ -45,8 +43,6 @@
             })
         },
         columns: [
-            // { data: "id" },
-            { data: "id_pluviometer" },
             { data: "year_number" },
             { data: "total_precipit"},
             { data: "max_registered_value"},
