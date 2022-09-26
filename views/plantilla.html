@@ -449,6 +449,22 @@
                   errorDiv.removeClass('visible');
             }, 5000)
         }
+
+        // Helper function to show confirm modal on elimination
+        function generalDelete(text, callback) {
+        swal({
+            title: "¿Está seguro de eliminar?",
+            text: text,
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Eliminar",
+            cancelButtonText: "Cancelar",
+            closeOnConfirm: true,
+            closeOnCancel: true
+        }, callback
+        )
+    }
     </script>
 
     {{block page_js}}{{end page_js}}

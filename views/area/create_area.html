@@ -175,8 +175,9 @@
                 $('#no_edit_info_modal').modal(); //open no edit warning modal
             }
             })
-              .on('pm:remove', function (layer_event) {//Event handler for removing an area layer
-                  if (e.layer.myDatabaseId){
+              .on('pm:remove', () => generalDelete("El área será eliminada completamente del sistema", function (isConfirm) {//Event handler for removing an area layer
+                  if(isConfirm){
+                      if (e.layer.myDatabaseId){
                     // Remove the layer only when is saved in db
 
                     // request to remove_area API
@@ -184,7 +185,7 @@
                             area_id: e.layer.myDatabaseId,
                         })
                         .then(response => {
-                            showMyNotification('success', "El área se ha editado correctamente");
+                            showMyNotification('success', "El área se ha eliminado correctamente");
                         })
                         .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
                   }else{
@@ -192,8 +193,12 @@
                     e.layer.addTo(map); //Adding layer to map again after incorrect elimination
                     e.layer.setLatLngs(restorePosition); //Restore layer old position
                     $('#no_edit_info_modal').modal(); //open no edit warning modal
-            }
-          })
+                }
+              } else{
+                    e.layer.addTo(map); //Adding layer to map again after incorrect elimination
+                    e.layer.setLatLngs(restorePosition); //Restore layer old position
+                  }
+          }))
 
 
         $('#create_area_modal #closeButton').off().on('click', () => {
