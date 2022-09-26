@@ -130,12 +130,17 @@ def marker_mouseover():
         pluv_id = request.vars.id
         resul = db(db.YearStatistics.id_pluviometer == pluv_id).select(db.YearStatistics.year_number.min()
                                                                        , db.YearStatistics.year_number.max()).first()
-        min = resul[db.YearStatistics.year_number.min()]
-        max = resul[db.YearStatistics.year_number.max()]
+        min_value = resul[db.YearStatistics.year_number.min()]
+        max_value = resul[db.YearStatistics.year_number.max()]
+        total_years = ' - '
 
-        total_years = max - min
+        if min_value is not None or max_value is not None:
+            total_years = max_value - min_value
+        else:
+            min_value = ' - '
+            max_value = ' - '
 
-        return dict(areas=areas, min=min, max=max, total_years=total_years)
+        return dict(areas=areas, min=min_value, max=max_value, total_years=total_years)
 
     return locals()
 
