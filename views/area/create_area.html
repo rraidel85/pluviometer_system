@@ -14,7 +14,7 @@
             #create_area_modal input{
                 width: 100%;
             }
-            #error-box{
+            #name-error-box{
                 color: red;
                 font-size: 14px;
                 transition: opacity 2s;
@@ -22,7 +22,7 @@
                 height: 0;
                 overflow: hidden;
             }
-            #error-box.visible{
+            #name-error-box.visible{
                 transition: opacity 2s;
                  opacity: 1;
                 height: auto;
@@ -67,7 +67,7 @@
                                     <div class="form-group">
                                         <label for="name">Nombre:</label>
                                         <input type="text" class="form-control" id="name">
-                                        <div id="error-box"></div>
+                                        <div id="name-error-box"></div>
                                     </div>
                                     <label for="area_type_select">Tipo de área:</label>
                                     <select class="form-control" id="area_type_select" style="padding-bottom: 10px;padding-top: 8px;">
@@ -123,16 +123,14 @@
         //Event listener trigered at the end of create area event
         $("#create_area_modal").modal({backdrop: "static"});// open modal
         let restorePosition = e.layer._latlngs;//original position when the area is created
+
         $('#create_area_modal #acceptButton').off().on('click', () => {
-                let errBox = $("#error-box");
+                let errBox = $("#name-error-box");
                 let name = $('#create_area_modal #name').val().trim()
                 if (name.length === 0) {
                     // if name input is empty
-                    errBox.text("Este campo no puede estar vacío");
-                    errBox.addClass('visible');
-                    window.setTimeout(function () {
-                          errBox.removeClass('visible');
-                    }, 5000)
+                    showMyNotification('error', "Existen errores en el formulario");
+                    showErrorDiv($("#name-error-box"), "Este campo no puede estar vacío")
                 } else {
                     $("#create_area_modal").modal('toggle');
                     let points = e.layer._latlngs;

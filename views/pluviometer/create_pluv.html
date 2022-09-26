@@ -174,9 +174,9 @@
     //Event handler for creating a pluviometer
     map.on('pm:create', (e) => {
         map.pm.disableDraw(); //stop draw mode
-        //Event listener trigered at the end of create area event
+        //Event listener trigered at the end of create pluv event
         $("#create_pluv_modal").modal({backdrop: "static"});// open modal
-        let restorePosition = e.layer._latlngs;//original position when the area is created
+        let restorePosition = e.layer._latlng;//original position when the area is created
 
         $('#create_pluv_modal #acceptButton').off().on('click', () => {
                 let name = $('#create_pluv_modal #name').val().trim();
@@ -195,8 +195,8 @@
                     let points = e.layer._latlng;
                     let station_name = $('#create_pluv_modal #station_name').val().trim();
                     let pluv_type_id = $("#create_pluv_modal #pluv_type_select option:selected").val()
-                    console.log(points,station_name,name,msnm,pluv_type_id)
-                    // request to save_area_api
+
+                    // request to save_pluv_api
                     axios.post('{{=URL('pluviometer', 'save_pluv_api')}}', {
                         name: name,
                         pluv_type_id: pluv_type_id,
@@ -205,34 +205,33 @@
                         points: points,
                     })
                     .then(response => {
-                        showMyNotification('success', "El pluviómetro se ha creado correctamente");
                         e.layer['myDatabaseId'] = response.data.pluvId;
-                        console.log("Todo bien")
+                        showMyNotification('success', "El pluviómetro se ha creado correctamente");
                     })
                     .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
                 }
 
         })
 
-        //Event handler for editing an area layer
+        //Event handler for editing a pluviometer marker
         e.layer.on('pm:edit', function(layer_event){
             if (e.layer.myDatabaseId){
                 // Edit the layer only when is saved in db
-                let points = e.layer._latlngs;
+                let points = e.layer._latlng;
                 restorePosition = points; //saved in outer variable the new points of the area
 
-                // request to edit_area API
-                axios.post('{{=URL('map', 'edit_area_api')}}', {
-                        area_id: e.layer.myDatabaseId,
+                // request to edit_pluv_api API
+                axios.post('{{=URL('pluviometer', 'edit_pluv_api')}}', {
+                        pluv_id: e.layer.myDatabaseId,
                         points: points,
                     })
                     .then(response => {
-                        console.log("Todo en talla");
+                        showMyNotification('success', "El pluviómetro se ha editado correctamente");
                     })
-                    .catch(error => alert(error));
+                    .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
             }else{
                 //This fires when the area is not saved in db yet
-                e.layer.setLatLngs(restorePosition); //Restore layer old position
+                e.layer.setLatLng(restorePosition); //Restore layer old position
                 e.layer.pm.disable(); //I wrote this because the docs recommend it
                 $('#no_edit_info_modal').modal(); //open no edit warning modal
             }
@@ -242,13 +241,13 @@
                     // Remove the layer only when is saved in db
 
                     // request to remove_area API
-                    axios.post('{{=URL('map', 'remove_area_api')}}', {
-                            area_id: e.layer.myDatabaseId,
+                    axios.post('{{=URL('pluviometer', 'remove_pluv_api')}}', {
+                            pluv_id: e.layer.myDatabaseId,
                         })
                         .then(response => {
-                            console.log("Todo en talla");
+                            showMyNotification('success', "El pluviómetro se ha eliminado correctamente");
                         })
-                        .catch(error => alert(error));
+                        .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
                   }else{
                     //This fires when the area is not saved in db yet
                     e.layer.addTo(map); //Adding layer to map again after incorrect elimination

@@ -106,20 +106,17 @@ def edit_pluv_api():
     response.view = 'generic.json'
 
     def POST(*args, **kwargs):
-        name = request.vars.name
-        pluv_type_id = request.vars.pluv_type_id
-        station_name = request.vars.station_name
-        msnm = request.vars.msnm
+        pluv_id = request.vars.pluv_id
         points = request.vars.points
-        new_pluv = db.Pluviometer.insert(name=name, id_pluviometer_type=pluv_type_id, station_name=station_name,
-                                         msnm=msnm, lat=points['lat'], lon=points['lng'])
+
+        db(db.Pluviometer.id == pluv_id).update(lat=points['lat'], lon=points['lng']) # Edit pluviometer lat and lon in db
 
         db.commit()
 
         cache.ram('areas', None)  # emptying map cache so that the new areas are shown
         __getAreaNodes()  # calling map cache again
 
-        return dict(pluvId=new_pluv)
+        return dict()
 
     return locals()
 
@@ -129,8 +126,8 @@ def remove_pluv_api():
     response.view = 'generic.json'
 
     def POST(*args, **kwargs):
-        area_id = request.vars.area_id
-        db(db.Area.id == area_id).delete()
+        pluv_id = request.vars.pluv_id
+        db(db.Pluviometer.id == pluv_id).delete()
         db.commit()
 
         cache.ram('areas', None) #emptying map cache so that the new areas are shown
