@@ -175,7 +175,7 @@
                 $('#no_edit_info_modal').modal(); //open no edit warning modal
             }
             })
-              .on('pm:remove', () => generalDelete("El área será eliminada completamente del sistema", function (isConfirm) {//Event handler for removing an area layer
+              .on('pm:remove', () => confirmationDelete("El área será eliminada completamente del sistema", function (isConfirm) {//Event handler for removing an area layer
                   if(isConfirm){
                       if (e.layer.myDatabaseId){
                     // Remove the layer only when is saved in db

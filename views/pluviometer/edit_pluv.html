@@ -1,0 +1,169 @@
+{{extend 'plantilla.html'}}
+
+{{block head}}
+    <link rel="stylesheet" href="{{=URL('static', 'leaflet/leaflet.css')}}" />
+    <link rel="stylesheet" href="{{=URL('static', 'leaflet_geoman/leaflet-geoman.css')}}" />
+
+    <script type="text/javascript" src="{{=URL('static', 'leaflet/leaflet.js')}}"></script>
+    <script type="text/javascript" src="{{=URL('static', 'leaflet_geoman/leaflet-geoman.min.js')}}"></script>
+    <style>
+        #map_id{
+            height: 500px;
+            z-index: 0;
+        }
+     </style>
+{{end head}}
+
+{{block page_js}}
+    <script>
+
+    let mymap = L.map('map_id').setView(
+           [ 21.941415395551573,-78.66101966354675], 10);
+    L.tileLayer('{{=URL('static','CubaOSM/{z}/{x}/{y}.png',url_encode=False)}}',{ maxZoom: 12 }).addTo(mymap);
+
+    $(window).on('map-container-resize', function () {
+            mymap.invalidateSize();
+
+        }).trigger('resize');
+
+    mymap.pm.setLang('es', null, 'en');//Setting to spanish language
+
+    mymap.pm.addControls({
+        position: 'topleft',
+        drawCircle: false,
+        drawPolygon: false,
+        drawCircleMarker: false,
+        drawPolyline: false,
+        drawRectangle: false,
+        cutPolygon: false,
+        rotateMode: false,
+        editMode: false,
+        drawMarker: false
+    });
+
+
+    //------------------------------------------------
+    // Capas
+    //------------------------------------------------
+    //Nuevo metodo modificado para comprobar cuales capas estan activas
+    L.Control.Layers.include({
+                getActiveOverlays: function() {
+                /*
+                Devuelve un array con los nombres de las capas activas
+                */
+                let control, layers;
+                layers = [];
+                control = this;
+
+                // loop through all layers in control
+                control._layers.forEach(function(obj) {
+                  let layerName;
+
+                  // check if layer is an overlay
+                  if (obj.overlay) {
+                    // get name of overlay
+                    layerName = obj.name;
+
+                    // check if layer is active on the map and save the name
+                    if(control._map.hasLayer(obj.layer)){
+                        layers.push(layerName);
+                    }
+                  }
+                });
+
+                return layers;
+              }
+            });
+
+    let overlayMaps = {};
+    let layerGroup;
+
+        {{for area_type in areas:}}
+        //areas has the form of {'area_type':[{'area':[id_area, [area_borders]}, areaType_color, areaType_description],}
+        //Loop for all the area types
+            layerGroup = []
+            {{for area in areas[area_type][0]:}}
+                    layerGroup.push(L.polygon({{=areas[area_type][0][area][1]}},
+                            {color: '{{=areas[area_type][1]}}'}).on('click', e => {
+                          let pluv_options = `
+                            <a class="btn btn-flat btn-primary btn-lg mb-3" style="color:white;" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area',args=areas[area_type][0][area][0])}}>Calcular indice del area</a><br>
+                          `
+                          $(".modal-body").append(pluv_options);
+                          $("#map_options_modal").modal();
+                          }
+                    ))
+            {{pass}}
+            overlayMaps["{{=area_type}}"] = L.layerGroup(layerGroup);
+        {{pass}}
+
+        overlayMaps["Municipios"].addTo(mymap);
+        let control = L.control.layers(null, overlayMaps).addTo(mymap);
+
+
+
+        //------------------------------------------------
+        // Pluviometros
+        //------------------------------------------------
+        {{for pluv in pluvs:}}
+            L.marker([{{=pluv.lat}}, {{=pluv.lon}}]).addTo(mymap).on('mouseover', e => {
+                let marker = e.target; // pluviometro seleccionado
+                let active_layers = control.getActiveOverlays() // tipos de area activas en el mapa
+                axios.get('{{=URL('map', 'marker_mouseover')}}',{
+                    params: {
+                        id: {{=pluv.id}},
+                        layers: active_layers,
+                    }
+                })
+                    .then(response => {
+                        marker.bindPopup(`<b>Nombre</b>:{{=pluv.station_name}} ({{=pluv.name}})<br>
+                                        <b>Areas</b>: ${response.data.areas.map(area => { //response.data.areas es [areaObject, areaObject,] o [' - ']
+                                            //Comprueba si area es un string y si lo es lo devuelve, sino comprueba si el area tiene un sub_name sino envia el area.name
+                                            return typeof area === "string" ? area : area.sub_name ? area.sub_name : area.name
+                                        }).join(", ")}<br>
+                                        <b>Año de inicio</b>:${response.data.min}<br>
+                                        <b>Año de fin</b>:${response.data.max}<br>
+                                        <b>Años activo</b>:${response.data.total_years}<br>
+                                        <b>MSNM</b>:{{=pluv.msnm}}<br>
+                                        `);
+                        marker.openPopup();
+                    })
+                    .catch(error => {
+                        alert(error)
+                    })
+            }).on('mouseout', e =>{e.target.closePopup();})
+                .on('pm:edit', function(e){
+                    let points = e.layer._latlng;
+
+                    // request to edit_pluv_api API
+                    axios.post('{{=URL('pluviometer', 'edit_pluv_api')}}', {
+                            pluv_id: {{=pluv.id}},
+                            points: points,
+                        })
+                        .then(response => {
+                            showMyNotification('success', "El pluviómetro se ha editado correctamente");
+                        })
+                        .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+            })
+            .on('pm:remove', (e) => confirmationDelete("El pluviómetro será eliminado completamente del sistema",
+                  function (isConfirm) {//Event handler for removing an area layer
+                    let restorePosition = e.layer._latlng;
+                    if(isConfirm){
+                        // request to remove_area API
+                        axios.post('{{=URL('pluviometer', 'remove_pluv_api')}}', {
+                                pluv_id: {{=pluv.id}},
+                            })
+                            .then(response => {
+                                showMyNotification('success', "El pluviómetro se ha eliminado correctamente");
+                            })
+                            .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+                      }
+                     else{
+                        e.layer.addTo(mymap); //Adding layer to map again after incorrect elimination
+                        e.layer.setLatLng(restorePosition); //Restore layer old position
+                      }
+          }))
+        {{pass}}
+
+
+		</script>
+{{end page_js}}

@@ -8,7 +8,8 @@ def create_pluv():
     return locals()
 
 def edit_pluv():
-    return dict(areas=__getAreaNodes())
+    pluvs = db(db.Pluviometer.lat > 0).select()
+    return dict(areas=__getAreaNodes(), pluvs= pluvs)
 
 def remove_pluv():
     pluv = db.Pluviometer(request.args(0, cast=int)) or redirect(URL('pluv_list'))

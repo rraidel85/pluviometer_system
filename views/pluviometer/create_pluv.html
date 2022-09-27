@@ -236,7 +236,7 @@
                 $('#no_edit_info_modal').modal(); //open no edit warning modal
             }
             })
-              .on('pm:remove', () => generalDelete("El pluviómetro será eliminado completamente del sistema",
+              .on('pm:remove', () => confirmationDelete("El pluviómetro será eliminado completamente del sistema",
                   function (isConfirm) {//Event handler for removing an area layer
                     if(isConfirm){
                           if (e.layer.myDatabaseId){
