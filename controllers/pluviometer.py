@@ -1,5 +1,6 @@
 def pluv_list():
     """Returns pluviometer table"""
+    pluv_types = db(db.PluviometerType.id > 0).select()  # for the select box on edit pluviometer modal
     return locals()
 
 def create_pluv():
