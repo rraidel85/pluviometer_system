@@ -108,10 +108,19 @@ def edit_pluv_api():
     response.view = 'generic.json'
 
     def POST(*args, **kwargs):
+        edit_type = request.vars.edit_type # Type of edit: if is 'position' edit the pluv map position and if is 'information' edit pluv info
         pluv_id = request.vars.pluv_id
-        points = request.vars.points
 
-        db(db.Pluviometer.id == pluv_id).update(lat=points['lat'], lon=points['lng']) # Edit pluviometer lat and lon in db
+        if edit_type == 'position':
+            points = request.vars.points
+            db(db.Pluviometer.id == pluv_id).update(lat=points['lat'], lon=points['lng']) # Edit pluviometer lat and lon in db
+        elif edit_type == 'information':
+            name = request.vars.name
+            pluv_type_id = request.vars.pluv_type_id
+            station_name = request.vars.station_name
+            msnm = request.vars.msnm
+            db(db.Pluviometer.id == pluv_id).update(name=name, id_pluviometer_type=pluv_type_id,
+                                                    station_name=station_name, msnm=msnm)
 
         db.commit()
 

@@ -21,7 +21,7 @@
         </thead>
 </table>
 {{block body_end}}
-    <div id="create_pluv_modal" class="modal fade">
+    <div id="edit_pluv_modal" class="modal fade">
                         <div class="modal-dialog modal-sm">
                             <div class="modal-content" style="width: 400px">
                                 <div class="modal-header">
@@ -98,15 +98,13 @@
               data: null,
               // defaultContent: "<a href={{=URL('default','mapa')}} class='btn btn-primary'>Mapa</a>",
               "render": function ( data, type, row, meta ) {
-                  // console.log(JSON.stringify(row))
-                  $(`#edit-${row.id}`).off().on('click', () => {
-                      editPluviometer(row)
-                  })
+                  // In edit anchor i used encodeURIComponent function because passing the object by it self did not work
+                  const b = {name: row}
                   return `
                   <a title="Ubicación" style="padding: 9px 14px !important;" href={{=URL('map','ubicacion_pluv')}}/${row.id} class="botones-iconos btn btn-info btn-rounded btn-icon">
                     <i class="fa fa-map-marker"></i>
                   </a>
-                  <a id="edit-${row.id}" title="Editar" style="background-color: #05e20c;" class="botones-iconos btn btn-info btn-rounded btn-icon">
+                  <a id="edit-${row.id}" title="Editar" onclick="editPluviometer('${encodeURIComponent(JSON.stringify(row))}')" style="color:white; background-color: #05e20c;" class="botones-iconos btn btn-info btn-rounded btn-icon">
                     <i class="fa fa-pencil"></i>
                   </a>
                   <a title="Eliminar" style="background-color: #f84a4a;" href="#" onclick="eliminar(${row.id})" class="botones-iconos btn btn-info btn-rounded btn-icon">
@@ -150,18 +148,18 @@
     }
 
     //Events listeners to close modal
-    $('#create_pluv_modal #closeButton').off().on('click', () => {
-                $("#create_pluv_modal").modal('toggle');
+    $('#edit_pluv_modal #closeButton').off().on('click', () => {
+                $("#edit_pluv_modal").modal('toggle');
         })
 
-        $('#create_pluv_modal .xButton').off().on('click', () => {
-                $("#create_pluv_modal").modal('toggle');
+        $('#edit_pluv_modal .xButton').off().on('click', () => {
+                $("#edit_pluv_modal").modal('toggle');
         })
 
         // Event listener on accept button modal
-        $('#create_pluv_modal #acceptButton').off().on('click', () => {
-                let name = $('#create_pluv_modal #name').val().trim();
-                let msnm = $('#create_pluv_modal #msnm').val().trim();
+        $('#edit_pluv_modal #acceptButton').off().on('click', () => {
+                let name = $('#edit_pluv_modal #name').val().trim();
+                let msnm = $('#edit_pluv_modal #msnm').val().trim();
 
                 // Validations
                 if (name.length === 0) {
@@ -173,37 +171,36 @@
                     showErrorDiv($("#msnm-error-box"), "Este campo debe ser un número")
                 }
                 else {
-                    $("#create_pluv_modal").modal('toggle');
-                    let points = e.layer._latlng;
-                    let station_name = $('#create_pluv_modal #station_name').val().trim();
-                    let pluv_type_id = $("#create_pluv_modal #pluv_type_select option:selected").val()
+                    $("#edit_pluv_modal").modal('toggle');
+                    let station_name = $('#edit_pluv_modal #station_name').val().trim();
+                    let pluv_type_id = $("#edit_pluv_modal #pluv_type_select option:selected").val()
 
                     // request to save_pluv_api
-                    axios.post('{{=URL('pluviometer', 'save_pluv_api')}}', {
+                    axios.post('{{=URL('pluviometer', 'edit_pluv_api')}}', {
                         name: name,
                         pluv_type_id: pluv_type_id,
                         station_name: station_name,
                         msnm: msnm,
-                        points: points,
+                        edit_type: "information",
                     })
                     .then(response => {
-                        showMyNotification('success', "El pluviómetro se ha creado correctamente");
+                        showMyNotification('success', "El pluviómetro se ha editado correctamente");
                     })
                     .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
                 }
 
         })
 
-    const editPluviometer = (row) => {
-        console.log(row)
+    function editPluviometer(encodedRow){
         //Function to open edit pluviometer modal and prefill the form
-        $("#create_pluv_modal").modal({backdrop: "static"});// open modal
+        const row = JSON.parse(decodeURIComponent(encodedRow)); // Decoding the row information passed by parameters
+        $("#edit_pluv_modal").modal({backdrop: "static"});// open modal
 
-        //Prepopulate form
-        $('#create_pluv_modal #name').val(row.name)
-        $('#create_pluv_modal #station_name').val(row.station_name)
-        $('#create_pluv_modal #msnm').val(row.msnm)
-        $('#create_pluv_modal #id_pluviometer_type').val(row.id_pluviometer_type)
+        //Prepopulate form with pluv information
+        $('#edit_pluv_modal #name').val(row.name);
+        $('#edit_pluv_modal #station_name').val(row.station_name);
+        $('#edit_pluv_modal #msnm').val(row.msnm);
+        $('#edit_pluv_modal #id_pluviometer_type').val(row.id_pluviometer_type);
     }
 {{end datatable}}
 </script>

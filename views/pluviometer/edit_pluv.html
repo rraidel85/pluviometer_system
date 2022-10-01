@@ -138,6 +138,7 @@
                     axios.post('{{=URL('pluviometer', 'edit_pluv_api')}}', {
                             pluv_id: {{=pluv.id}},
                             points: points,
+                            edit_type: "position",
                         })
                         .then(response => {
                             showMyNotification('success', "El pluviómetro se ha editado correctamente");
