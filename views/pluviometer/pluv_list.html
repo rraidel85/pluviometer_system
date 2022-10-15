@@ -62,8 +62,7 @@
 <script>
 {{block datatable}}
     let currentRowId; // Global variable for the selected row id for edit options
-
-    data_table.DataTable({
+    const datatableOptions = {
         //Adding server-side processing
         serverSide: true,
         processing: true,
@@ -127,7 +126,9 @@
                 }
             }
         ],
-    });
+    };
+
+   let table = data_table.DataTable(datatableOptions);
 
     function eliminar(id) {
         swal({
@@ -189,6 +190,8 @@
                     })
                     .then(response => {
                         showMyNotification('success', "El pluviómetro se ha editado correctamente");
+                        table.destroy(); //Destroiyng datatable for refetch
+                        table = data_table.DataTable(datatableOptions); //Building datatable again with updated data
                     })
                     .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
                 }
