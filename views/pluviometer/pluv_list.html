@@ -179,6 +179,8 @@
                     let station_name = $('#edit_pluv_modal #station_name').val().trim();
                     let pluv_type_id = $("#edit_pluv_modal #pluv_type_select option:selected").val()
 
+                    $(".loading-spinner").show(); // Show loading
+                    
                     // request to save_pluv_api
                     axios.post('{{=URL('pluviometer', 'edit_pluv_api')}}', {
                         pluv_id: currentRowId,
@@ -190,6 +192,7 @@
                     })
                     .then(response => {
                         showMyNotification('success', "El pluviómetro se ha editado correctamente");
+                        $(".loading-spinner").hide(); // Hide loading
                         table.destroy(); //Destroiyng datatable for refetch
                         table = data_table.DataTable(datatableOptions); //Building datatable again with updated data
                     })
