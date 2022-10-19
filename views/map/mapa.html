@@ -47,13 +47,13 @@
 
         }).trigger('resize');
     //------------------------------------------------
-    // Capas
+    // Layers
     //------------------------------------------------
-    //Nuevo metodo modificado para comprobar cuales capas estan activas
+    //New modify method to check wich layers are active
     L.Control.Layers.include({
                 getActiveOverlays: function() {
                 /*
-                Devuelve un array con los nombres de las capas activas
+                Return an array with active layers names
                 */
                 let control, layers;
                 layers = [];
@@ -106,12 +106,12 @@
 
 
         //------------------------------------------------
-        // Pluviometros
+        // Pluviometers
         //------------------------------------------------
         {{for pluv in pluvs:}}
         L.marker([{{=pluv.lat}}, {{=pluv.lon}}]).addTo(mymap).on('mouseover', e => {
-            let marker = e.target; // pluviometro seleccionado
-            let active_layers = control.getActiveOverlays() // tipos de area activas en el mapa
+            let marker = e.target; // selected pluviometer
+            let active_layers = control.getActiveOverlays() // area types actives on the map
             axios.get('{{=URL('map', 'marker_mouseover')}}',{
                 params: {
                     id: {{=pluv.id}},
@@ -121,7 +121,7 @@
                 .then(response => {
                     marker.bindPopup(`<b>Nombre</b>:{{=pluv.station_name}} ({{=pluv.name}})<br>
                                     <b>Areas</b>: ${response.data.areas.map(area => { //response.data.areas es [areaObject, areaObject,] o [' - ']
-                                        //Comprueba si area es un string y si lo es lo devuelve, sino comprueba si el area tiene un sub_name sino envia el area.name
+                                        //Check if area is a string and if it is returns it, otherwise checks if area has a sub_name otherwise sends area.name
                                         return typeof area === "string" ? area : area.sub_name ? area.sub_name : area.name
                                     }).join(", ")}<br>
                                     <b>Año de inicio</b>:${response.data.min}<br>
@@ -159,8 +159,6 @@
         $(document).on('hide.bs.modal','#map_options_modal',() => {
             $(".modal-body").empty();
         });
-
-
 
 
 

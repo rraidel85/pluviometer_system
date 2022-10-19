@@ -196,7 +196,10 @@
                         table.destroy(); //Destroiyng datatable for refetch
                         table = data_table.DataTable(datatableOptions); //Building datatable again with updated data
                     })
-                    .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+                    .catch(error => {
+                        showMyNotification('error', "Hubo errores en el servidor");
+                        $(".loading-spinner").hide(); // Hide loading
+                    });
                 }
 
         })

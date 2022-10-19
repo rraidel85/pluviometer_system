@@ -114,6 +114,8 @@ def edit_pluv_api():
         if edit_type == 'position':
             points = request.vars.points
             db(db.Pluviometer.id == pluv_id).update(lat=points['lat'], lon=points['lng']) # Edit pluviometer lat and lon in db
+            cache.ram('areas', None)  # emptying map cache so that the new areas are shown
+            __getAreaNodes()  # calling map cache again
         elif edit_type == 'information':
             name = request.vars.name
             pluv_type_id = request.vars.pluv_type_id
@@ -123,9 +125,6 @@ def edit_pluv_api():
                                                     station_name=station_name, msnm=msnm)
 
         db.commit()
-
-        cache.ram('areas', None)  # emptying map cache so that the new areas are shown
-        __getAreaNodes()  # calling map cache again
 
         return dict()
 

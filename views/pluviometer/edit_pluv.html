@@ -134,6 +134,8 @@
                 .on('pm:edit', function(e){
                     let points = e.layer._latlng;
 
+                    $(".loading-spinner").show(); // Show loading
+
                     // request to edit_pluv_api API
                     axios.post('{{=URL('pluviometer', 'edit_pluv_api')}}', {
                             pluv_id: {{=pluv.id}},
@@ -142,21 +144,32 @@
                         })
                         .then(response => {
                             showMyNotification('success', "El pluviómetro se ha editado correctamente");
+                            $(".loading-spinner").hide(); // Hide loading
                         })
-                        .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+                        .catch(error => {
+                            showMyNotification('error', "Hubo errores en el servidor");
+                            $(".loading-spinner").hide(); // Hide loading
+                        });
             })
             .on('pm:remove', (e) => confirmationDelete("El pluviómetro será eliminado completamente del sistema",
                   function (isConfirm) {//Event handler for removing an area layer
                     let restorePosition = e.layer._latlng;
                     if(isConfirm){
+
+                        $(".loading-spinner").show(); // Show loading
+
                         // request to remove_area API
                         axios.post('{{=URL('pluviometer', 'remove_pluv_api')}}', {
                                 pluv_id: {{=pluv.id}},
                             })
                             .then(response => {
                                 showMyNotification('success', "El pluviómetro se ha eliminado correctamente");
+                                $(".loading-spinner").hide(); // Hide loading
                             })
-                            .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+                            .catch(error => {
+                                showMyNotification('error', "Hubo errores en el servidor");
+                                $(".loading-spinner").hide(); // Hide loading
+                            });
                       }
                      else{
                         e.layer.addTo(mymap); //Adding layer to map again after incorrect elimination

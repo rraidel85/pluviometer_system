@@ -11,7 +11,8 @@
                 height: 500px;
                 z-index: 0;
             }
-            #create_area_modal input{
+            #create_area_modal input,
+            #create_area_modal textarea{
                 width: 100%;
             }
             #name-error-box{
@@ -70,11 +71,18 @@
                                         <div id="name-error-box"></div>
                                     </div>
                                     <label for="area_type_select">Tipo de área:</label>
-                                    <select class="form-control" id="area_type_select" style="padding-bottom: 10px;padding-top: 8px;">
-                                        {{for a_type in area_types:}}
-                                            <option value={{=a_type.id}}>{{=a_type.name}}</option>
-                                        {{pass}}
-                                    </select>
+                                    <div class="form-group">
+                                        <select class="form-control" id="area_type_select" style="padding-bottom: 10px;padding-top: 8px;">
+                                            {{for a_type in area_types:}}
+                                                <option value={{=a_type.id}}>{{=a_type.name}}</option>
+                                            {{pass}}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="description">Descripción:</label>
+                                        <textarea type="text" class="form-control" id="description" rows="3"></textarea>
+                                        <div id="description-error-box"></div>
+                                    </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button id="closeButton" type="button" class="btn btn-danger">Cerrar</button>
@@ -125,7 +133,6 @@
         let restorePosition = e.layer._latlngs;//original position when the area is created
 
         $('#create_area_modal #acceptButton').off().on('click', () => {
-                let errBox = $("#name-error-box");
                 let name = $('#create_area_modal #name').val().trim()
                 if (name.length === 0) {
                     // if name input is empty
@@ -135,19 +142,27 @@
                     $("#create_area_modal").modal('toggle');
                     let points = e.layer._latlngs;
 
+                    let description = $("#create_area_modal #description").val().trim();
                     let area_type_id = $("#create_area_modal #area_type_select option:selected").val()
 
+                    $(".loading-spinner").show(); // Show loading
+
                     // request to save_area_api
-                    axios.post('{{=URL('map', 'save_area_api')}}', {
+                    axios.post('{{=URL('area', 'save_area_api')}}', {
                         name: name,
                         area_type_id: area_type_id,
+                        description: description,
                         points: points,
                     })
                     .then(response => {
                         e.layer['myDatabaseId'] = response.data.areaId;
                         showMyNotification('success', "El área se ha creado correctamente");
+                        $(".loading-spinner").hide(); // Hide loading
                     })
-                    .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+                    .catch(error => {
+                        showMyNotification('error', "Hubo errores en el servidor");
+                        $(".loading-spinner").hide(); // Hide loading
+                    });
                 }
 
         })
@@ -159,15 +174,22 @@
                 let points = e.layer._latlngs;
                 restorePosition = points; //saved in outer variable the new points of the area
 
+                $(".loading-spinner").show(); // Show loading
+
                 // request to edit_area API
-                axios.post('{{=URL('map', 'edit_area_api')}}', {
+                axios.post('{{=URL('area', 'edit_area_api')}}', {
                         area_id: e.layer.myDatabaseId,
                         points: points,
+                        edit_type: 'position'
                     })
                     .then(response => {
                         showMyNotification('success', "El área se ha editado correctamente");
+                        $(".loading-spinner").hide(); // Hide loading
                     })
-                    .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+                    .catch(error => {
+                        showMyNotification('error', "Hubo errores en el servidor");
+                        $(".loading-spinner").hide(); // Hide loading
+                    });
             }else{
                 //This fires when the area is not saved in db yet
                 e.layer.setLatLngs(restorePosition); //Restore layer old position
@@ -180,14 +202,20 @@
                       if (e.layer.myDatabaseId){
                     // Remove the layer only when is saved in db
 
+                    $(".loading-spinner").show();
+
                     // request to remove_area API
-                    axios.post('{{=URL('map', 'remove_area_api')}}', {
+                    axios.post('{{=URL('area', 'remove_area_api')}}', {
                             area_id: e.layer.myDatabaseId,
                         })
                         .then(response => {
                             showMyNotification('success', "El área se ha eliminado correctamente");
+                            $(".loading-spinner").hide();
                         })
-                        .catch(error => showMyNotification('error', "Hubo errores en el servidor"));
+                        .catch(error => {
+                            showMyNotification('error', "Hubo errores en el servidor");
+                            $(".loading-spinner").hide(); // Hide loading
+                        });
                   }else{
                     //This fires when the area is not saved in db yet
                     e.layer.addTo(map); //Adding layer to map again after incorrect elimination
