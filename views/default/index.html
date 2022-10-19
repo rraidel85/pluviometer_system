@@ -13,34 +13,30 @@
     .my-card-parent{
         border-radius: 15px;
         margin: auto;
-        margin-top: 20px;
+        margin-top: 30px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        background-color: transparent;
     }
     .my-card{
-        border-radius: 15px;
-        -webkit-box-shadow: 0 0 28px rgba(0,0,0,.08);
-        box-shadow: 0 0 28px rgba(0,0,0,.08);
-        height: 100%;
-        padding: 20px;
-        background: #2980B9;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #7faff9, #6DD5FA, #1e7cb9);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #7faff9, #6DD5FA, #1e7cb9); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+            border-radius: 15px;
+    -webkit-box-shadow: 0 0 28px rgba(0,0,0,.08);
+    box-shadow: 0 0 28px rgba(0,0,0,.08);
+    height: 100%;
+    padding: 20px;
+    background: #2980B9;
+    background: -webkit-linear-gradient(to right, #7faff9, #6DD5FA, #1e7cb9);
+    background: linear-gradient(to right, #6198ed, #30a5cf, #126ca7);
     }
     .my-card h2{
+        color: white;
         font-size: 35px;
     }
     .my-card p{
-        color: #000;
+        color: white;
         font-size: 19px;
-    }
-    .single-post{
-        align-items: center;
-        margin-bottom: 0;
-    }
-    .lts-thumb img{
-        height: 200px;
-        display: block;
-        margin: auto;
     }
     .area-card{
         background: #79ab18;
@@ -48,19 +44,21 @@ background: linear-gradient(to right, #7faff9, #6DD5FA, #1e7cb9); /* W3C, IE 10+
     .other-card{
         background: #d25656;
     }
+    .my-card-parent img{
+        height: 321px;
+        width: 344px;
+    }
 </style>
 {{end}}
 
 <div class="row">
     <div class="big-box">
-        <h1 class="my-page-heading">Bienvenido, {{=auth.user.first_name}}!</h1>
-        <div class="card my-card-parent">
-            <div class="card-body my-card">
+        <!--<h1 class="my-page-heading">Bienvenido, {{=auth.user.first_name}}!</h1>-->
+        <div class="my-card-parent">
+            <img src="{{=URL('static', 'images/hero.png')}}">
+            <div class="my-card">
                 <div class="letest-news">
-                    <div class="single-post">
-                        <div class="lts-thumb">
-                            <img src="{{=URL('static','images/water_index.png')}}" alt="post thumb">
-                        </div>
+                    <div class="">
                         <div class="lts-content">
                             <h2>Herramienta informática para la gestión de precipitaciones</h2>
                             <p>
