@@ -4,7 +4,6 @@ databases/
 __pycache__
 TASKS_TO_DO.txt
 CODIGOS_A_GUARDAR.txt
-static/CubaOSM
 private/
 errors/
 sessions/
