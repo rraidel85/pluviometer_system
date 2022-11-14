@@ -5,11 +5,16 @@ db.define_table("AreaType",
                 Field("description", "text", default=None, label='Descripción'),
                 format=AreaType_format)
 
+db.AreaType.name.requires = [IS_NOT_EMPTY(error_message='Este campo es obligatorio')]
+db.AreaType.representation.requires = [IS_NOT_EMPTY(error_message='Este campo es obligatorio')]
+
 PluviometerType_format = '%(name)s'
 db.define_table("PluviometerType",
                 Field("name", "string", default=None, label='Tipo de pluviómetro'),
                 Field("description", "text", default=None, label='Descripción'),
                 format=PluviometerType_format)
+
+db.PluviometerType.name.requires = [IS_NOT_EMPTY(error_message='Este campo es obligatorio')]
 
 Pluviometer_format = '%(name)s'
 db.define_table("Pluviometer",
@@ -24,6 +29,8 @@ db.Pluviometer._singular = T('Pluviómetro')
 db.Pluviometer._plural = T('Pluviómetros')
 db.Pluviometer.id.readable = False
 
+db.Pluviometer.name.requires = [IS_NOT_EMPTY(error_message='Este campo es obligatorio')]
+
 db.define_table("Registers",
                 Field("id_pluviometer", db.Pluviometer, label='Pluviómetro'),
                 Field("register_date", "date", notnull=True, default='NULL', label='Fecha'),
@@ -31,6 +38,9 @@ db.define_table("Registers",
 db.Registers._singular = T('Registro')
 db.Registers._plural = T('Registros')
 db.Registers.id.readable = False
+
+db.Registers.register_date.requires = [IS_NOT_EMPTY(error_message='Este campo es obligatorio')]
+db.Registers.rain_value.requires = [IS_NOT_EMPTY(error_message='Este campo es obligatorio')]
 
 YearStatistics_format = '%(year_number)s'
 db.define_table("YearStatistics",
@@ -83,6 +93,8 @@ db.define_table("Area",
                 Field("centroid_lat", "double", default=None, label='Latitud del centroide'),
                 Field("centroid_lon", "double", default=None, label='Longitud del centroide'),
                 format=Area_format)
+
+db.Area.name.requires = [IS_NOT_EMPTY(error_message='Este campo es obligatorio')]
 
 db.define_table("AreaNode",
                 Field("id_area", db.Area, label='Área'),
@@ -157,19 +169,19 @@ db.define_table("PrecipitationConcentrationIndex_Monthly_By_Pluviometer",
 
 """ Relations between tables (remove fields you don't need from requires) """
 db.Registers.id_pluviometer.requires = IS_IN_DB(db, 'Pluviometer.id',
-                                                ' %(id_pluviometer_type)s %(name)s %(lat)s %(lon)s')
-db.Pluviometer.id_pluviometer_type.requires = IS_IN_DB(db, 'PluviometerType.id', ' %(name)s %(description)s')
+                                                ' %(name)s ', zero=None)
+db.Pluviometer.id_pluviometer_type.requires = IS_IN_DB(db, 'PluviometerType.id', ' %(name)s ')
 db.MonthStatistics.id_year.requires = IS_IN_DB(db, 'YearStatistics.id',
-                                               ' %(id_pluviometer)s %(year_number)s %(total_precipit)s %(max_registered_value)s %(daily_mean)s %(rainy_days_count)s %(rainy_streak_count)s %(rainy_streak_med_long)s')
+                                               ' %(year_number)s ', zero=None)
 db.YearStatistics.id_pluviometer.requires = IS_IN_DB(db, 'Pluviometer.id',
-                                                     ' %(id_pluviometer_type)s %(name)s %(lat)s %(lon)s')
-db.Area.id_area_type.requires = IS_IN_DB(db, 'AreaType.id', ' %(name)s %(representation)s %(description)s')
+                                                     ' %(name)s ', zero=None)
+db.Area.id_area_type.requires = IS_IN_DB(db, 'AreaType.id', ' %(name)s ', zero=None)
 db.AreaNode.id_area.requires = IS_IN_DB(db, 'Area.id',
-                                        ' %(id_area_type)s %(name)s %(description)s %(centroid_lat)s %(centroid_lon)s')
+                                        ' %(name)s ', zero=None)
 db.Pluviometer_Area.id_area.requires = IS_IN_DB(db, 'Area.id',
-                                                ' %(id_area_type)s %(name)s %(description)s %(centroid_lat)s %(centroid_lon)s')
+                                                ' %(name)s ', zero=None)
 db.Pluviometer_Area.id_pluviometer.requires = IS_IN_DB(db, 'Pluviometer.id',
-                                                       ' %(id_pluviometer_type)s %(name)s %(lat)s %(lon)s')
+                                                       ' %(name)s ', zero=None)
 
 
 
