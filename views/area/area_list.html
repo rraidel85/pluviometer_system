@@ -4,10 +4,32 @@
         .dropdown-item:focus, .dropdown-item:hover{
             background-color: #c5d6e6;
         }
+        .create-button-box{
+            width: 100%;
+            display: flex;
+            flex-direction: row-reverse;
+        }
+        .create-button{
+            font-family: sans-serif;
+            font-size: 16px;
+        }
     </style>
 {{end}}
+
         <h3 class="encabezado">Áreas</h3>
-<table id="example" class="display" width="100%" cellspacing="0">
+        <div class="create-button-box">
+            {{=A('Nuevo',
+            _class='btn btn-success text-white mb-2 create-button',
+            _target='_blank',
+            _href=URL("area", "area_form",
+            vars={} # <- Puedes pasar variables aqui
+            ),
+            cid="content-area",
+            data={'toggle':'modal', 'target':'#area_modal'})}}
+        </div>
+
+
+<table id="area_table" class="display" width="100%" cellspacing="0">
         <thead>
             <tr>
                 <!--<th>Id</th>-->
@@ -50,44 +72,15 @@
 </table>
 
 {{block body_end}}
-    <div id="edit_area_modal" class="modal fade">
-                        <div class="modal-dialog modal-sm">
-                            <div class="modal-content" style="width: 400px">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Crear área</h5>
-                                    <button type="button" class="close xButton"><span>&times;</span></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="form-group">
-                                        <label for="name">Nombre:</label>
-                                        <input type="text" class="form-control" id="name">
-                                        <div id="name-error-box"></div>
-                                    </div>
-                                    <label for="area_type_select">Tipo de área:</label>
-                                    <select class="form-control" id="area_type_select" style="padding-bottom: 10px;padding-top: 8px;">
-                                        {{for a_type in area_types:}}
-                                            <option value={{=a_type.id}}>{{=a_type.name}}</option>
-                                        {{pass}}
-                                    </select>
-                                    <div class="form-group">
-                                        <label for="description">Descripción:</label>
-                                        <textarea type="text" class="form-control" id="description" rows="3"></textarea>
-                                        <div id="description-error-box"></div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button id="closeButton" type="button" class="btn btn-danger">Cerrar</button>
-                                    <button id="acceptButton" type="button" class="btn btn-success">Aceptar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-        
+    <div id="area_modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-sm" id="content-area">
+        </div>
+    </div>
 {{end body_end}}
 
 <script>
 {{block datatable}}
-    let table = data_table.DataTable();
+    let my_table = data_table.DataTable();
 
     function eliminar(id) {
         swal({
@@ -110,61 +103,57 @@
     }
 
     //Events listeners to close modal
-    $('#edit_area_modal #closeButton').off().on('click', () => {
-                $("#edit_area_modal").modal('toggle');
-        })
-
-    $('#edit_area_modal .xButton').off().on('click', () => {
-            $("#edit_area_modal").modal('toggle');
-    })
+    // $('#area_modal .xButton').off().on('click', () => {
+    //         $("#area_modal").modal('toggle');
+    // })
 
     // Event listener on accept button modal
-    $('#edit_area_modal #acceptButton').off().on('click', () => {
-            let name = $('#edit_area_modal #name').val().trim();
-
-            // Validations
-            if (name.length === 0) {
-                // if name input is empty
-                showMyNotification('error', "Existen errores en el formulario");
-                showErrorDiv($("#name-error-box"), "Este campo no puede estar vacío")
-            } else {
-                $("#edit_area_modal").modal('toggle');
-
-                let description = $("#edit_area_modal #description").val().trim();
-                let area_type_id = $("#edit_area_modal #area_type_select option:selected").val();
-
-                $(".loading-spinner").show(); // Show loading
-
-                // request to edit_area_api
-                axios.post('{{=URL('area', 'edit_area_api')}}', {
-                    name: name,
-                    description: description,
-                    area_type_id: area_type_id,
-                    edit_type: 'information'
-                })
-                .then(response => {
-                    showMyNotification('success', "El área se ha creado correctamente");
-                    $(".loading-spinner").hide(); // Hide loading
-                    table.destroy(); //Destroiyng datatable for refetch
-                    table = data_table.DataTable(); //Building datatable again with updated data
-                })
-                .catch(error => {
-                    showMyNotification('error', "Hubo errores en el servidor");
-                    $(".loading-spinner").hide(); // Hide loading
-                });
-            }
-
-    })
+    // $('#area_modal #acceptButton').off().on('click', () => {
+    //         let name = $('#area_modal #name').val().trim();
+    //
+    //         // Validations
+    //         if (name.length === 0) {
+    //             // if name input is empty
+    //             showMyNotification('error', "Existen errores en el formulario");
+    //             showErrorDiv($("#name-error-box"), "Este campo no puede estar vacío")
+    //         } else {
+    //             $("#area_modal").modal('toggle');
+    //
+    //             let description = $("#area_modal #description").val().trim();
+    //             let area_type_id = $("#area_modal #area_type_select option:selected").val();
+    //
+    //             $(".loading-spinner").show(); // Show loading
+    //
+    //             // request to edit_area_api
+    //             axios.post('{{=URL('area', 'edit_area_api')}}', {
+    //                 name: name,
+    //                 description: description,
+    //                 area_type_id: area_type_id,
+    //                 edit_type: 'information'
+    //             })
+    //             .then(response => {
+    //                 showMyNotification('success', "El área se ha creado correctamente");
+    //                 $(".loading-spinner").hide(); // Hide loading
+    //                 table.destroy(); //Destroiyng datatable for refetch
+    //                 table = data_table.DataTable(); //Building datatable again with updated data
+    //             })
+    //             .catch(error => {
+    //                 showMyNotification('error', "Hubo errores en el servidor");
+    //                 $(".loading-spinner").hide(); // Hide loading
+    //             });
+    //         }
+    //
+    // })
 
     function editar(){
         //Function to open edit pluviometer modal and prefill the form
-        $("#edit_area_modal").modal({backdrop: "static"});// open modal
+        $("#area_modal").modal({backdrop: "static"});// open modal
         // console.log()
         //Prepopulate form with pluv information
-        // $('#edit_area_modal #name').val(row.name);
-        // $('#edit_area_modal #station_name').val(row.station_name);
-        // $('#edit_area_modal #msnm').val(row.msnm);
-        // $('#edit_area_modal #id_pluviometer_type').val(row.id_pluviometer_type);
+        // $('#area_modal #name').val(row.name);
+        // $('#area_modal #station_name').val(row.station_name);
+        // $('#area_modal #msnm').val(row.msnm);
+        // $('#area_modal #id_pluviometer_type').val(row.id_pluviometer_type);
     }
 {{end datatable}}
 
