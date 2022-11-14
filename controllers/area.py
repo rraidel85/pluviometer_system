@@ -22,6 +22,18 @@ def remove_area():
 
     return dict()
 
+def area_form():
+    form = SQLFORM(db.Area)
+    reload_table = False
+
+    if form.process().accepted:
+        # redirect(request.env.http_web2py_component_location, client_side=True)
+        reload_table = True
+        response.js = "jQuery('#area_modal').modal('hide');showMyNotification('success', 'El área se ha creado correctamente');"
+    elif form.errors:
+        plugin_toastr_message_config('error', T('Existen errores en el formulario'))
+
+    return dict(form=form, reload_table=reload_table)
 
 #-----------------------------------------------------
 # APIS

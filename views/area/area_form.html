@@ -1,0 +1,47 @@
+{{=form.custom.begin}}
+    <div class="modal-content" style="width: 400px">
+        <div class="modal-header">
+            <h4 class="modal-title">Crear área</h4>
+            <button type="button" data-dismiss="modal" class="close"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+           <div class="form-group">
+
+                <label>{{=form.custom.label.name}}:</label>
+                {{=form.custom.widget.name}}
+            </div>
+            <div class="form-group">
+                <label>{{=form.custom.label.id_area_type}}:</label>
+                {{=form.custom.widget.id_area_type}}
+            </div>
+            <div class="form-group">
+                <label>{{=form.custom.label.description}} (opcional):</label>
+                {{=form.custom.widget.description}}
+            </div>
+            <div class="form-group">
+                <label>{{=form.custom.label.sub_name}} (opcional):</label>
+                {{=form.custom.widget.sub_name}}
+            </div>
+            <div class="form-group">
+                <label>{{=form.custom.label.centroid_lat}} (opcional):</label>
+                {{=form.custom.widget.centroid_lat}}
+            </div>
+            <div class="form-group">
+                <label>{{=form.custom.label.centroid_lon}} (opcional):</label>
+                {{=form.custom.widget.centroid_lon}}
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button type="submit" id="acceptButton" class="btn btn-success">Aceptar</button>
+        </div>
+    </div>
+{{=form.custom.end}}
+
+<script>
+        // Code that reloads the datatable when the form is accepted
+        {{if reload_table:}}
+            my_table.destroy(); //Destroiyng datatable for refetch
+            my_table = data_table.DataTable(); //Building datatable again with updated data
+        {{pass}}
+</script>
