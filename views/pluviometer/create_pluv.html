@@ -82,6 +82,15 @@
                                         <input type="text" class="form-control" id="msnm">
                                         <div class="error-box" id="msnm-error-box"></div>
                                     </div>
+                                    <div class="form-group">
+                                        <label for="lat">Latitud:</label>
+                                        <input type="number" class="form-control" id="lat">
+                                        <div class="error-box" id="lat-error-box"></div>
+
+                                        <label for="lon">Longitud:</label>
+                                        <input type="number" class="form-control" id="lon">
+                                        <div class="error-box" id="lon-error-box"></div>
+                                    </div>
                                      <label for="pluv_type_select">Tipo de pluviómetro:</label>
                                     <select class="form-control" id="pluv_type_select" style="padding-bottom: 10px;padding-top: 8px;">
                                         {{for pluv_type in pluv_types:}}

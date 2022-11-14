@@ -80,7 +80,7 @@ def pluvs():
 
 @request.restful()
 def save_pluv_api():
-    """Save an area created by the user to the map"""
+    """Save pluviometer created by the user to the map"""
     response.view = 'generic.json'
 
     def POST(*args, **kwargs):
