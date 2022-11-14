@@ -38,6 +38,48 @@ def area_form():
 #-----------------------------------------------------
 # APIS
 #-----------------------------------------------------
+
+@request.restful()
+def areas_api():
+    """Return asynchronous areas data for Datatable"""
+    response.view = 'generic.json'
+
+    def GET(*args, **kwargs):
+        start = int(request.vars.start)
+        limit = int(request.vars.limit)
+        search = request.vars.search
+        order_column = request.vars.order_column
+        order_dir = request.vars.order_dir
+
+        areas = []
+        count = 0
+
+        try:
+            areas = db(((db.Area.sub_name=="") | (db.Area.sub_name==None)) &
+                              (db.Area.name.contains(search))).select(
+                        orderby=f'{db.Area[order_column]} {order_dir}',
+                        limitby=(start, start+limit))
+
+            count_query = db.Area.id.count()
+            count = db(((db.Area.sub_name=="") | (db.Area.sub_name==None)) &
+                        (db.Area.name.contains(search))).select(count_query,
+                                                                       cache=(cache.ram, None),cacheable=True).first()[count_query]
+
+            for area in areas:
+                area.id_area_type = area.id_area_type.name
+
+        except Exception as e:
+            print(e)
+
+        data = {
+            'length': count,
+            'areas': areas.as_list(),
+        }
+
+        return data
+
+    return locals()
+
 @request.restful()
 def save_area_api():
     """Save an area created by the user to the map"""

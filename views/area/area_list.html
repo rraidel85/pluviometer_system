@@ -25,6 +25,7 @@
             vars={} # <- Puedes pasar variables aqui
             ),
             cid="content-area",
+            value="Nuevo",
             data={'toggle':'modal', 'target':'#area_modal'})}}
         </div>
 
@@ -33,42 +34,12 @@
         <thead>
             <tr>
                 <!--<th>Id</th>-->
-                <th>Nombre</th>
+                <th onclick="updateTable()">Nombre</th>
                 <th>Tipo de área</th>
                 <th>Descripción</th>
                 <th>Opciones</th>
             </tr>
         </thead>
-        <tbody>
-            {{for area in areas:}}
-                <tr>
-                    <td>{{=area.name if area.name else '-'}}</td>
-                    <td>{{=area.id_area_type.name if area.id_area_type.name else '-'}}</td>
-                    <td>{{=area.description if area.description else '-'}}</td>
-                    <td>
-                        <a title="Ubicación" class="botones-iconos btn btn-info btn-rounded btn-icon" style="padding: 9px 14px !important;" href={{=URL('map','ubicacion_area',args=area.id)}}>
-                            <i class="fa fa-map-marker"></i>
-                        </a>
-                        <a title="Editar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="color:white; background-color: #05e20c;" onclick="editar()"}}>
-                            <i class="fa fa-pencil"></i>
-                        </a>
-                        <a title="Eliminar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #f84a4a;" href="#" onclick="eliminar('{{=area.id}}')">
-                            <i class="fa fa-trash"></i>
-                        </a>
-                        <div class="dropdown show" style="display: inline;">
-                          <a title="Información" class="botones-iconos btn btn-info btn-rounded btn-icon dropdown-toggle" style="background-color: #0062cc;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-info"></i>
-                          </a>
-                          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="font-size: .5rem;">
-                            <a class="dropdown-item" href={{=URL('pluviometer','pluv_by_area',args=area.id)}} >Pluviometros</a>
-                            <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area',args=area.id)}}>Índice de concentracion</a>
-                            <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area_by_month',args=area.id)}}>Índice de concentracion por mes</a>
-                          </div>
-                        </div>
-                    </td>
-                </tr>
-            {{pass}}
-        </tbody>
 </table>
 
 {{block body_end}}
@@ -80,8 +51,71 @@
 
 <script>
 {{block datatable}}
-    let my_table = data_table.DataTable();
 
+    const datatableOptions = {
+            //Adding server-side processing
+            serverSide: true,
+            processing: true,
+            ajax: function ( data, callback, settings ) {
+                axios.get('{{=URL('area', 'areas_api')}}',{
+                    params: {
+                        start: data.start,
+                        limit: data.length,
+                        search: data.search.value,
+                        order_column: data.columns[data.order[0].column].data,
+                        order_dir: data.order[0].dir
+                    }
+                }).then(res=>{
+                    callback({
+                       recordsTotal: res.data.length,
+                       recordsFiltered: res.data.length,
+                       data: res.data.areas
+                    });
+                })
+                .catch(error => {
+                    showMyNotification('error', "Hubo errores en el servidor");
+                })
+            },
+            columns: [
+                // { data: "id" },
+                { data: "name", defaultContent: "-"},
+                { data: "id_area_type", defaultContent: "-" },
+                { data: "description", defaultContent: "-"},
+                {
+                  data: null,
+                  "render": function ( data, type, row, meta ) {
+                      // In edit anchor i used encodeURIComponent function because passing the object by it self did not work
+                      return `
+                      <a title="Ubicación" class="botones-iconos btn btn-info btn-rounded btn-icon" style="padding: 9px 14px !important;" href={{=URL('map','ubicacion_area')}}/${row.id}>
+                            <i class="fa fa-map-marker"></i>
+                        </a>
+                        <a title="Editar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="color:white; background-color: #05e20c;" onclick="editar()"}}>
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        <a title="Eliminar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #f84a4a;" href="#" onclick="eliminar(${row.id})">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                        <div class="dropdown show" style="display: inline;">
+                          <a title="Información" class="botones-iconos btn btn-info btn-rounded btn-icon dropdown-toggle" style="background-color: #0062cc;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-info"></i>
+                          </a>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="font-size: .5rem;">
+                            <a class="dropdown-item" href={{=URL('pluviometer','pluv_by_area')}}/${row.id} >Pluviometros</a>
+                            <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area')}}/${row.id} >Índice de concentracion</a>
+                            <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area_by_month')}}/${row.id} >Índice de concentracion por mes</a>
+                          </div>
+                        </div>
+                      `;
+                    }
+                }
+            ],
+        };
+
+    let my_table = data_table.DataTable(datatableOptions);
+function updateTable(){
+        my_table.destroy(); //Destroiyng datatable for refetch
+            my_table = data_table.DataTable(datatableOptions); //Building datatable again with updated data
+    }
     function eliminar(id) {
         swal({
             title: "¿Está seguro de eliminar?",

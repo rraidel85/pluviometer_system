@@ -42,6 +42,6 @@
         // Code that reloads the datatable when the form is accepted
         {{if reload_table:}}
             my_table.destroy(); //Destroiyng datatable for refetch
-            my_table = data_table.DataTable(); //Building datatable again with updated data
+            my_table = data_table.DataTable(datatableOptions); //Building datatable again with updated data
         {{pass}}
 </script>
