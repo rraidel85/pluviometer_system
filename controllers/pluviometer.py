@@ -57,13 +57,13 @@ def pluvs():
         count = 0
         try:
             pluviometers = db((db.Pluviometer.id > 0) &
-                              (db.Pluviometer.name.contains(search))).select(
+                              (db.Pluviometer.name.contains(search)) | (db.Pluviometer.station_name.contains(search)) ).select(
                         orderby=f'{db.Pluviometer[order_column]} {order_dir}',
                         limitby=(start, start+limit)).as_list()
 
             count_query = db.Pluviometer.id.count()
             count = db((db.Pluviometer.id > 0) &
-                        (db.Pluviometer.name.contains(search))).select(count_query,
+                        (db.Pluviometer.name.contains(search) | (db.Pluviometer.station_name.contains(search)))).select(count_query,
                                                                        cache=(cache.ram, None),cacheable=True).first()[count_query]
 
         except Exception as e:
