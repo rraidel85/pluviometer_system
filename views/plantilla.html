@@ -217,6 +217,9 @@
         .dataTables_wrapper{
             padding-top: 22px !important;
         }
+        .generic-widget{
+            padding: 0 0.7rem;
+        }
     </style>
 </head>
 
@@ -387,6 +390,81 @@
 
 
     <script>
+
+        //--------------------------------------------------
+        // My helper code
+        //--------------------------------------------------
+
+        // Convert a anchor string into HTML DOM node
+        const anchorStringToHTML = str => {
+            const myDiv = document.createElement('div');
+            myDiv.innerHTML = str;
+            return myDiv.firstElementChild;
+        };
+
+        // Append data to anchor`s urls (Mostly used on edit buttons in datatables)
+        const appendDataToAnchorTag = (stringElement, url, data) => {
+            let anchorTag = anchorStringToHTML(stringElement);
+            anchorTag.setAttribute('href', url+`/${data}`);
+            return anchorTag.outerHTML // Returns element as string
+        }
+
+        // Show Toastr notification in my javascript code
+        const showMyNotification = (type, message) =>{
+            //Toastr Options
+            let toastr_options = {
+            timeOut: 3000,
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "500",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "tapToDismiss": true
+        }
+            let notification_type = {
+            success: 'Notificación',
+            error: 'Error',
+            warning: 'Advertencia',
+            info: 'Información',
+        };
+            // jQuery('#plugin-toastr-message').get(0).reload();
+            toastr[type](message, notification_type[type], toastr_options); //show notification
+
+        }
+
+        // Used in forms validation to show error messages
+        const showErrorDiv = (errorDiv, message) => {
+            errorDiv.text(message);
+            errorDiv.addClass('visible');
+            window.setTimeout(function () {
+                  errorDiv.removeClass('visible');
+            }, 5000)
+        }
+
+        // Show confirm modal on elimination
+        function confirmationDelete(text, callback) {
+        swal({
+            title: "¿Está seguro de eliminar?",
+            text: text,
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Eliminar",
+            cancelButtonText: "Cancelar",
+            closeOnConfirm: true,
+            closeOnCancel: true
+        }, callback
+        )
+    }
+
         // Con este código se establece la configuración por defecto para todos los datatables
     $.extend( $.fn.dataTable.defaults, {
           "responsive": true,
@@ -443,71 +521,6 @@
 
   $('.web2py_console a, .dataTables_filter, .dataTables_paginate').addClass('toright');
   $('.dataTables_filter').addClass('toright');
-
-    //--------------------------------------------------
-    // My helper code
-    //--------------------------------------------------
-
-        // Helper function to show loading spinner
-        const showLoadingSpinner = (show=true) => {
-
-        }
-
-        // Helper function to show Toastr notification in my javascript code
-        let showMyNotification = (type, message) =>{
-            //Toastr Options
-            let toastr_options = {
-            timeOut: 3000,
-            "closeButton": true,
-            "debug": false,
-            "newestOnTop": true,
-            "progressBar": true,
-            "positionClass": "toast-top-right",
-            "preventDuplicates": true,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "500",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut",
-            "tapToDismiss": true
-        }
-            let notification_type = {
-            success: 'Notificación',
-            error: 'Error',
-            warning: 'Advertencia',
-            info: 'Información',
-        };
-            // jQuery('#plugin-toastr-message').get(0).reload();
-            toastr[type](message, notification_type[type], toastr_options); //show notification
-
-        }
-
-        // Helper function used in forms validation to show error messages
-        let showErrorDiv = (errorDiv, message) => {
-            errorDiv.text(message);
-            errorDiv.addClass('visible');
-            window.setTimeout(function () {
-                  errorDiv.removeClass('visible');
-            }, 5000)
-        }
-
-        // Helper function to show confirm modal on elimination
-        function confirmationDelete(text, callback) {
-        swal({
-            title: "¿Está seguro de eliminar?",
-            text: text,
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Eliminar",
-            cancelButtonText: "Cancelar",
-            closeOnConfirm: true,
-            closeOnCancel: true
-        }, callback
-        )
-    }
     </script>
 
     {{block page_js}}{{end page_js}}

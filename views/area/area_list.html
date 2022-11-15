@@ -16,21 +16,18 @@
     </style>
 {{end}}
 
-        <h3 class="encabezado">Áreas</h3>
+        <h3 id="cabeza" class="encabezado">Áreas</h3>
         <div class="create-button-box">
-            {{=A('Nuevo',
+            {{=A(I(_class='fa fa-plus'), ' Nueva área',
             _class='btn btn-success text-white mb-2 create-button',
             _target='_blank',
-            _href=URL("area", "area_form",
-            vars={} # <- Puedes pasar variables aqui
-            ),
+            _href=URL("area", "area_form"),
             cid="content-area",
-            value="Nuevo",
             data={'toggle':'modal', 'target':'#area_modal'})}}
         </div>
 
 
-<table id="area_table" class="display" width="100%" cellspacing="0">
+<table id="area_table" class="display">
         <thead>
             <tr>
                 <!--<th>Id</th>-->
@@ -84,38 +81,43 @@
                 {
                   data: null,
                   "render": function ( data, type, row, meta ) {
-                      // In edit anchor i used encodeURIComponent function because passing the object by it self did not work
-                      return `
-                      <a title="Ubicación" class="botones-iconos btn btn-info btn-rounded btn-icon" style="padding: 9px 14px !important;" href={{=URL('map','ubicacion_area')}}/${row.id}>
-                            <i class="fa fa-map-marker"></i>
-                        </a>
-                        <a title="Editar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="color:white; background-color: #05e20c;" onclick="editar()"}}>
-                            <i class="fa fa-pencil"></i>
-                        </a>
-                        <a title="Eliminar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #f84a4a;" href="#" onclick="eliminar(${row.id})">
-                            <i class="fa fa-trash"></i>
-                        </a>
-                        <div class="dropdown show" style="display: inline;">
-                          <a title="Información" class="botones-iconos btn btn-info btn-rounded btn-icon dropdown-toggle" style="background-color: #0062cc;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-info"></i>
-                          </a>
-                          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="font-size: .5rem;">
-                            <a class="dropdown-item" href={{=URL('pluviometer','pluv_by_area')}}/${row.id} >Pluviometros</a>
-                            <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area')}}/${row.id} >Índice de concentracion</a>
-                            <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area_by_month')}}/${row.id} >Índice de concentracion por mes</a>
-                          </div>
-                        </div>
-                      `;
+
+                        let stringAnchorTag = '{{=A(I(_class='fa fa-pencil'), _title="Editar", _class='botones-iconos btn btn-info btn-rounded btn-icon',_target='_blank',
+                        _style="color:white; background-color: #05e20c;", _href=URL("area", "area_form"), cid="content-area", data={'toggle':'modal', 'target':'#area_modal'})}}'; //Getting the string representation of the edit button
+
+                        let editButton = appendDataToAnchorTag(stringAnchorTag, '{{=URL("area", "area_form")}}', row.id);
+
+                          return `
+                            <a title="Ubicación" class="botones-iconos btn btn-info btn-rounded btn-icon" style="padding: 9px 14px !important;" href={{=URL('map','ubicacion_area')}}/${row.id}>
+                                <i class="fa fa-map-marker"></i>
+                            </a>
+                            ${editButton}
+                            <a title="Eliminar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #f84a4a;" href="#" onclick="eliminar(${row.id})">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                            <div class="dropdown show" style="display: inline;">
+                              <a title="Información" class="botones-iconos btn btn-info btn-rounded btn-icon dropdown-toggle" style="background-color: #0062cc;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-info"></i>
+                              </a>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="font-size: .5rem;">
+                                <a class="dropdown-item" href={{=URL('pluviometer','pluv_by_area')}}/${row.id} >Pluviometros</a>
+                                <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area')}}/${row.id} >Índice de concentracion</a>
+                                <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area_by_month')}}/${row.id} >Índice de concentracion por mes</a>
+                              </div>
+                            </div>
+                          `;
+                        }
                     }
-                }
-            ],
+                ],
         };
 
     let my_table = data_table.DataTable(datatableOptions);
-function updateTable(){
+
+    function updateTable(){
         my_table.destroy(); //Destroiyng datatable for refetch
-            my_table = data_table.DataTable(datatableOptions); //Building datatable again with updated data
+         my_table = data_table.DataTable(datatableOptions); //Building datatable again with updated data
     }
+
     function eliminar(id) {
         swal({
             title: "¿Está seguro de eliminar?",

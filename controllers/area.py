@@ -26,10 +26,14 @@ def area_form():
     form = SQLFORM(db.Area)
     reload_table = False
 
+    if request.args(0):
+        area = db.Area(request.args(0, cast=int))
+        form = SQLFORM(db.Area, area)
+
     if form.process().accepted:
         # redirect(request.env.http_web2py_component_location, client_side=True)
         reload_table = True
-        response.js = "jQuery('#area_modal').modal('hide');showMyNotification('success', 'El área se ha creado correctamente');"
+        response.js = "jQuery('#area_modal').modal('hide');showMyNotification('success', 'Operación realizada exitosamente');"
     elif form.errors:
         plugin_toastr_message_config('error', T('Existen errores en el formulario'))
 
