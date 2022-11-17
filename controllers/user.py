@@ -78,6 +78,11 @@ def registro():
         # db.auth_membership.insert(
         #     user_id=user_id, group_id=form.vars.rol)
         auth.login_bare(form.vars.username,form.vars.password)
+
+        # By default new users will belong to the 'lector' group
+        group_id = auth.id_group('lector')
+        auth.add_membership(group_id, user_id)
+
         plugin_toastr_message_config('success', T(
             'Bienvenido al sistema: ' + auth.user.username))
         redirect(auth.settings.login_next)
