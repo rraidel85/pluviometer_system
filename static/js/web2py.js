@@ -609,7 +609,7 @@
              */
             if ((el.data('w2p_disable_with') == 'default') || (web2py.isUndefined(el.data(
                     'w2p_disable_with')))) {
-                el.data('w2p_disable_with', disable_with_message);
+                el.data('w2p_disable_with', el.data('w2p_enable_with')); // I change this line to fix 'Working...' bug
             }
 
             /* set to disabled state*/
