@@ -16,7 +16,7 @@
     </style>
 {{end}}
 
-        <h3 id="cabeza" class="encabezado">Áreas</h3>
+        <h3 class="encabezado">Áreas</h3>
         <div class="create-button-box">
             {{=A(I(_class='fa fa-plus'), ' Nueva área',
             _class='btn btn-success text-white mb-2 create-button',
@@ -136,60 +136,6 @@
                     location.href = url + "/" + id;
                 }
             });
-    }
-
-    //Events listeners to close modal
-    // $('#area_modal .xButton').off().on('click', () => {
-    //         $("#area_modal").modal('toggle');
-    // })
-
-    // Event listener on accept button modal
-    // $('#area_modal #acceptButton').off().on('click', () => {
-    //         let name = $('#area_modal #name').val().trim();
-    //
-    //         // Validations
-    //         if (name.length === 0) {
-    //             // if name input is empty
-    //             showMyNotification('error', "Existen errores en el formulario");
-    //             showErrorDiv($("#name-error-box"), "Este campo no puede estar vacío")
-    //         } else {
-    //             $("#area_modal").modal('toggle');
-    //
-    //             let description = $("#area_modal #description").val().trim();
-    //             let area_type_id = $("#area_modal #area_type_select option:selected").val();
-    //
-    //             $(".loading-spinner").show(); // Show loading
-    //
-    //             // request to edit_area_api
-    //             axios.post('{{=URL('area', 'edit_area_api')}}', {
-    //                 name: name,
-    //                 description: description,
-    //                 area_type_id: area_type_id,
-    //                 edit_type: 'information'
-    //             })
-    //             .then(response => {
-    //                 showMyNotification('success', "El área se ha creado correctamente");
-    //                 $(".loading-spinner").hide(); // Hide loading
-    //                 table.destroy(); //Destroiyng datatable for refetch
-    //                 table = data_table.DataTable(); //Building datatable again with updated data
-    //             })
-    //             .catch(error => {
-    //                 showMyNotification('error', "Hubo errores en el servidor");
-    //                 $(".loading-spinner").hide(); // Hide loading
-    //             });
-    //         }
-    //
-    // })
-
-    function editar(){
-        //Function to open edit pluviometer modal and prefill the form
-        $("#area_modal").modal({backdrop: "static"});// open modal
-        // console.log()
-        //Prepopulate form with pluv information
-        // $('#area_modal #name').val(row.name);
-        // $('#area_modal #station_name').val(row.station_name);
-        // $('#area_modal #msnm').val(row.msnm);
-        // $('#area_modal #id_pluviometer_type').val(row.id_pluviometer_type);
     }
 {{end datatable}}
 
