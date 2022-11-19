@@ -1,0 +1,41 @@
+{{=form.custom.begin}}
+<div class="modal-content" style="width: 400px">
+    <div class="modal-header">
+        {{ if not is_editing:}}
+            <h5 class="modal-title">Crear pluviómetro</h5>
+        {{ else: }}
+            <h5 class="modal-title">Editar pluviómetro</h5>
+        {{ pass }}
+        <button type="button" data-dismiss="modal" class="close xButton"><span>&times;</span></button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label>{{=form.custom.label.name}}:</label>
+            {{=form.custom.widget.name}}
+        </div>
+        <div class="form-group">
+            <label>{{=form.custom.label.station_name}}: (opcional)</label>
+            {{=form.custom.widget.station_name}}
+        </div>
+        <div class="form-group">
+            <label>{{=form.custom.label.msnm}}: (opcional)</label>
+            {{=form.custom.widget.msnm}}
+        </div>
+        <div class="form-group">
+            <label>{{=form.custom.label.lat}}: (opcional)</label>
+            {{=form.custom.widget.lat}}
+        </div>
+        <div class="form-group">
+            <label>{{=form.custom.label.lon}}: (opcional)</label>
+            {{=form.custom.widget.lon}}
+        </div>
+        <div class="form-group">
+             <label>{{=form.custom.label.id_pluviometer_type}}:</label>
+             {{=form.custom.widget.id_pluviometer_type}}
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" id="acceptButton" class="btn btn-success">Aceptar</button>
+    </div>
+</div>
+{{=form.custom.end}}

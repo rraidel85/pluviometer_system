@@ -24,17 +24,19 @@ def remove_area():
 
 def area_form():
     form = SQLFORM(db.Area)
+    is_editing = False
 
     if request.args(0):
         area = db.Area(request.args(0, cast=int))
         form = SQLFORM(db.Area, area)
+        is_editing = True
 
     if form.process().accepted:
         response.js = "jQuery('#area_modal').modal('hide');showMyNotification('success', 'Operación realizada exitosamente');updateTable();"
     elif form.errors:
         plugin_toastr_message_config('error', T('Existen errores en el formulario'))
 
-    return dict(form=form)
+    return dict(form=form, is_editing=is_editing)
 
 #-----------------------------------------------------
 # APIS

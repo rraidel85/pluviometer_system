@@ -19,7 +19,7 @@ db.PluviometerType.name.requires = [IS_NOT_EMPTY(error_message='Este campo es ob
 Pluviometer_format = '%(name)s'
 db.define_table("Pluviometer",
                 Field("id_pluviometer_type", db.PluviometerType, label='Tipo'),
-                Field("name", "string", notnull=True, default='NULL', label='Identificador'),
+                Field("name", "string", notnull=True, default=None, label='Identificador'),
                 Field("station_name", "string", label='Nombre de la estación'),
                 Field("msnm", "integer", label='Altura sobre el nivel del mar'),
                 Field("lat", "double", default=None, label='Latitud'),
@@ -170,7 +170,7 @@ db.define_table("PrecipitationConcentrationIndex_Monthly_By_Pluviometer",
 """ Relations between tables (remove fields you don't need from requires) """
 db.Registers.id_pluviometer.requires = IS_IN_DB(db, 'Pluviometer.id',
                                                 ' %(name)s ', zero=None)
-db.Pluviometer.id_pluviometer_type.requires = IS_IN_DB(db, 'PluviometerType.id', ' %(name)s ')
+db.Pluviometer.id_pluviometer_type.requires = IS_IN_DB(db, 'PluviometerType.id', ' %(name)s ', zero=None)
 db.MonthStatistics.id_year.requires = IS_IN_DB(db, 'YearStatistics.id',
                                                ' %(year_number)s ', zero=None)
 db.YearStatistics.id_pluviometer.requires = IS_IN_DB(db, 'Pluviometer.id',

@@ -1,12 +1,15 @@
 {{=form.custom.begin}}
     <div class="modal-content" style="width: 400px">
         <div class="modal-header">
-            <h4 class="modal-title">Crear área</h4>
-            <button type="button" data-dismiss="modal" class="close"><span>&times;</span></button>
+            {{ if not is_editing:}}
+            <h5 class="modal-title">Crear área</h5>
+            {{ else: }}
+                <h5 class="modal-title">Editar área</h5>
+            {{ pass }}
+            <button type="button" data-dismiss="modal" class="close xButton"><span>&times;</span></button>
         </div>
         <div class="modal-body">
            <div class="form-group">
-
                 <label>{{=form.custom.label.name}}:</label>
                 {{=form.custom.widget.name}}
             </div>

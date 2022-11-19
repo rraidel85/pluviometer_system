@@ -36,6 +36,21 @@ def pluvs_grid():
                                                             _href=URL('mapa',args=row.id))]))
     return locals()
 
+def pluv_form():
+    form = SQLFORM(db.Pluviometer)
+    is_editing = False
+
+    if request.args(0):
+        pluv = db.Pluviometer(request.args(0, cast=int))
+        form = SQLFORM(db.Pluviometer, pluv)
+        is_editing = True
+
+    if form.process().accepted:
+        response.js = "jQuery('#pluv_modal').modal('hide');showMyNotification('success', 'Operación realizada exitosamente');updateTable();"
+    elif form.errors:
+        plugin_toastr_message_config('error', T('Existen errores en el formulario'))
+
+    return dict(form=form, is_editing=is_editing)
 
 #-----------------------------------------------
 # APIS
