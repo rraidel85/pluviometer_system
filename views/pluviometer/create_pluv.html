@@ -50,55 +50,31 @@
                 font-family: sans-serif;
                 font-weight: 500;
             }
+            #myTab{
+                margin: 0;
+            }
+            #pluv-select{
+                padding: 0 0.7rem !important;
+            }
+            .no-link{
+                color: black;
+            }
         </style>
 {{end head}}
 
+<!--Link to open ajax modal programmatically in js code after events-->
+{{=A('',
+        _id="linkOpenModal",
+        _target='_blank',
+        _href=URL("pluviometer", "pluv_form_map"),
+        _style="display:none",
+        cid="content-pluv",
+        data={'toggle':'modal', 'target':'#pluv_modal'})}}
 
 {{block body_end}}
-        <div id="create_pluv_modal" class="modal fade">
-                        <div class="modal-dialog modal-sm">
-                            <div class="modal-content" style="width: 400px">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Crear pluviómetro</h5>
-                                    <button type="button" class="close xButton"><span>&times;</span></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="form-group">
-                                        <label for="name">Identificador:</label>
-                                        <input type="text" class="form-control" id="name">
-                                        <div class="error-box" id="name-error-box"></div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="station_name">Nombre de la estación:</label>
-                                        <input type="text" class="form-control" id="station_name">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="msnm">Altura sobre el nivel del mar:</label>
-                                        <input type="text" class="form-control" id="msnm">
-                                        <div class="error-box" id="msnm-error-box"></div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="lat">Latitud:</label>
-                                        <input type="number" class="form-control" id="lat">
-                                        <div class="error-box" id="lat-error-box"></div>
-
-                                        <label for="lon">Longitud:</label>
-                                        <input type="number" class="form-control" id="lon">
-                                        <div class="error-box" id="lon-error-box"></div>
-                                    </div>
-                                     <label for="pluv_type_select">Tipo de pluviómetro:</label>
-                                    <select class="form-control" id="pluv_type_select" style="padding-bottom: 10px;padding-top: 8px;">
-                                        {{for pluv_type in pluv_types:}}
-                                            <option value={{=pluv_type.id}}>{{=pluv_type.name}}</option>
-                                        {{pass}}
-                                    </select>
-                                </div>
-                                <div class="modal-footer">
-                                    <button id="closeButton" type="button" class="btn btn-danger">Cerrar</button>
-                                    <button id="acceptButton" type="button" class="btn btn-success">Aceptar</button>
-                                </div>
-                            </div>
-                        </div>
+<div id="pluv_modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-sm" id="content-pluv">
+        </div>
 </div>
 
 <div id="no_edit_info_modal" class="modal" tabindex="-1" role="dialog">
@@ -179,47 +155,32 @@
     map.on('pm:create', (e) => {
         map.pm.disableDraw(); //stop draw mode
         //Event listener trigered at the end of create pluv event
-        $("#create_pluv_modal").modal({backdrop: "static"});// open modal
-        let restorePosition = e.layer._latlng;//original position when the area is created
+        // $("#create_pluv_modal").modal({backdrop: "static"});// open modal
+        let restorePosition = e.layer._latlng;//original position when the pluv is created
+        $('#linkOpenModal')[0].click();
+        $('#selectAcceptButton').off().on('click', () => {
 
-        $('#create_pluv_modal #acceptButton').off().on('click', () => {
-                let name = $('#create_pluv_modal #name').val().trim();
-                let msnm = $('#create_pluv_modal #msnm').val().trim();
-                // Validations
-                if (name.length === 0) {
-                    // if name input is empty
-                    showMyNotification('error', "Existen errores en el formulario");
-                    showErrorDiv($("#name-error-box"), "Este campo no puede estar vacío")
-                }else if (isNaN(msnm)  || msnm.length === 0){
-                    showMyNotification('error', "Existen errores en el formulario");
-                    showErrorDiv($("#msnm-error-box"), "Este campo debe ser un número")
-                }
-                else {
-                    $("#create_pluv_modal").modal('toggle');
-                    let points = e.layer._latlng;
-                    let station_name = $('#create_pluv_modal #station_name').val().trim();
-                    let pluv_type_id = $("#create_pluv_modal #pluv_type_select option:selected").val()
+                $("#pluv_modal").modal('toggle');
+                let points = e.layer._latlng;
 
-                    $(".loading-spinner").show(); // Show loading
+                let pluv_id = $("#create_pluv_modal #pluv_type_select option:selected").val()
 
-                    // request to save_pluv_api
-                    axios.post('{{=URL('pluviometer', 'save_pluv_api')}}', {
-                        name: name,
-                        pluv_type_id: pluv_type_id,
-                        station_name: station_name,
-                        msnm: msnm,
-                        points: points,
-                    })
-                    .then(response => {
-                        e.layer['myDatabaseId'] = response.data.pluvId;
-                        showMyNotification('success', "El pluviómetro se ha creado correctamente");
-                        $(".loading-spinner").hide(); // Hide loading
-                    })
-                    .catch(error => {
-                        showMyNotification('error', "Hubo errores en el servidor");
-                        $(".loading-spinner").hide(); // Hide loading
-                    });
-                }
+                $(".loading-spinner").show(); // Show loading
+
+                // request to save_pluv_position_api
+                axios.post('{{=URL('pluviometer', 'save_pluv_position_api')}}', {
+                    pluv_id: pluv_id,
+                    points: points,
+                })
+                .then(response => {
+                    e.layer['myDatabaseId'] = response.data.pluvId;
+                    showMyNotification('success', "El pluviómetro se ha creado correctamente");
+                    $(".loading-spinner").hide(); // Hide loading
+                })
+                .catch(error => {
+                    showMyNotification('error', "Hubo errores en el servidor");
+                    $(".loading-spinner").hide(); // Hide loading
+                });
 
         })
 

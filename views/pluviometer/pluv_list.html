@@ -54,7 +54,6 @@
         serverSide: true,
         processing: true,
         ajax: function ( data, callback, settings ) {
-            // console.log(data)
             axios.get('{{=URL('pluviometer', 'pluvs')}}',{
                 params: {
                     start: data.start,
@@ -64,7 +63,6 @@
                     order_dir: data.order[0].dir
                 }
             }).then(res=>{
-                // console.log(res)
                 callback({
                    recordsTotal: res.data.length,
                    recordsFiltered: res.data.length,
@@ -84,7 +82,6 @@
             { data: "msnm", defaultContent: "-"},
             {
               data: null,
-              // defaultContent: "<a href={{=URL('default','mapa')}} class='btn btn-primary'>Mapa</a>",
               "render": function ( data, type, row, meta ) {
                   let stringAnchorTag = '{{=A(I(_class='fa fa-pencil'), _title="Editar", _class='botones-iconos btn btn-info btn-rounded btn-icon',_target='_blank',
                         _style="color:white; background-color: #05e20c;", _href=URL("pluviometer", "pluv_form"), cid="content-pluv", data={'toggle':'modal', 'target':'#pluv_modal'})}}'; //Getting the string representation of the edit button

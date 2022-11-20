@@ -1,10 +1,8 @@
 def pluv_list():
     """Returns pluviometer table"""
-    pluv_types = db(db.PluviometerType.id > 0).select()  # for the select box on edit pluviometer modal
     return locals()
 
 def create_pluv():
-    pluv_types = db(db.PluviometerType.id > 0).select() #for the select box
     areas = __getAreaNodes()
     return locals()
 
@@ -26,16 +24,6 @@ def pluv_by_area():
     area_pluvs = db(db.Pluviometer_Area.id_area==area.id).select(db.Pluviometer_Area.id_pluviometer)
     return locals()
 
-def pluvs_grid():
-    """Made with only purpose of checking if the pluviometers and registers table match with other controllers"""
-    form = SQLFORM.smartgrid(db.Pluviometer, linked_tables=['Registers'], csv=dict(Pluviometer=False, Registers=False),
-                            searchable=dict(Pluviometer=False,Registers=False),
-                             paginate=dict(Pluviometer=False),
-                             links=dict(
-                                 Pluviometer=[lambda row: A('Ubicación', _class='btn btn-primary',
-                                                            _href=URL('mapa',args=row.id))]))
-    return locals()
-
 def pluv_form():
     form = SQLFORM(db.Pluviometer)
     is_editing = False
@@ -51,6 +39,25 @@ def pluv_form():
         plugin_toastr_message_config('error', T('Existen errores en el formulario'))
 
     return dict(form=form, is_editing=is_editing)
+
+def pluv_form_map():
+    pluvs_without_position = db((db.Pluviometer.lat==None) | (db.Pluviometer.lon==None)).select()
+    options = []
+
+    for pluv in pluvs_without_position:
+        options.append(OPTION(pluv.name, _value=pluv.id))
+
+    select = SELECT(*options, _id='pluv-select',
+                    _name='pluv-select', _class='form-control')
+
+    create_form = SQLFORM(db.Pluviometer)
+
+    if create_form.process().accepted:
+        response.js = "jQuery('#pluv_modal').modal('hide');showMyNotification('success', 'Operación realizada exitosamente');"
+    elif create_form.errors:
+        plugin_toastr_message_config('error', T('Existen errores en el formulario'))
+
+    return dict(create_form=create_form, select=select)
 
 #-----------------------------------------------
 # APIS
@@ -94,25 +101,21 @@ def pluvs():
     return locals()
 
 @request.restful()
-def save_pluv_api():
-    """Save pluviometer created by the user to the map"""
+def save_pluv_position_api():
+    """Save pluviometer position created by the user on the map"""
     response.view = 'generic.json'
 
     def POST(*args, **kwargs):
-        name = request.vars.name
-        pluv_type_id = request.vars.pluv_type_id
-        station_name = request.vars.station_name
-        msnm = request.vars.msnm
+        pluv_id = request.vars.pluv_id
         points = request.vars.points
-        new_pluv = db.Pluviometer.insert(name=name,id_pluviometer_type=pluv_type_id,station_name=station_name,
-                                  msnm=msnm,lat=points['lat'],lon=points['lng'])
+        db(db.Pluviometer.id == pluv_id).update(lat=points['lat'], lon=points['lng'])
 
         db.commit()
 
-        cache.ram('areas', None) #emptying map cache so that the new areas are shown
+        cache.ram('areas', None) #emptying map cache so that the new pluvs are shown
         __getAreaNodes() #calling map cache again
 
-        return dict(pluvId=new_pluv)
+        return dict(pluvId=pluv_id)
 
     return locals()
 

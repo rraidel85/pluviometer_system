@@ -1,0 +1,50 @@
+<div class="modal-content" style="width: 400px">
+    <div class="modal-header">
+        <h5 class="modal-title">Crear pluviómetro</h5>
+        <button type="button" data-dismiss="modal" class="close xButton"><span>&times;</span></button>
+    </div>
+    <div class="modal-body">
+        <ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link no-link active" id="create-tab" data-toggle="tab" href="#create-pluv" role="tab" aria-controls="profile" aria-selected="false">Crear</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link no-link" id="select-tab" data-toggle="tab" href="#select-pluv" role="tab" aria-controls="home" aria-selected="true">Seleccionar</a>
+            </li>
+        </ul>
+        <div class="tab-content mt-3" id="myTabContent">
+            <div class="tab-pane fade show active" id="create-pluv" role="tabpanel" aria-labelledby="create-tab">
+                {{=create_form.custom.begin}}
+                    <div class="form-group">
+                        <label>{{=create_form.custom.label.name}}:</label>
+                        {{=create_form.custom.widget.name}}
+                    </div>
+                    <div class="form-group">
+                        <label>{{=create_form.custom.label.station_name}}: (opcional)</label>
+                        {{=create_form.custom.widget.station_name}}
+                    </div>
+                    <div class="form-group">
+                        <label>{{=create_form.custom.label.msnm}}: (opcional)</label>
+                        {{=create_form.custom.widget.msnm}}
+                    </div>
+                    <div class="form-group">
+                         <label>{{=create_form.custom.label.id_pluviometer_type}}:</label>
+                         {{=create_form.custom.widget.id_pluviometer_type}}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" id="acceptButton" class="btn btn-success">Aceptar</button>
+                    </div>
+                {{=create_form.custom.end}}
+            </div>
+            <div class="tab-pane fade" id="select-pluv" role="tabpanel" aria-labelledby="select-tab">
+                <div class="form-group">
+                    <label for="pluv-select">Seleccione el pluviómetro:</label>
+                        {{=select}}
+                    </div>
+                    <div class="modal-footer">
+                            <button type="submit" id="selectAcceptButton" class="btn btn-success">Aceptar</button>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
