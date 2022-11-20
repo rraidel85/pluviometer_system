@@ -54,7 +54,7 @@ def pluv_form_map():
 
     if create_form.validate():
         pluv_id = db.Pluviometer.insert(**create_form.vars)
-        response.js = "jQuery('#pluv_modal').modal('hide');savePluviometerPosition(%d);" % pluv_id
+        response.js = "jQuery('#pluv_modal').modal('hide');outerSavePluviometerPosition(%d);" % pluv_id
     elif create_form.errors:
         plugin_toastr_message_config('error', T('Existen errores en el formulario'))
 
@@ -122,28 +122,20 @@ def save_pluv_position_api():
 
 
 @request.restful()
-def edit_pluv_api():
+def edit_pluv_position_api():
     """Save pluviometer edited by the user to the database"""
     response.view = 'generic.json'
 
     def POST(*args, **kwargs):
-        edit_type = request.vars.edit_type # Type of edit: if is 'position' edit the pluv map position and if is 'information' edit pluv info
         pluv_id = request.vars.pluv_id
+        points = request.vars.points
 
-        if edit_type == 'position':
-            points = request.vars.points
-            db(db.Pluviometer.id == pluv_id).update(lat=points['lat'], lon=points['lng']) # Edit pluviometer lat and lon in db
-            cache.ram('areas', None)  # emptying map cache so that the new areas are shown
-            __getAreaNodes()  # calling map cache again
-        elif edit_type == 'information':
-            name = request.vars.name
-            pluv_type_id = request.vars.pluv_type_id
-            station_name = request.vars.station_name
-            msnm = request.vars.msnm
-            db(db.Pluviometer.id == pluv_id).update(name=name, id_pluviometer_type=pluv_type_id,
-                                                    station_name=station_name, msnm=msnm)
+        db(db.Pluviometer.id == pluv_id).update(lat=points['lat'], lon=points['lng']) # Edit pluviometer lat and lon in db
 
         db.commit()
+
+        cache.ram('areas', None)  # emptying map cache so that the new areas are shown
+        __getAreaNodes()  # calling map cache again
 
         return dict()
 

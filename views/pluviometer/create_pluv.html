@@ -104,6 +104,7 @@
     });
 
     let currentMarkerPosition = {}; // Global variable to save current marker position
+    let outerSavePluviometerPosition = null; // Global variable to save savePluviometerPosition function (wich is has to be declared inside the map event handler)
 
     //Event handler for creating a pluviometer
     map.on('pm:create', (e) => {
@@ -144,92 +145,79 @@
 
         //Event handler for editing a pluviometer marker
         e.layer.on('pm:edit', function(layer_event){
-            if (e.layer.myDatabaseId){
-                // Edit the layer only when is saved in db
+
                 let points = e.layer._latlng;
                 restorePosition = points; //saved in outer variable the new points of the area
 
                 $(".loading-spinner").show(); // Show loading
 
                 // request to edit_pluv_api API
-                axios.post('{{=URL('pluviometer', 'edit_pluv_api')}}', {
+                axios.post('{{=URL('pluviometer', 'edit_pluv_position_api')}}', {
                         pluv_id: e.layer.myDatabaseId,
                         points: points,
                         edit_type: "position",
                     })
                     .then(response => {
-                        showMyNotification('success', "El pluviómetro se ha editado correctamente");
+                        showMyNotification('success', "Operación realizada exitosamente");
                         $(".loading-spinner").hide(); // Hide loading
                     })
                     .catch(error => {
                         showMyNotification('error', "Hubo errores en el servidor");
                         $(".loading-spinner").hide(); // Hide loading
                     });
-            }else{
-                //This fires when the area is not saved in db yet
-                e.layer.setLatLng(restorePosition); //Restore layer old position
-                e.layer.pm.disable(); //I wrote this because the docs recommend it
-                $('#no_edit_info_modal').modal(); //open no edit warning modal
-            }
             })
-              .on('pm:remove', () => confirmationDelete("El pluviómetro será eliminado completamente del sistema",
+              .on('pm:remove', () => confirmationDelete("Operación realizada exitosamente",
                   function (isConfirm) {//Event handler for removing an area layer
                     if(isConfirm){
-                          if (e.layer.myDatabaseId){
-                            // Remove the layer only when is saved in db
 
-                          $(".loading-spinner").show(); // Show loading
+                      $(".loading-spinner").show(); // Show loading
 
-                            // request to remove_area API
-                            axios.post('{{=URL('pluviometer', 'remove_pluv_api')}}', {
-                                    pluv_id: e.layer.myDatabaseId,
-                                })
-                                .then(response => {
-                                    showMyNotification('success', "El pluviómetro se ha eliminado correctamente");
-                                    $(".loading-spinner").hide(); // Hide loading
-                                })
-                                .catch(error => {
-                                    showMyNotification('error', "Hubo errores en el servidor");
-                                    $(".loading-spinner").hide(); // Hide loading
-                                });
-                          }else{
-                            //This fires when the area is not saved in db yet
-                            e.layer.addTo(map); //Adding layer to map again after incorrect elimination
-                            e.layer.setLatLng(restorePosition); //Restore layer old position
-                            $('#no_edit_info_modal').modal(); //open no edit warning modal
-                        }
+                    // request to remove_area API
+                    axios.post('{{=URL('pluviometer', 'remove_pluv_api')}}', {
+                            pluv_id: e.layer.myDatabaseId,
+                        })
+                        .then(response => {
+                            showMyNotification('success', "Operación realizada exitosamente");
+                            $(".loading-spinner").hide(); // Hide loading
+                        })
+                        .catch(error => {
+                            showMyNotification('error', "Hubo errores en el servidor");
+                            $(".loading-spinner").hide(); // Hide loading
+                        });
                     } else{
                         e.layer.addTo(map); //Adding layer to map again after incorrect elimination
                         e.layer.setLatLng(restorePosition); //Restore layer old position
                       }
           }))
 
+        outerSavePluviometerPosition = function savePluviometerPosition(pluv_id){
+                $("#pluv_modal").modal('toggle');
+                let points = currentMarkerPosition;
+
+                $(".loading-spinner").show(); // Show loading
+
+                // request to save_pluv_position_api
+                axios.post('{{=URL('pluviometer', 'save_pluv_position_api')}}', {
+                    pluv_id: pluv_id,
+                    points: points,
+                })
+                .then(response => {
+                    e.layer['myDatabaseId'] = pluv_id;
+                    showMyNotification('success', "Operación realizada exitosamente");
+                    $(".loading-spinner").hide(); // Hide loading
+                })
+                .catch(error => {
+                    showMyNotification('error', "Hubo errores en el servidor");
+                    $(".loading-spinner").hide(); // Hide loading
+                });
+            }
 
         $('#pluv_modal .xButton').off().on('click', () => {
                 e.layer.remove();
         })
     });
 
-    const savePluviometerPosition = (pluv_id) => {
-        $("#pluv_modal").modal('toggle');
-        let points = currentMarkerPosition;
 
-        $(".loading-spinner").show(); // Show loading
-
-        // request to save_pluv_position_api
-        axios.post('{{=URL('pluviometer', 'save_pluv_position_api')}}', {
-            pluv_id: pluv_id,
-            points: points,
-        })
-        .then(response => {
-            showMyNotification('success', "El pluviómetro se ha creado correctamente");
-            $(".loading-spinner").hide(); // Hide loading
-        })
-        .catch(error => {
-            showMyNotification('error', "Hubo errores en el servidor");
-            $(".loading-spinner").hide(); // Hide loading
-        });
-    }
 
     </script>
 {{end page_js}}
