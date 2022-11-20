@@ -62,18 +62,10 @@
         </style>
 {{end head}}
 
-<!--Link to open ajax modal programmatically in js code after events-->
-{{=A('',
-        _id="linkOpenModal",
-        _target='_blank',
-        _href=URL("pluviometer", "pluv_form_map"),
-        _style="display:none",
-        cid="content-pluv",
-        data={'toggle':'modal', 'target':'#pluv_modal'})}}
-
 {{block body_end}}
 <div id="pluv_modal" class="modal fade" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-sm" id="content-pluv">
+            {{=LOAD('pluviometer', 'pluv_form_map.load', ajax=True, target='content-pluv')}}
         </div>
 </div>
 
@@ -111,76 +103,42 @@
         editMode: false,
     });
 
-    // let overlayMaps = {};
-    // let layerGroup;
-    // let area_layer;
-    //
-        {{for area_type in areas:}}//Loop for all the area types
-    //     //areas has the form of {'area_type':[{'area':[id_area, [area_borders]}, areaType_color, areaType_description],}
-    //         layerGroup = []
-            {{for area in areas[area_type][0]:}}
-    //                 area_layer = L.polygon({{=areas[area_type][0][area][1]}},
-    //                         {color: '{{=areas[area_type][1]}}'}).on('mouseover', e => {
-    //                        let selected_area = e.target;
-    //                        axios.get('{{=URL('map', 'area_mouseover')}}',{
-    //                         params: {
-    //                             id: {{=areas[area_type][0][area][0]}},// Area_id
-    //                         }})
-    //                         .then(response => {
-    //                             selected_area.bindPopup(`<b>Nombre</b>: ${response.data.area.name} ${response.data.area.sub_name ? ('('+response.data.area.sub_name+')') : ''}<br>
-    //                                                        <b>Descripción</b>: ${response.data.area.description ? response.data.area.description : ''}<br>
-    //                                                        <b>Tipo de área</b>: ${response.data.area_type_name }`);
-    //                             selected_area.openPopup();
-    //                         })
-    //                         .catch(error => {
-    //                             console.log(error)
-    //                         })
-    //                 })
-    //
-    //
-    //                 area_layer.setStyle({pmIgnore: false});
-    //                 layerGroup.push(area_layer);
-            {{pass}}
-    //         overlayMaps["{{=area_type}}"] = L.layerGroup(layerGroup);
-        {{pass}}
-
-    //     overlayMaps["Municipios"].addTo(map);
-    //     overlayMaps["Cuencas"].addTo(map);
-    //     overlayMaps["Provincias"].addTo(map);
-    //     overlayMaps["Sector Hidrogeológico"].addTo(map);
-    //     let control = L.control.layers(null, overlayMaps).addTo(map);
-
+    let currentMarkerPosition = {}; // Global variable to save current marker position
 
     //Event handler for creating a pluviometer
     map.on('pm:create', (e) => {
         map.pm.disableDraw(); //stop draw mode
         //Event listener trigered at the end of create pluv event
-        // $("#create_pluv_modal").modal({backdrop: "static"});// open modal
+
+
+        $("#pluv_modal").modal({backdrop: "static"});// open modal
         let restorePosition = e.layer._latlng;//original position when the pluv is created
-        $('#linkOpenModal')[0].click();
+        currentMarkerPosition = e.layer._latlng;
+        // $('#linkOpenModal')[0].click();
+
         $('#selectAcceptButton').off().on('click', () => {
+            // Save pluviometer position of an already created pluviometer in database
+            $("#pluv_modal").modal('toggle');
+            let points = e.layer._latlng;
 
-                $("#pluv_modal").modal('toggle');
-                let points = e.layer._latlng;
+            let pluv_id = $("#pluv_modal #pluv-select option:selected").val()
 
-                let pluv_id = $("#create_pluv_modal #pluv_type_select option:selected").val()
+            $(".loading-spinner").show(); // Show loading
 
-                $(".loading-spinner").show(); // Show loading
-
-                // request to save_pluv_position_api
-                axios.post('{{=URL('pluviometer', 'save_pluv_position_api')}}', {
-                    pluv_id: pluv_id,
-                    points: points,
-                })
-                .then(response => {
-                    e.layer['myDatabaseId'] = response.data.pluvId;
-                    showMyNotification('success', "El pluviómetro se ha creado correctamente");
-                    $(".loading-spinner").hide(); // Hide loading
-                })
-                .catch(error => {
-                    showMyNotification('error', "Hubo errores en el servidor");
-                    $(".loading-spinner").hide(); // Hide loading
-                });
+            // request to save_pluv_position_api
+            axios.post('{{=URL('pluviometer', 'save_pluv_position_api')}}', {
+                pluv_id: pluv_id,
+                points: points,
+            })
+            .then(response => {
+                e.layer['myDatabaseId'] = response.data.pluvId;
+                showMyNotification('success', "El pluviómetro se ha creado correctamente");
+                $(".loading-spinner").hide(); // Hide loading
+            })
+            .catch(error => {
+                showMyNotification('error', "Hubo errores en el servidor");
+                $(".loading-spinner").hide(); // Hide loading
+            });
 
         })
 
@@ -247,18 +205,31 @@
           }))
 
 
-        $('#create_pluv_modal #closeButton').off().on('click', () => {
-                e.layer.remove()
-                $("#create_pluv_modal").modal('toggle');
-        })
-
-        $('#create_pluv_modal .xButton').off().on('click', () => {
+        $('#pluv_modal .xButton').off().on('click', () => {
                 e.layer.remove();
-                $("#create_pluv_modal").modal('toggle');
         })
-
-
     });
+
+    const savePluviometerPosition = (pluv_id) => {
+        $("#pluv_modal").modal('toggle');
+        let points = currentMarkerPosition;
+
+        $(".loading-spinner").show(); // Show loading
+
+        // request to save_pluv_position_api
+        axios.post('{{=URL('pluviometer', 'save_pluv_position_api')}}', {
+            pluv_id: pluv_id,
+            points: points,
+        })
+        .then(response => {
+            showMyNotification('success', "El pluviómetro se ha creado correctamente");
+            $(".loading-spinner").hide(); // Hide loading
+        })
+        .catch(error => {
+            showMyNotification('error', "Hubo errores en el servidor");
+            $(".loading-spinner").hide(); // Hide loading
+        });
+    }
 
     </script>
 {{end page_js}}

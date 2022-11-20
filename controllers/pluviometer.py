@@ -52,8 +52,9 @@ def pluv_form_map():
 
     create_form = SQLFORM(db.Pluviometer)
 
-    if create_form.process().accepted:
-        response.js = "jQuery('#pluv_modal').modal('hide');showMyNotification('success', 'Operación realizada exitosamente');"
+    if create_form.validate():
+        pluv_id = db.Pluviometer.insert(**create_form.vars)
+        response.js = "jQuery('#pluv_modal').modal('hide');savePluviometerPosition(%d);" % pluv_id
     elif create_form.errors:
         plugin_toastr_message_config('error', T('Existen errores en el formulario'))
 
