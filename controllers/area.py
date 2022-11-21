@@ -5,7 +5,6 @@ def area_list():
     return locals()
 
 def create_area():
-    area_types = db(db.AreaType.id > 0).select(db.AreaType.id, db.AreaType.name)
     return locals()
 
 def edit_area():
@@ -38,6 +37,26 @@ def area_form():
 
     return dict(form=form, is_editing=is_editing)
 
+def area_form_map():
+    areas_without_position = db(db.AreaNode.id_area == None).select(db.Area.id, db.Area.name,
+                                                left=db.AreaNode.on(db.Area.id == db.AreaNode.id_area))
+    options = []
+
+    for area in areas_without_position:
+        options.append(OPTION(area.name, _value=area.id))
+
+    select = SELECT(*options, _id='area-select',
+                    _name='area-select', _class='form-control')
+
+    form = SQLFORM(db.Area)
+
+    if form.validate():
+        area_id = db.Area.insert(**form.vars)
+        response.js = "jQuery('#area_modal').modal('hide');outerSaveAreaPosition(%d);" % area_id
+    elif form.errors:
+        plugin_toastr_message_config('error', T('Existen errores en el formulario'))
+
+    return dict(form=form, select=select)
 #-----------------------------------------------------
 # APIS
 #-----------------------------------------------------
@@ -84,49 +103,40 @@ def areas_api():
     return locals()
 
 @request.restful()
-def save_area_api():
+def save_area_position_api():
     """Save an area created by the user to the map"""
     response.view = 'generic.json'
 
     def POST(*args, **kwargs):
-        name = request.vars.name
-        description = request.vars.description
-        area_type_id = request.vars.area_type_id
+        area_id = request.vars.area_id
         points = request.vars.points # Has the form of [[{}, {}]]
 
-        new_area = db.Area.insert(name=name,id_area_type=area_type_id,description=description)
-
         for step,point in enumerate(points[0]):
-            db.AreaNode.insert(id_area=new_area,lat=point['lat'],lon=point['lng'],step=step)
+            db.AreaNode.insert(id_area=area_id,lat=point['lat'],lon=point['lng'],step=step)
 
         db.commit()
 
         cache.ram('areas', None) #emptying map cache so that the new areas are shown
         __getAreaNodes() #calling map cache again
 
-        return dict(areaId=new_area)
+        return dict(areaId=area_id)
 
     return locals()
 
 @request.restful()
-def edit_area_api():
+def edit_area_position_api():
     """Save area edited by the user to the database"""
     response.view = 'generic.json'
 
     def POST(*args, **kwargs):
-        edit_type = request.vars.edit_type  # Type of edit: if is 'position' edit the area map position and if is 'information' edit area info
         area_id = request.vars.area_id
 
-        if edit_type == 'position':
-            points = request.vars.points # Has the form of [[{}, {}]]
-            for step,point in enumerate(points[0]):
-                db((db.AreaNode.id_area==area_id) & (db.AreaNode.step==step)).update(lat=point['lat'], lon=point['lng'])
+        points = request.vars.points # Has the form of [[{}, {}]]
+        for step,point in enumerate(points[0]):
+            db((db.AreaNode.id_area==area_id) & (db.AreaNode.step==step)).update(lat=point['lat'], lon=point['lng'])
 
-            cache.ram('areas', None)  # emptying map cache so that the new areas are shown
-            __getAreaNodes()  # calling map cache again
-
-        elif edit_type == 'information':
-            db(db.Area.id == area_id).update(**request.vars)
+        cache.ram('areas', None)  # emptying map cache so that the new areas are shown
+        __getAreaNodes()  # calling map cache again
 
         db.commit()
 

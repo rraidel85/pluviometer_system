@@ -108,7 +108,7 @@
                     }
                 })
                     .then(response => {
-                        marker.bindPopup(`<b>Nombre</b>:{{=pluv.station_name}} ({{=pluv.name}})<br>
+                        marker.bindPopup(`<b>Nombre</b>:{{=pluv.station_name if pluv.station_name else 'Sin estación'}} ({{=pluv.name}})<br>
                                         <b>Areas</b>: ${response.data.areas.map(area => { //response.data.areas es [areaObject, areaObject,] o [' - ']
                                             //Comprueba si area es un string y si lo es lo devuelve, sino comprueba si el area tiene un sub_name sino envia el area.name
                                             return typeof area === "string" ? area : area.sub_name ? area.sub_name : area.name

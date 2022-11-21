@@ -49,15 +49,15 @@ def pluv_form_map():
     select = SELECT(*options, _id='pluv-select',
                     _name='pluv-select', _class='form-control')
 
-    create_form = SQLFORM(db.Pluviometer)
+    form = SQLFORM(db.Pluviometer)
 
-    if create_form.validate():
-        pluv_id = db.Pluviometer.insert(**create_form.vars)
+    if form.validate():
+        pluv_id = db.Pluviometer.insert(**form.vars)
         response.js = "jQuery('#pluv_modal').modal('hide');outerSavePluviometerPosition(%d);" % pluv_id
-    elif create_form.errors:
+    elif form.errors:
         plugin_toastr_message_config('error', T('Existen errores en el formulario'))
 
-    return dict(create_form=create_form, select=select)
+    return dict(form=form, select=select)
 
 #-----------------------------------------------
 # APIS
@@ -116,27 +116,6 @@ def save_pluv_position_api():
         __getAreaNodes() #calling map cache again
 
         return dict(pluvId=pluv_id)
-
-    return locals()
-
-
-@request.restful()
-def edit_pluv_position_api():
-    """Save pluviometer edited by the user to the database"""
-    response.view = 'generic.json'
-
-    def POST(*args, **kwargs):
-        pluv_id = request.vars.pluv_id
-        points = request.vars.points
-
-        db(db.Pluviometer.id == pluv_id).update(lat=points['lat'], lon=points['lng']) # Edit pluviometer lat and lon in db
-
-        db.commit()
-
-        cache.ram('areas', None)  # emptying map cache so that the new areas are shown
-        __getAreaNodes()  # calling map cache again
-
-        return dict()
 
     return locals()
 

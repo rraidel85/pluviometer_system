@@ -1,0 +1,58 @@
+<div class="modal-content" style="width: 400px">
+    <div class="modal-header">
+        <h5 class="modal-title">Crear área</h5>
+        <button type="button" data-dismiss="modal" class="close xButton"><span>&times;</span></button>
+    </div>
+    <div class="modal-body">
+        <ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link no-link active" id="create-tab" data-toggle="tab" href="#create-area" role="tab" aria-controls="profile" aria-selected="false">Crear</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link no-link" id="select-tab" data-toggle="tab" href="#select-area" role="tab" aria-controls="home" aria-selected="true">Seleccionar</a>
+            </li>
+        </ul>
+        <div class="tab-content mt-3" id="myTabContent">
+            <div class="tab-pane fade show active" id="create-area" role="tabpanel" aria-labelledby="create-tab">
+                {{=form.custom.begin}}
+                    <div class="form-group">
+                    <label>{{=form.custom.label.name}}:</label>
+                    {{=form.custom.widget.name}}
+                    </div>
+                    <div class="form-group">
+                        <label>{{=form.custom.label.id_area_type}}:</label>
+                        {{=form.custom.widget.id_area_type}}
+                    </div>
+                    <div class="form-group">
+                        <label>{{=form.custom.label.description}} (opcional):</label>
+                        {{=form.custom.widget.description}}
+                    </div>
+                    <div class="form-group">
+                        <label>{{=form.custom.label.sub_name}} (opcional):</label>
+                        {{=form.custom.widget.sub_name}}
+                    </div>
+                    <div class="form-group">
+                        <label>{{=form.custom.label.centroid_lat}} (opcional):</label>
+                        {{=form.custom.widget.centroid_lat}}
+                    </div>
+                    <div class="form-group">
+                        <label>{{=form.custom.label.centroid_lon}} (opcional):</label>
+                        {{=form.custom.widget.centroid_lon}}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" id="acceptButton" class="btn btn-success">Aceptar</button>
+                    </div>
+                {{=form.custom.end}}
+            </div>
+            <div class="tab-pane fade" id="select-area" role="tabpanel" aria-labelledby="select-tab">
+                <div class="form-group">
+                    <label for="pluv-select">Seleccione el área sin coordenadas:</label>
+                        {{=select}}
+                    </div>
+                    <div class="modal-footer">
+                            <button type="submit" id="selectAcceptButton" class="btn btn-success">Aceptar</button>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
