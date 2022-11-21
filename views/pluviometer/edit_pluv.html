@@ -84,14 +84,7 @@
             layerGroup = []
             {{for area in areas[area_type][0]:}}
                     layerGroup.push(L.polygon({{=areas[area_type][0][area][1]}},
-                            {color: '{{=areas[area_type][1]}}'}).on('click', e => {
-                          let pluv_options = `
-                            <a class="btn btn-flat btn-primary btn-lg mb-3" style="color:white;" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area',args=areas[area_type][0][area][0])}}>Calcular indice del area</a><br>
-                          `
-                          $(".modal-body").append(pluv_options);
-                          $("#map_options_modal").modal();
-                          }
-                    ))
+                            {color: '{{=areas[area_type][1]}}'}))
             {{pass}}
             overlayMaps["{{=area_type}}"] = L.layerGroup(layerGroup);
         {{pass}}
@@ -131,51 +124,50 @@
                         alert(error)
                     })
             }).on('mouseout', e =>{e.target.closePopup();})
-                .on('pm:edit', function(e){
-                    let points = e.layer._latlng;
+            .on('pm:edit', function(e){
+                let points = e.layer._latlng;
+
+                $(".loading-spinner").show(); // Show loading
+
+                // request to edit_pluv_api API
+                axios.post('{{=URL('pluviometer', 'edit_pluv_position_api')}}', {
+                        pluv_id: {{=pluv.id}},
+                        points: points
+                    })
+                    .then(response => {
+                        showMyNotification('success', "Operación realizada exitosamente");
+                        $(".loading-spinner").hide(); // Hide loading
+                    })
+                    .catch(error => {
+                        showMyNotification('error', "Hubo errores en el servidor");
+                        $(".loading-spinner").hide(); // Hide loading
+                    });
+        })
+        .on('pm:remove', (e) => confirmationDelete("El pluviómetro será eliminado completamente del sistema",
+              function (isConfirm) {//Event handler for removing an area layer
+                let restorePosition = e.layer._latlng;
+                if(isConfirm){
 
                     $(".loading-spinner").show(); // Show loading
 
-                    // request to edit_pluv_api API
-                    axios.post('{{=URL('pluviometer', 'edit_pluv_api')}}', {
+                    // request to remove_area API
+                    axios.post('{{=URL('pluviometer', 'remove_pluv_api')}}', {
                             pluv_id: {{=pluv.id}},
-                            points: points,
-                            edit_type: "position",
                         })
                         .then(response => {
-                            showMyNotification('success', "El pluviómetro se ha editado correctamente");
+                            showMyNotification('success', "Operación realizada exitosamente");
                             $(".loading-spinner").hide(); // Hide loading
                         })
                         .catch(error => {
                             showMyNotification('error', "Hubo errores en el servidor");
                             $(".loading-spinner").hide(); // Hide loading
                         });
-            })
-            .on('pm:remove', (e) => confirmationDelete("El pluviómetro será eliminado completamente del sistema",
-                  function (isConfirm) {//Event handler for removing an area layer
-                    let restorePosition = e.layer._latlng;
-                    if(isConfirm){
-
-                        $(".loading-spinner").show(); // Show loading
-
-                        // request to remove_area API
-                        axios.post('{{=URL('pluviometer', 'remove_pluv_api')}}', {
-                                pluv_id: {{=pluv.id}},
-                            })
-                            .then(response => {
-                                showMyNotification('success', "El pluviómetro se ha eliminado correctamente");
-                                $(".loading-spinner").hide(); // Hide loading
-                            })
-                            .catch(error => {
-                                showMyNotification('error', "Hubo errores en el servidor");
-                                $(".loading-spinner").hide(); // Hide loading
-                            });
-                      }
-                     else{
-                        e.layer.addTo(mymap); //Adding layer to map again after incorrect elimination
-                        e.layer.setLatLng(restorePosition); //Restore layer old position
-                      }
-          }))
+                  }
+                 else{
+                    e.layer.addTo(mymap); //Adding layer to map again after incorrect elimination
+                    e.layer.setLatLng(restorePosition); //Restore layer old position
+                  }
+      }))
         {{pass}}
 
 

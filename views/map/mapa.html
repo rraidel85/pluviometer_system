@@ -37,7 +37,6 @@
     <script type="text/javascript" src="{{=URL('static', 'leaflet/leaflet.js')}}"></script>
     <script>
 
-
     let mymap = L.map('map_id').setView(
            [ 21.941415395551573,-78.66101966354675], 10);
     L.tileLayer('{{=URL('static','CubaOSM/{z}/{x}/{y}.png',url_encode=False)}}',{ maxZoom: 12 }).addTo(mymap);
@@ -143,71 +142,12 @@
               $(".modal-body").append(pluv_options);
               $("#map_options_modal").modal();
           })
-        /*.on('dragend', e => {
-            let location = e.target.getLatLng()
-            axios.post('{{=URL('map', 'marker_dragg')}}',{
-                id: {{=pluv.id}},
-                lat: location.lat,
-                lon: location.lng
-            }).then(e => {
-                console.log('Updated successfully');
-            })
-        })*/
         {{pass}}
 
-        // Para limpiar el modal luego de que se cierre
+        // To clean modal after closing
         $(document).on('hide.bs.modal','#map_options_modal',() => {
             $(".modal-body").empty();
         });
 
-
-
-        //-------------------------------------------------
-        // Polygon representation on map
-        //-------------------------------------------------
-        // zoom the map to the polygon
-        // mymap.fitBounds(polyline.getBounds());
-        //-------------------------------------------------
-        // Layer Groups and Layer Controls
-        //-------------------------------------------------
-        // var baseMaps = {
-        //     "Grayscale": grayscale,
-        //     "Streets": streets
-        // };
-        // Layer Group
-        // let municipios = L.layerGroup([polyline_baragua, polyline_ciego,
-        // polyline_pina,polyline_florencia,polyline_majagua,polyline_violeta,
-        // polyline_venezuela,polyline_bolivia,polyline_moron
-        // ]).addTo(mymap);
-        //
-        // let baseMaps = {
-        //     "Municipios": municipios,
-        //     "Chambas": polyline_chambas
-        // };
-        //
-        // L.control.layers(baseMaps).addTo(mymap);
-     //        L.Control.Layers.include({
-     //            getOverlays: function() {
-     //            // create hash to hold all layers
-     //            let control, layers;
-     //            layers = {};
-     //            control = this;
-     //
-     //            // loop thru all layers in control
-     //            control._layers.forEach(function(obj) {
-     //              let layerName;
-     //
-     //              // check if layer is an overlay
-     //              if (obj.overlay) {
-     //                // get name of overlay
-     //                layerName = obj.name;
-     //                // store whether it's present on the map or not
-     //                return layers[layerName] = control._map.hasLayer(obj.layer);
-     //              }
-     //            });
-     //
-     //            return layers;
-     //          }
-     //        });
 		</script>
 {{end page_js}}

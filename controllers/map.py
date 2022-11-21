@@ -126,7 +126,7 @@ def marker_mouseover():
         else:
             areas = [' - ']
 
-        ################## Años
+        ################## Years
         pluv_id = request.vars.id
         resul = db(db.YearStatistics.id_pluviometer == pluv_id).select(db.YearStatistics.year_number.min()
                                                                        , db.YearStatistics.year_number.max()).first()

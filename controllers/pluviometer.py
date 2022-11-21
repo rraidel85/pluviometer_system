@@ -3,7 +3,6 @@ def pluv_list():
     return locals()
 
 def create_pluv():
-    areas = __getAreaNodes()
     return locals()
 
 def edit_pluv():
