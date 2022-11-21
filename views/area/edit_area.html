@@ -7,61 +7,8 @@
                 height: 100vh;
                 z-index: 0;
             }
-            #create_area_modal input,
-            #create_area_modal textarea{
-                width: 100%;
-            }
         </style>
 {{end head}}
-
-{{block body_end}}
-<div id="create_area_modal" class="modal fade">
-                        <div class="modal-dialog modal-sm">
-                            <div class="modal-content" style="width: 400px">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Editar área</h5>
-                                    <button type="button" class="close xButton"><span>&times;</span></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="form-group">
-                                        <label for="name">Nombre:</label>
-                                        <input type="text" class="form-control" id="name">
-                                        <div id="name-error-box"></div>
-                                    </div>
-                                    <label for="area_type_select">Tipo de área:</label>
-                                    <div class="form-group">
-                                        <select class="form-control" id="area_type_select" style="padding-bottom: 10px;padding-top: 8px;">
-                                            {{for a_type in area_types:}}
-                                                <option value={{=a_type.id}}>{{=a_type.name}}</option>
-                                            {{pass}}
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="description">Descripción:</label>
-                                        <textarea type="text" class="form-control" id="description" rows="3"></textarea>
-                                        <div id="description-error-box"></div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button id="closeButton" type="button" class="btn btn-danger">Cerrar</button>
-                                    <button id="acceptButton" type="button" class="btn btn-success">Aceptar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-    <div id="no_edit_info_modal" class="modal" tabindex="-1" role="dialog">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-body">
-                <p>Todavía no puedes modificar este elemento, espera unos segundos.</p>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Aceptar</button>
-              </div>
-            </div>
-          </div>
-        </div>
-{{end body_end}}
 
 {{block page_js}}
     <script type="text/javascript" src="{{=URL('static', 'leaflet/leaflet.js')}}"></script>
@@ -90,6 +37,8 @@
     let overlayMaps = {};
     let layerGroup;
     let area_layer;
+    let restorePosition;
+    let areaEvent;
 
         {{for area_type in areas:}}//Loop for all the area types
         //areas has the form of {'area_type':[{'area':[id_area, [area_borders]}, areaType_color, areaType_description],}
@@ -108,88 +57,49 @@
                                 selected_area.openPopup();
                             })
                             .catch(error => {
-                                console.log(error)
+                                showMyNotification('error', "Hubo errores en el servidor");
                             })
-                    }).on('click', () => { //Perhaps need to bind the off('click') method
-                            //Click event handler to edit an area
-                        $("#create_area_modal").modal();// open modal
-
-                        // Setting input default values of selected area
-                        $("#create_area_modal #name").val("{{=area}}");
-                        // $("#create_area_modal #area_type_select").val("{{=area_type}}")
-                        //  .find("option[value=" + {{=areas[area_type][0][area][2]}} +"]").attr('selected', 'selected');
-
-                        //Modal click event handlers
-                        $('#create_area_modal #acceptButton').off().on('click', () => {
-                            let name = $('#create_area_modal #name').val().trim()
-                            if (name.length === 0) {
-                                // if name input is empty
-                                showMyNotification('error', "Existen errores en el formulario");
-                                showErrorDiv($("#name-error-box"), "Este campo no puede estar vacío")
-                            } else {
-                                $("#create_area_modal").modal('toggle');
-
-                                let area_type_id = $("#create_area_modal #area_type_select option:selected").val()
-                                let description = $("#create_area_modal #description").val().trim();
-
-                                $(".loading-spinner").show(); // Show loading
-
-                                // request to edit_area_api to edit the information but not the position
-                                axios.post('{{=URL('area', 'edit_area_api')}}', {
-                                    area_id: {{=areas[area_type][0][area][0]}},
-                                    name: name,
-                                    description: description,
-                                    id_area_type: area_type_id,
-                                    edit_type: 'information',
-                                })
-                                .then(response => {
-                                    // console.log(response.data);
-                                    showMyNotification('success', "El área se ha editado correctamente");
-                                    $(".loading-spinner").hide(); // Hide loading
-                                })
-                                .catch(error => {
-                                    showMyNotification('error', "Hubo errores en el servidor");
-                                    $(".loading-spinner").hide(); // Hide loading
-                                });
-                        }
                     })
-                })
-                        .on('pm:edit', function(event) {
-                        let points = event.target._latlngs;
+                    .on('pm:edit', function(e) {
+                        let points = e.target._latlngs;
+                        restorePosition = points;
 
                         $(".loading-spinner").show(); // Show loading
 
-                        axios.post('{{=URL('area', 'edit_area_api')}}',{
+                        axios.post('{{=URL('area', 'edit_area_position_api')}}',{
                             area_id: {{=areas[area_type][0][area][0]}},
                             points: points,
-                            edit_type: 'position',
                         })
                         .then(response => {
-                            showMyNotification('success', "El área se ha editado correctamente");
+                            showMyNotification('success', "Operación realizada exitosamente");
                             $(".loading-spinner").hide(); // Hide loading
                         })
                         .catch(error => {
                             showMyNotification('error', "Hubo errores en el servidor");
                             $(".loading-spinner").hide(); // Hide loading
                         });
-                    }).on('pm:remove', function (x) {
+                    }).on('pm:remove', (e) =>{
+                         return confirmationDelete("El área será eliminada completamente del sistema", function (isConfirm) {
                         // request to remove_area API
+                        // console.log(e)
+                        if(isConfirm){
+                            $(".loading-spinner").show(); // Show loading
 
-                        $(".loading-spinner").show(); // Show loading
-
-                        axios.post('{{=URL('area', 'remove_area_api')}}', {
-                                area_id: {{=areas[area_type][0][area][0]}},
-                            })
+                            axios.post('{{=URL('area', 'remove_area_api')}}', {
+                                    area_id: {{=areas[area_type][0][area][0]}},
+                                })
                             .then(response => {
-                                showMyNotification('success', "El área se ha eliminado correctamente");
+                                showMyNotification('success', "Operación realizada exitosamente");
                                 $(".loading-spinner").hide(); // Hide loading
                             })
                             .catch(error => {
                                 showMyNotification('error', "Hubo errores en el servidor");
                                 $(".loading-spinner").hide(); // Hide loading
                             });
-                    })
-
+                        } else{
+                            mymap.addLayer(e.layer); //Adding layer to map again after incorrect elimination
+                          }
+                    })})
 
                     area_layer.setStyle({pmIgnore: false});
                     layerGroup.push(area_layer);
@@ -202,16 +112,6 @@
         overlayMaps["Provincias"].addTo(mymap);
         overlayMaps["Sector Hidrogeológico"].addTo(mymap);
         let control = L.control.layers(null, overlayMaps).addTo(mymap);
-
-
-        $('#create_area_modal #closeButton').off().on('click', () => {
-                $("#create_area_modal").modal('toggle');
-        })
-
-        $('#create_area_modal .xButton').off().on('click', () => {
-                $("#create_area_modal").modal('toggle');
-        })
-
 
 		</script>
 {{end page_js}}

@@ -63,7 +63,7 @@
                  marker.openPopup();
              })
             .catch(error => {
-                alert(error)
+                showMyNotification('error', "Hubo errores en el servidor");
             })
         }).on('mouseout', e =>{e.target.closePopup();})
         .on('click', e => {

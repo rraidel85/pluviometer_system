@@ -37,7 +37,7 @@ $(document).ready(function () {
                 });
             })
             .catch(error => {
-                alert(error)
+                showMyNotification('error', "Hubo errores en el servidor");
             })
         },
         columns: [
