@@ -1,7 +1,7 @@
 AreaType_format = '%(name)s'
 db.define_table("AreaType",
                 Field("name", "string", default=None, label='Nombre'),
-                Field("representation", "string", default=None, label='Representación'),
+                Field("representation", "string", default=None, label='Color'),
                 Field("description", "text", default=None, label='Descripción'),
                 format=AreaType_format)
 

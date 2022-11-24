@@ -45,9 +45,9 @@
                     <td><div class="color-box" style="background-color:{{=area_type.representation}}"></div></td>
                     <td>{{=area_type.description if area_type.description else '-'}}</td>
                     <td>
-                        <a title="Editar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #05e20c;" href={{=URL('area_type','ubicacion_area',args=area_type.id)}}>
-                            <i class="fa fa-pencil"></i>
-                        </a>
+                        {{=A(I(_class='fa fa-pencil'), _title="Editar", _class='botones-iconos btn btn-info btn-rounded btn-icon',_target='_blank',
+                        _style="color:white; background-color: #05e20c;", _href=URL("area_type", "areatype_form", args=area_type.id),
+                        cid="content-areatype", data={'toggle':'modal', 'target':'#areatype_modal'})}}
                         <a title="Eliminar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #f84a4a;" href="#" onclick="eliminar('{{=area_type.id}}')">
                             <i class="fa fa-trash"></i>
                         </a>
@@ -66,6 +66,13 @@
 
 <script>
 {{block datatable}}
+
+    // Check if page was reloaded by form submit and show notification
+    {{if session.page_reload:}}
+        showMyNotification('success', 'Operación realizada exitosamente');
+        {{session.page_reload = False}}
+    {{pass}}
+
     data_table.DataTable();
 
     function eliminar(id) {

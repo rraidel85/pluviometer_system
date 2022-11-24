@@ -11,20 +11,25 @@ def remove_areatype():
     return dict()
 
 def areatype_form():
-    form = SQLFORM(db.Area)
+    form = SQLFORM(db.AreaType)
+    session.page_reload = False
     is_editing = False
+    color = "#000000"
 
     if request.args(0):
-        area = db.Area(request.args(0, cast=int))
-        form = SQLFORM(db.Area, area)
+        area_type = db.AreaType(request.args(0, cast=int))
+        form = SQLFORM(db.AreaType, area_type)
+        color = area_type.representation
         is_editing = True
+        session.page_reload = True
 
     if form.process().accepted:
-        response.js = "jQuery('#area_modal').modal('hide');showMyNotification('success', 'Operación realizada exitosamente');updateTable();"
+        session.page_reload = True
+        redirect(request.env.http_web2py_component_location, client_side=True)
     elif form.errors:
         plugin_toastr_message_config('error', T('Existen errores en el formulario'))
 
-    return dict(form=form, is_editing=is_editing)
+    return dict(form=form, is_editing=is_editing, color=color)
 
 
 # def create_areatype():
