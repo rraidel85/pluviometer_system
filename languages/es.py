@@ -362,6 +362,7 @@
 'This email already has an account': 'Este correo electrónico ya tiene una cuenta',
 'Time in Cache (h:m:s)': 'Tiempo en Caché (h:m:s)',
 'Timestamp': 'Marca de tiempo',
+'Tipos de pluviómetro': 'Tipos de pluviómetro',
 'Tipos de área': 'Tipos de área',
 'Too short': 'Too short',
 'Total de precipitaciones registradas': 'Total de precipitaciones registradas',

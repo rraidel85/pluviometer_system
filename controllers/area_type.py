@@ -30,11 +30,3 @@ def areatype_form():
         plugin_toastr_message_config('error', T('Existen errores en el formulario'))
 
     return dict(form=form, is_editing=is_editing, color=color)
-
-
-# def create_areatype():
-#     return locals()
-#
-# def edit_areatype():
-#     area_types = db(db.AreaType.id > 0).select(db.AreaType.id, db.AreaType.name)
-#     return dict(area_types=area_types, areas=__getAreaNodes())

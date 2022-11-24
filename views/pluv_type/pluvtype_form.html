@@ -1,0 +1,25 @@
+{{=form.custom.begin}}
+    <div class="modal-content" style="width: 400px">
+        <div class="modal-header">
+            {{ if not is_editing:}}
+            <h5 class="modal-title">Crear tipo de pluviómetro</h5>
+            {{ else: }}
+                <h5 class="modal-title">Editar tipo de pluviómetro</h5>
+            {{ pass }}
+            <button type="button" data-dismiss="modal" class="close xButton"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+           <div class="form-group">
+                <label>{{=form.custom.label.name}}:</label>
+                {{=form.custom.widget.name}}
+            </div>
+            <div class="form-group">
+                <label>{{=form.custom.label.description}} (opcional):</label>
+                {{=form.custom.widget.description}}
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" id="acceptButton" class="btn btn-success">Aceptar</button>
+        </div>
+    </div>
+{{=form.custom.end}}

@@ -10,7 +10,7 @@ db.AreaType.representation.requires = [IS_NOT_EMPTY(error_message='Este campo es
 
 PluviometerType_format = '%(name)s'
 db.define_table("PluviometerType",
-                Field("name", "string", default=None, label='Tipo de pluviómetro'),
+                Field("name", "string", default=None, label='Nombre'),
                 Field("description", "text", default=None, label='Descripción'),
                 format=PluviometerType_format)
 

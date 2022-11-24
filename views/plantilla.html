@@ -522,6 +522,13 @@
           },
       });
 
+
+    // Check if page was reloaded by form submit and show notification
+    {{if session.page_reload:}}
+        showMyNotification('success', 'Operación realizada exitosamente');
+        {{session.page_reload = False}}
+    {{pass}}
+
     let data_table = $('table');
      data_table.addClass('table table-hover');
      {{block datatable}}{{end datatable}}
