@@ -1,0 +1,92 @@
+{{extend 'plantilla.html'}}
+{{block head}}
+    <style>
+        .create-button-box{
+            width: 100%;
+            display: flex;
+            flex-direction: row-reverse;
+        }
+        .create-button{
+            font-family: sans-serif;
+            font-size: 16px;
+        }
+        .color-box{
+            width: 25px;
+            height: 25px;
+        }
+    </style>
+{{end}}
+
+        <h3 class="encabezado">Tipos de área</h3>
+        <div class="create-button-box">
+            {{=A(I(_class='fa fa-plus'), ' Nuevo tipo de área',
+            _class='btn btn-success text-white mb-2 create-button',
+            _target='_blank',
+            _href=URL("area_type", "areatype_form"),
+            cid="content-areatype",
+            data={'toggle':'modal', 'target':'#areatype_modal'})}}
+        </div>
+
+
+<table id="area_table" class="display">
+        <thead>
+            <tr>
+                <!--<th>Id</th>-->
+                <th>Nombre</th>
+                <th>Color</th>
+                <th>Descripción</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{for area_type in area_types:}}
+                <tr>
+                    <td>{{=area_type.name if area_type.name else '-'}}</td>
+                    <td><div class="color-box" style="background-color:{{=area_type.representation}}"></div></td>
+                    <td>{{=area_type.description if area_type.description else '-'}}</td>
+                    <td>
+                        <a title="Editar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #05e20c;" href={{=URL('area_type','ubicacion_area',args=area_type.id)}}>
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        <a title="Eliminar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #f84a4a;" href="#" onclick="eliminar('{{=area_type.id}}')">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            {{pass}}
+        </tbody>
+</table>
+
+{{block body_end}}
+    <div id="areatype_modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-sm" id="content-areatype">
+        </div>
+    </div>
+{{end body_end}}
+
+<script>
+{{block datatable}}
+    data_table.DataTable();
+
+    function eliminar(id) {
+        swal({
+            title: "¿Está seguro de eliminar?",
+            text: "El area será eliminada completamente del sistema.",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Eliminar",
+            cancelButtonText: "Cancelar",
+            closeOnConfirm: true,
+            closeOnCancel: true
+        },
+            function (isConfirm) {
+                if (isConfirm) {
+                    let url = "{{=URL('area_type','remove_areatype')}}";
+                    location.href = url + "/" + id;
+                }
+            });
+    }
+{{end datatable}}
+
+</script>

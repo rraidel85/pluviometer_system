@@ -15,16 +15,17 @@ def function(name):
 response.menu = [
     (T('Inicio'), controller("default") and function("index"), URL('default', 'index'), 'ti-dashboard', []),
     (T('Mapa'), controller("map") and function("mapa"), URL('map', 'mapa'), 'ti-map-alt', []),
-    (T('Gestionar pluviometros'), controller("pluviometer") and function("index"), '#', 'ti-location-pin', [
-        (T('Listar pluviometros'), controller("pluviometer") and function("pluv_list"), URL('pluviometer', 'pluv_list')),
-        (T('Crear pluviometros'), controller("pluviometer") and function("index"), URL('pluviometer', 'create_pluv')),
-        (T('Editar pluviometros'), controller("pluviometer") and function("index"), URL('pluviometer', 'edit_pluv')),
+    (T('Pluviómetros'), controller("pluviometer") and function("index"), '#', 'ti-location-pin', [
+        (T('Listado'), controller("pluviometer") and function("pluv_list"), URL('pluviometer', 'pluv_list')),
+        (T('Crear en el mapa'), controller("pluviometer") and function("index"), URL('pluviometer', 'create_pluv')),
+        (T('Editar en el mapa'), controller("pluviometer") and function("index"), URL('pluviometer', 'edit_pluv')),
     ]),
-    (T('Gestionar áreas'), controller("area") and function("area_list"), '#', 'ti-direction', [
-        (T('Listar áreas'), controller("area") and function("area_list"), URL('area', 'area_list')),
-        (T('Crear área'), controller("area") and function("create_area"), URL('area', 'create_area')),
-        (T('Editar área'), controller("area") and function("edit_area"), URL('area', 'edit_area')),
+    (T('Áreas'), controller("area") and function("area_list"), '#', 'ti-direction', [
+        (T('Listado'), controller("area") and function("area_list"), URL('area', 'area_list')),
+        (T('Crear en el mapa'), controller("area") and function("create_area"), URL('area', 'create_area')),
+        (T('Editar en el mapa'), controller("area") and function("edit_area"), URL('area', 'edit_area')),
     ]),
+    (T('Tipos de área'), controller("area_type") and function("areatype_list"), URL('area_type', 'areatype_list'), 'ti-map-alt', []),
     (T('Calcular'), controller("math") and function("select_math"), URL('math', 'select_math'), 'ti-stats-down', []),
     (T('Graficos'), controller("graphics"), '#', 'fa fa-area-chart', [
         (T('Ind Conc Pluv'), controller("graphics") and function("select_graphic"), URL('graphics', 'select_graphic')),
