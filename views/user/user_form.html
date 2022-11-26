@@ -1,0 +1,47 @@
+{{=form.custom.begin}}
+      <div class="modal-content" style="width: 400px">
+        <div class="modal-header">
+            {{ if not is_editing:}}
+            <h5 class="modal-title">Crear usuario</h5>
+            {{ else: }}
+                <h5 class="modal-title">Editar usuario</h5>
+            {{ pass }}
+            <button type="button" data-dismiss="modal" class="close xButton"><span>&times;</span></button>
+        </div>
+          <div class="modal-body">
+				<div class="form-group">
+					<label for="name" class="label">Nombre:</label>
+					{{=form.custom.widget.first_name}}
+				</div>
+                <div class="form-group">
+					<label for="last" class="label">Apellidos:</label>
+					{{=form.custom.widget.last_name}}
+				</div>
+                <div class="form-group">
+					<label for="user" class="label">Usuario:</label>
+					{{=form.custom.widget.username}}
+				</div>
+                <div class="form-group">
+					<label for="email" class="label">Correo:</label>
+					{{=form.custom.widget.email}}
+				</div>
+                {{ if not is_editing:}}
+                    <div class="form-group">
+                        <label for="pass" class="label">Contraseña:</label>
+                        {{=form.custom.widget.password}}
+                    </div>
+                    <div class="form-group">
+                        <label for="pass" class="label">Repetir contraseña:</label>
+                        {{=form.custom.widget.repeat}}
+                    </div>
+              {{pass}}
+                <div class="form-group">
+					<label for="pass" class="label">Rol de usuario:</label>
+					{{=form.custom.widget.role}}
+				</div>
+			</div>
+          <div class="modal-footer">
+            <button type="submit" id="acceptButton" class="btn btn-success">Aceptar</button>
+        </div>
+    </div>
+{{=form.custom.end}}

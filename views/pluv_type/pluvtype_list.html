@@ -38,7 +38,7 @@
                 <tr>
                     <td>{{=pluv_type.name if pluv_type.name else '-'}}</td>
                     <td>{{=pluv_type.description if pluv_type.description else '-'}}</td>
-                    <td>
+                    <td class="options">
                         {{=A(I(_class='fa fa-pencil'), _title="Editar", _class='botones-iconos btn btn-info btn-rounded btn-icon',_target='_blank',
                         _style="color:white; background-color: #05e20c;", _href=URL("pluv_type", "pluvtype_form", args=pluv_type.id),
                         cid="content-pluvtype", data={'toggle':'modal', 'target':'#pluvtype_modal'})}}

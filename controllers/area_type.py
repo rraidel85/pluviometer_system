@@ -12,7 +12,6 @@ def remove_areatype():
 
 def areatype_form():
     form = SQLFORM(db.AreaType)
-    session.page_reload = False
     is_editing = False
     color = "#000000"
 
@@ -21,7 +20,6 @@ def areatype_form():
         form = SQLFORM(db.AreaType, area_type)
         color = area_type.representation
         is_editing = True
-        session.page_reload = True
 
     if form.process().accepted:
         session.page_reload = True

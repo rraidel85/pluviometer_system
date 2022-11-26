@@ -191,5 +191,3 @@ if not exist_admin_user:
     db.auth_membership.insert(user_id=exist_admin_user, group_id=exist_admin_role)
 
 # -------------  FIN DEL BLOQUE DE INICIALIZACIÓN DE ROLES Y USUARIOS
-
-page_reload = False

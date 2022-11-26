@@ -10,45 +10,45 @@
             font-family: sans-serif;
             font-size: 16px;
         }
-        .color-box{
-            width: 25px;
-            height: 25px;
-        }
     </style>
 {{end}}
 
-        <h3 class="encabezado">Tipos de área</h3>
+        <h3 class="encabezado">Usuarios</h3>
         <div class="create-button-box">
-            {{=A(I(_class='fa fa-plus'), ' Nuevo tipo de área',
+            {{=A(I(_class='fa fa-plus'), ' Nuevo usuario',
             _class='btn btn-success text-white mb-2 create-button',
             _target='_blank',
-            _href=URL("area_type", "areatype_form"),
-            cid="content-areatype",
-            data={'toggle':'modal', 'target':'#areatype_modal'})}}
+            _href=URL("user", "user_form"),
+            cid="content-user",
+            data={'toggle':'modal', 'target':'#user_modal'})}}
         </div>
 
 
-<table id="areatype_table" class="display">
+<table id="user_table" class="display">
         <thead>
             <tr>
                 <!--<th>Id</th>-->
+                <th>Usuario</th>
+                <th>Correo</th>
                 <th>Nombre</th>
-                <th>Color</th>
-                <th>Descripción</th>
+                <th>Apellidos</th>
+                <th>Rol</th>
                 <th>Opciones</th>
             </tr>
         </thead>
         <tbody>
-            {{for area_type in area_types:}}
+            {{for user in users:}}
                 <tr>
-                    <td>{{=area_type.name if area_type.name else '-'}}</td>
-                    <td><div class="color-box" style="background-color:{{=area_type.representation}}"></div></td>
-                    <td>{{=area_type.description if area_type.description else '-'}}</td>
+                    <td>{{=user.auth_user.username if user.auth_user.username else '-'}}</td>
+                    <td>{{=user.auth_user.email if user.auth_user.email else '-'}}</td>
+                    <td>{{=user.auth_user.first_name if user.auth_user.first_name else '-'}}</td>
+                    <td>{{=user.auth_user.last_name if user.auth_user.last_name else '-'}}</td>
+                    <td>{{=user.auth_membership.group_id.role if user.auth_membership.group_id.role else '-'}}</td>
                     <td class="options">
                         {{=A(I(_class='fa fa-pencil'), _title="Editar", _class='botones-iconos btn btn-info btn-rounded btn-icon',_target='_blank',
-                        _style="color:white; background-color: #05e20c;", _href=URL("area_type", "areatype_form", args=area_type.id),
-                        cid="content-areatype", data={'toggle':'modal', 'target':'#areatype_modal'})}}
-                        <a title="Eliminar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #f84a4a;" href="#" onclick="eliminar('{{=area_type.id}}')">
+                        _style="color:white; background-color: #05e20c;", _href=URL("user", "user_form", args=user.auth_user.id),
+                        cid="content-user", data={'toggle':'modal', 'target':'#user_modal'})}}
+                        <a title="Eliminar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #f84a4a;" href="#" onclick="eliminar('{{=user.auth_user.id}}')">
                             <i class="fa fa-trash"></i>
                         </a>
                     </td>
@@ -58,8 +58,8 @@
 </table>
 
 {{block body_end}}
-    <div id="areatype_modal" class="modal fade" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog modal-sm" id="content-areatype">
+    <div id="user_modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-sm" id="content-user">
         </div>
     </div>
 {{end body_end}}
@@ -67,13 +67,12 @@
 <script>
 {{block datatable}}
 
-
     data_table.DataTable();
 
     function eliminar(id) {
         swal({
             title: "¿Está seguro de eliminar?",
-            text: "El tipo de área será eliminado completamente del sistema.",
+            text: "El tipo de pluviómetro será eliminado completamente del sistema.",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#DD6B55",
@@ -84,7 +83,7 @@
         },
             function (isConfirm) {
                 if (isConfirm) {
-                    let url = "{{=URL('area_type','remove_areatype')}}";
+                    let url = "{{=URL('user','remove_user')}}";
                     location.href = url + "/" + id;
                 }
             });

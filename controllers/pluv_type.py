@@ -12,14 +12,12 @@ def remove_pluvtype():
 
 def pluvtype_form():
     form = SQLFORM(db.PluviometerType)
-    session.page_reload = False
     is_editing = False
 
     if request.args(0):
         pluv_type = db.PluviometerType(request.args(0, cast=int))
         form = SQLFORM(db.PluviometerType, pluv_type)
         is_editing = True
-        session.page_reload = True
 
     if form.process().accepted:
         session.page_reload = True

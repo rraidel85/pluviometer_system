@@ -31,6 +31,9 @@ response.menu = [
     (T('Graficos'), controller("graphics"), '#', 'fa fa-area-chart', [
         (T('Ind Conc Pluv'), controller("graphics") and function("select_graphic"), URL('graphics', 'select_graphic')),
     ]),
+    (T('Usuarios'), controller("user") and function("user_list"), URL('user', 'user_list'),
+     'ti-map-alt', []),
+
 ]
 
 page_type = {
