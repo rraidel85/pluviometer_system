@@ -1,0 +1,48 @@
+{{=form.custom.begin}}
+    <div class="modal-content" style="width: 400px">
+        <div class="modal-header">
+            {{ if not is_editing:}}
+            <h5 class="modal-title">Crear precipitación</h5>
+            {{ else: }}
+                <h5 class="modal-title">Editar precipitación</h5>
+            {{ pass }}
+            <button type="button" data-dismiss="modal" class="close xButton"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+           <div class="form-group">
+                <label for="register_date">{{=form.custom.label.register_date}}:</label>
+               {{if not is_editing:}}
+                    <input name="register_date" class="form-control" id="register_date" type="text">
+               {{else:}}
+                    <input name="register_date" class="form-control"
+                           id="register_date" type="text" value="{{=register_date}}">
+               {{pass}}
+               {{if form.errors.register_date:}}
+                    <div class="error_wrapper">
+                        <div class="error" id="register_date__error">{{=form.errors.register_date}}</div>
+                    </div>
+                {{pass}}
+            </div>
+            <div class="form-group">
+                <label>{{=form.custom.label.rain_value}}:</label>
+                {{=form.custom.widget.rain_value}}
+            </div>
+            <div class="form-group">
+                <label>{{=form.custom.label.id_pluviometer}}:</label>
+                {{=form.custom.widget.id_pluviometer}}
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" id="acceptButton" class="btn btn-success">Aceptar</button>
+        </div>
+    </div>
+{{=form.custom.end}}
+
+<script>
+    // Data Picker Initialization
+    jQuery.datetimepicker.setLocale('es');
+    $('#register_date').datetimepicker({
+     timepicker:false,
+     format:'Y-m-d'
+    });
+</script>

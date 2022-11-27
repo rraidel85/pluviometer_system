@@ -1,4 +1,4 @@
-def index():
+def registers_list():
     """Returns Registers table"""
     return locals()
 
@@ -10,7 +10,23 @@ def registers_pluv():
     pluv_name = db.Pluviometer(pluv_id).name
     return locals()
 
+def registers_form():
+    form = SQLFORM(db.Registers)
+    is_editing = False
+    register_date = None
 
+    if request.args(0):
+        register = db.Registers(request.args(0, cast=int))
+        form = SQLFORM(db.Registers, register)
+        register_date = register.register_date
+        is_editing = True
+
+    if form.process().accepted:
+        response.js = "jQuery('#registers_modal').modal('hide');showMyNotification('success', 'Operación realizada exitosamente');updateTable();"
+    elif form.errors:
+        plugin_toastr_message_config('error', T('Existen errores en el formulario'))
+
+    return dict(form=form, is_editing=is_editing, register_date=register_date)
 
 #-----------------------------------------------
 # APIS
@@ -33,19 +49,22 @@ def registers_api():
             registers = db((db.Registers.id > 0) &
                               (db.Registers.register_date.like(f'{search}%'))).select(
                                 orderby=f'{db.Registers[order_column]} {order_dir}',
-                                limitby=(start,start+limit)).as_list()
+                                limitby=(start,start+limit))
 
             count_query = db.Registers.id.count()
             count = db((db.Registers.id > 0) &
                        (db.Registers.register_date.like(f'{search}%'))).select(count_query,
                                                                                cache=(cache.ram, None),cacheable=True).first()[count_query]
-            print(count)
+
+            for register in registers:
+                register.id_pluviometer = register.id_pluviometer.name
+
         except Exception as e:
             print(e)
 
         data = {
             'length': count,
-            'registers': registers
+            'registers': registers.as_list()
         }
 
         return data

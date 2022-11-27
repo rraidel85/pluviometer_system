@@ -25,6 +25,7 @@ response.menu = [
         (T('Crear en el mapa'), controller("area") and function("create_area"), URL('area', 'create_area')),
         (T('Editar en el mapa'), controller("area") and function("edit_area"), URL('area', 'edit_area')),
     ]),
+    (T('Precipitaciones'), controller("registers") and function("registers_list"), URL('registers', 'registers_list'), 'ti-map-alt', []),
     (T('Tipos de área'), controller("area_type") and function("areatype_list"), URL('area_type', 'areatype_list'), 'ti-map-alt', []),
     (T('Tipos de pluviómetro'), controller("pluv_type") and function("pluvtype_list"), URL('pluv_type', 'pluvtype_list'), 'ti-map-alt', []),
     (T('Calcular'), controller("math") and function("select_math"), URL('math', 'select_math'), 'ti-stats-down', []),

@@ -1,0 +1,132 @@
+{{extend 'plantilla.html'}}
+{{block head}}
+    <style>
+        .dropdown-item:focus, .dropdown-item:hover{
+            background-color: #c5d6e6;
+        }
+        .create-button-box{
+            width: 100%;
+            display: flex;
+            flex-direction: row-reverse;
+        }
+        .create-button{
+            font-family: sans-serif;
+            font-size: 16px;
+        }
+    </style>
+{{end}}
+<h3 class="encabezado">Precipitaciones diarias</h3>
+        <div class="create-button-box">
+            {{=A(I(_class='fa fa-plus'), ' Nueva precipitación',
+            _class='btn btn-success text-white mb-2 create-button',
+            _target='_blank',
+            _href=URL("registers", "registers_form"),
+            cid="content-registers",
+            data={'toggle':'modal', 'target':'#registers_modal'})}}
+        </div>
+
+<table id="registers-table" class="display">
+        <thead>
+            <tr>
+               <!-- <th>Id</th> -->
+                <th>Pluviómetro</th>
+                <th>Fecha</th>
+                <th>Precipitación</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+</table>
+
+{{block body_end}}
+    <div id="registers_modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-sm" id="content-registers">
+        </div>
+    </div>
+{{end body_end}}
+
+<script>
+{{block datatable}}
+
+    const datatableOptions = {
+        //Adding server-side processing
+        serverSide: true,
+        processing: true,
+        ajax: function ( data, callback, settings ) {
+                // console.log(data);
+                axios.get('{{=URL('registers', 'registers_api')}}',{
+                    params: {
+                        start: data.start,
+                        limit: data.length,
+                        search: data.search.value,
+                        order_column: data.columns[data.order[0].column].data,
+                        order_dir: data.order[0].dir
+                    }
+                }).then(res=>{
+                    callback({
+                       recordsTotal: res.data.length,
+                       recordsFiltered: res.data.length,
+                       data: res.data.registers
+                    });
+                })
+                .catch(error => {
+                    showMyNotification('error', "Hubo errores en el servidor");
+                })
+            },
+        columns: [
+                // { data: "id" },
+                { data: "id_pluviometer", defaultContent: "-"},
+                { data: "register_date", defaultContent: "-" },
+                { data: "rain_value", defaultContent: "-"},
+                {
+                  data: null,
+                  "class" : "options",
+                  "render": function ( data, type, row, meta ) {
+
+                        let stringAnchorTag = '{{=A(I(_class='fa fa-pencil'), _title="Editar", _class='botones-iconos btn btn-info btn-rounded btn-icon',_target='_blank',
+                        _style="color:white; background-color: #05e20c;", _href=URL("registers", "registers_form"), cid="content-registers", data={'toggle':'modal', 'target':'#registers_modal'})}}'; //Getting the string representation of the edit button
+
+                        let editButton = appendDataToAnchorTag(stringAnchorTag, '{{=URL("registers", "registers_form")}}', row.id);
+
+                          return `
+                            ${editButton}
+                            <a title="Eliminar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #f84a4a;" href="#" onclick="eliminar(${row.id})">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                          `;
+                        }
+                    }
+            ],
+    }
+
+    let my_table = data_table.DataTable(datatableOptions);
+
+    function updateTable(){
+        my_table.destroy(); //Destroiyng datatable for refetch
+         my_table = data_table.DataTable(datatableOptions); //Building datatable again with updated data
+    }
+
+    function eliminar(id) {
+        swal({
+            title: "¿Está seguro de eliminar?",
+            text: "El area será eliminada completamente del sistema.",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Eliminar",
+            cancelButtonText: "Cancelar",
+            closeOnConfirm: true,
+            closeOnCancel: true
+        },
+            function (isConfirm) {
+                if (isConfirm) {
+                    let url = "{{=URL('registers','remove_area')}}";
+                    location.href = url + "/" + id;
+                }
+            });
+    }
+{{end datatable}}
+
+</script>
+
+
+

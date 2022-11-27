@@ -37,6 +37,9 @@
     <link rel="stylesheet" href="{{=URL('static', 'css/calendar.css')}}">
     <script src="{{=URL('static','js/modernizr-2.8.3.min.js')}}"></script>
 
+    <!-- Jquery DatetimePicker -->
+    <link rel="stylesheet" type="text/css" href="{{=URL('static', 'datetimepicker-master/jquery.datetimepicker.css')}}">
+
     {{include 'web2py_ajax.html'}}
     <!-- this includes jquery.js, calendar.js/.css and web2py.js -->
     {{block head}}{{end}}
@@ -345,8 +348,12 @@
     </div>
     <!-- page container area end -->
 
-    <!-- jquery latest version -->
+    <!-- jquery -->
     <script src="{{=URL('static/plantilla','assets/js/vendor/jquery-2.2.4.min.js')}}"></script>
+
+    <!-- Jquery DatetimePicker -->
+    <script src="{{=URL('static', 'datetimepicker-master/build/jquery.datetimepicker.full.min.js')}}"></script>
+
     <!-- bootstrap 4 js -->
     <script src="{{=URL('static/plantilla','assets/js/popper.min.js')}}"></script>
     <script src="{{=URL('static/plantilla','assets/js/bootstrap.min.js')}}"></script>

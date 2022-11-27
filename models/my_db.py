@@ -39,7 +39,11 @@ db.Registers._singular = T('Registro')
 db.Registers._plural = T('Registros')
 db.Registers.id.readable = False
 
-db.Registers.register_date.requires = [IS_NOT_EMPTY(error_message='Este campo es obligatorio')]
+db.Registers.register_date.requires = [IS_NOT_EMPTY(error_message='Este campo es obligatorio'),
+                                       IS_NOT_IN_DB(
+                                           db, "Registers.register_date",
+                                           error_message='Esta fecha ya existe'),
+                                       ]
 db.Registers.rain_value.requires = [IS_NOT_EMPTY(error_message='Este campo es obligatorio')]
 
 YearStatistics_format = '%(year_number)s'
