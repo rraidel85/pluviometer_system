@@ -104,6 +104,11 @@ def logout():
 def no_autorizado():
     return locals()
 
+# Url para mostrar mensaje de NO autorizado
+@auth.requires_login()
+def no_encontrado():
+    return locals()
+
 # Opcion para editar perfil si el usuario no es admin
 @auth.requires_login()
 def editar_perfil():
