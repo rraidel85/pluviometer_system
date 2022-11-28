@@ -2,19 +2,29 @@ def registers_list():
     """Returns Registers table"""
     return locals()
 
-
-
 def registers_pluv():
     """Expect a pluviometer id and return its registers(the datatable calls 'registers_api')"""
     pluv_id = request.args(0, cast=int) or redirect('error') #la pagina error no existe todavía
     pluv_name = db.Pluviometer(pluv_id).name
     return locals()
 
+def remove_register():
+    register = db.Registers(request.args(0, cast=int)) or redirect(URL('registers_list'))
+    pluv_id = register.id_pluviometer
+    db(db.Registers.id == register.id).delete()
+    plugin_toastr_message_config('success', 'Operación realizada exitosamente')
+    redirect(URL("registers_pluv", args=pluv_id))
+
+    return dict()
+
 def registers_form():
+    """Form to create or edit a register"""
+
     form = SQLFORM(db.Registers)
     is_editing = False
     register_date = None
-    current_page = "registers_pluv" if request.vars.pluv_id else "registers_list"
+    register = None
+    pluv_id = request.vars.pluv_id
 
     if request.args(0):
         register = db.Registers(request.args(0, cast=int))
@@ -22,16 +32,20 @@ def registers_form():
         register_date = register.register_date
         is_editing = True
 
-    if request.vars.pluv_id:
-        form.vars.id_pluviometer = request.vars.pluv_id
+    if form.validate():
+        if not is_editing:
+            new_register_id = db.Registers.insert(**form.vars)
+            db(db.Registers.id == new_register_id).update(id_pluviometer=pluv_id)
+        else:
+            db(db.Registers.id == register.id).update(**form.vars)
+            db(db.Registers.id == register.id).update(id_pluviometer=pluv_id)
 
-    if form.process().accepted:
         response.js = "jQuery('#registers_modal').modal('hide');showMyNotification('success', 'Operación realizada exitosamente');updateTable();"
     elif form.errors:
         plugin_toastr_message_config('error', T('Existen errores en el formulario'))
 
-    return dict(form=form, is_editing=is_editing,
-                register_date=register_date, current_page=current_page)
+
+    return dict(form=form, is_editing=is_editing, register_date=register_date)
 
 #-----------------------------------------------
 # APIS
@@ -74,6 +88,7 @@ def registers_pluv_api():
 
     return locals()
 
+#################################################
 @request.restful()
 def registers_api():
     """Return asynchronous registers data for the Datatable"""

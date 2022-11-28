@@ -418,9 +418,9 @@
         };
 
         // Append data to anchor`s urls (Mostly used on edit buttons in datatables)
-        const appendDataToAnchorTag = (stringElement, url, data) => {
+        const appendDataToAnchorTag = (stringElement, url, data, separator="/") => {
             let anchorTag = anchorStringToHTML(stringElement);
-            anchorTag.setAttribute('href', url+`/${data}`);
+            anchorTag.setAttribute('href', url+`${separator}${data}`);
             return anchorTag.outerHTML // Returns element as string
         }
 

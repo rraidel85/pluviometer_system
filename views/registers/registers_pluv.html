@@ -23,8 +23,8 @@
             {{=A(I(_class='fa fa-plus'), ' Nueva precipitación',
             _class='btn btn-success text-white mb-2 create-button',
             _target='_blank',
-            _href=URL("registers", "registers_form"),
-            _vars={'pluv_id':pluv_id},
+            _href=URL("registers", "registers_form",
+                        vars={'pluv_id': pluv_id}),
             cid="content-registers",
             data={'toggle':'modal', 'target':'#registers_modal'})}}
         </div>
@@ -92,10 +92,12 @@
 
                     let stringAnchorTag = '{{=A(I(_class='fa fa-pencil'), _title="Editar", _class='botones-iconos btn btn-info btn-rounded btn-icon',_target='_blank',
                     _style="color:white; background-color: #05e20c;",
-                    _href=URL("registers", "registers_form"), _vars={'pluv_id':pluv_id},
+                    _href=URL("registers", "registers_form"),
                     cid="content-registers", data={'toggle':'modal', 'target':'#registers_modal'})}}'; //Getting the string representation of the edit button
 
-                    let editButton = appendDataToAnchorTag(stringAnchorTag, '{{=URL("registers", "registers_form")}}', row.id);
+                    let editUrl = '{{=URL("registers", "registers_form")}}' + '/' + row.id;  //Append the register id to url
+
+                    let editButton = appendDataToAnchorTag(stringAnchorTag, editUrl, 'pluv_id={{=pluv_id}}', '?'); //Append pluviometer id var to url
 
                       return `
                         ${editButton}
@@ -129,7 +131,7 @@
         },
             function (isConfirm) {
                 if (isConfirm) {
-                    let url = "{{=URL('registers','remove_area')}}";
+                    let url = "{{=URL('registers','remove_register')}}";
                     location.href = url + "/" + id;
                 }
             });

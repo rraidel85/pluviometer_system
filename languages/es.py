@@ -151,6 +151,7 @@
 'Escoge uno': 'Escoge uno',
 'Ese correo ya existe': 'Ese correo ya existe',
 'Ese nombre de usuario ya existe': 'Ese nombre de usuario ya existe',
+'Esta fecha ya existe': 'Esta fecha ya existe',
 'Esta fecha ya se encuentra en el sistema ': 'Esta fecha ya se encuentra en el sistema ',
 'Estadisticas': 'Estadisticas',
 'Estadísticas': 'Estadísticas',

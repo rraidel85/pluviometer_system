@@ -172,8 +172,8 @@ db.define_table("PrecipitationConcentrationIndex_Monthly_By_Pluviometer",
                 )
 
 """ Relations between tables (remove fields you don't need from requires) """
-db.Registers.id_pluviometer.requires = IS_IN_DB(db, 'Pluviometer.id',
-                                                ' %(name)s ', zero=None)
+# db.Registers.id_pluviometer.requires = IS_IN_DB(db, 'Pluviometer.id',
+#                                                 ' %(name)s ', zero=None)
 db.Pluviometer.id_pluviometer_type.requires = IS_IN_DB(db, 'PluviometerType.id', ' %(name)s ', zero=None)
 db.MonthStatistics.id_year.requires = IS_IN_DB(db, 'YearStatistics.id',
                                                ' %(year_number)s ', zero=None)
