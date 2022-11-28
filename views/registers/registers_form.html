@@ -27,10 +27,12 @@
                 <label>{{=form.custom.label.rain_value}}:</label>
                 {{=form.custom.widget.rain_value}}
             </div>
-            <div class="form-group">
-                <label>{{=form.custom.label.id_pluviometer}}:</label>
-                {{=form.custom.widget.id_pluviometer}}
-            </div>
+            {{if current_page == "registers_list":}}
+                <div class="form-group">
+                    <label>{{=form.custom.label.id_pluviometer}}:</label>
+                    {{=form.custom.widget.id_pluviometer}}
+                </div>
+            {{pass}}
         </div>
         <div class="modal-footer">
             <button type="submit" id="acceptButton" class="btn btn-success">Aceptar</button>
