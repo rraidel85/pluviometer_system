@@ -191,3 +191,9 @@ if not exist_admin_user:
     db.auth_membership.insert(user_id=exist_admin_user, group_id=exist_admin_role)
 
 # -------------  FIN DEL BLOQUE DE INICIALIZACIÓN DE ROLES Y USUARIOS
+
+#--- Roles
+admin_role = auth.has_membership('administrador')
+editor_role = auth.has_membership('administrador') or auth.has_membership('editor')
+lector_role = auth.has_membership('administrador') or auth.has_membership('editor') or auth.has_membership('lector')
+

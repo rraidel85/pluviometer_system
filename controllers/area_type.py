@@ -1,7 +1,9 @@
+@auth.requires(lector_role, otherwise=URL('user', 'no_autorizado'))
 def areatype_list():
     area_types = db(db.AreaType.id > 0).select()
     return locals()
 
+@auth.requires(editor_role, otherwise=URL('user', 'no_autorizado'))
 def remove_areatype():
     areatype = db.AreaType(request.args(0, cast=int)) or redirect(URL('not_found'))
     db(db.AreaType.id == areatype.id).delete()

@@ -1,17 +1,20 @@
+@auth.requires(lector_role, otherwise=URL('user', 'no_autorizado'))
 def area_list():
     """Returns all areas that are not sub_areas"""
     areas = db((db.Area.sub_name=="") | (db.Area.sub_name==None)).select()
     area_types = db(db.AreaType.id > 0).select(db.AreaType.id, db.AreaType.name)
     return locals()
 
+@auth.requires(editor_role, otherwise=URL('user', 'no_autorizado'))
 def create_area():
     return locals()
 
+@auth.requires(editor_role, otherwise=URL('user', 'no_autorizado'))
 def edit_area():
     area_types = db(db.AreaType.id > 0).select(db.AreaType.id, db.AreaType.name)
     return dict(area_types=area_types, areas=__getAreaNodes())
 
-
+@auth.requires(editor_role, otherwise=URL('user', 'no_autorizado'))
 def remove_area():
     area = db.Area(request.args(0, cast=int)) or redirect(URL('area_list'))
     area_id = area.id

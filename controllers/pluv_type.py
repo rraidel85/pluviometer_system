@@ -1,7 +1,9 @@
+@auth.requires(lector_role, otherwise=URL('user', 'no_autorizado'))
 def pluvtype_list():
     pluv_types = db(db.PluviometerType.id > 0).select()
     return locals()
 
+@auth.requires(editor_role, otherwise=URL('user', 'no_autorizado'))
 def remove_pluvtype():
     pluvtype = db.PluviometerType(request.args(0, cast=int)) or redirect(URL('not_found'))
     db(db.PluviometerType.id == pluvtype.id).delete()

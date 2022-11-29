@@ -16,28 +16,11 @@ def index():
     cant_areas = db((db.Area.sub_name == "") | (db.Area.sub_name == None)).count()
     return locals()
 
-def tabla():
-    """Created only for testing purposes, same as default/index"""
-    return locals()
 
 
 #-----------------------------------------------
 # APIS
 #-----------------------------------------------
-@request.restful()
-def api():
-    """Api that returns test info only for testing purposes"""
-    response.view = 'generic.json'
-
-    def GET(*args, **kwargs):
-        # print(kwargs['id'])
-        # pluv_name = 'CA-60'
-        # lat = 21.4206 #pluv.lat
-        # lon = -77.8912
-        return dict(pluv_name='CA-60', lat=21.4206, lon=-77.8912)
-
-    return locals()
-
 
 # Default web2py stuff
 # ---- API (example) -----

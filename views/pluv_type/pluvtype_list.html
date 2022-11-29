@@ -14,14 +14,16 @@
 {{end}}
 
         <h3 class="encabezado">Tipos de pluviómetro</h3>
-        <div class="create-button-box">
-            {{=A(I(_class='fa fa-plus'), ' Nuevo tipo de pluviómetro',
-            _class='btn btn-success text-white mb-2 create-button',
-            _target='_blank',
-            _href=URL("pluv_type", "pluvtype_form"),
-            cid="content-pluvtype",
-            data={'toggle':'modal', 'target':'#pluvtype_modal'})}}
-        </div>
+        {{if editor_role:}}
+            <div class="create-button-box">
+                {{=A(I(_class='fa fa-plus'), ' Nuevo tipo de pluviómetro',
+                _class='btn btn-success text-white mb-2 create-button',
+                _target='_blank',
+                _href=URL("pluv_type", "pluvtype_form"),
+                cid="content-pluvtype",
+                data={'toggle':'modal', 'target':'#pluvtype_modal'})}}
+            </div>
+        {{pass}}
 
 
 <table id="pluvtype_table" class="display">
@@ -30,7 +32,9 @@
                 <!--<th>Id</th>-->
                 <th>Nombre</th>
                 <th>Descripción</th>
-                <th>Opciones</th>
+                {{if editor_role:}}
+                    <th>Opciones</th>
+                {{pass}}
             </tr>
         </thead>
         <tbody>
@@ -38,14 +42,16 @@
                 <tr>
                     <td>{{=pluv_type.name if pluv_type.name else '-'}}</td>
                     <td>{{=pluv_type.description if pluv_type.description else '-'}}</td>
-                    <td class="options">
-                        {{=A(I(_class='fa fa-pencil'), _title="Editar", _class='botones-iconos btn btn-info btn-rounded btn-icon',_target='_blank',
-                        _style="color:white; background-color: #05e20c;", _href=URL("pluv_type", "pluvtype_form", args=pluv_type.id),
-                        cid="content-pluvtype", data={'toggle':'modal', 'target':'#pluvtype_modal'})}}
-                        <a title="Eliminar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #f84a4a;" href="#" onclick="eliminar('{{=pluv_type.id}}')">
-                            <i class="fa fa-trash"></i>
-                        </a>
-                    </td>
+                    {{if editor_role:}}
+                        <td class="options">
+                            {{=A(I(_class='fa fa-pencil'), _title="Editar", _class='botones-iconos btn btn-info btn-rounded btn-icon',_target='_blank',
+                            _style="color:white; background-color: #05e20c;", _href=URL("pluv_type", "pluvtype_form", args=pluv_type.id),
+                            cid="content-pluvtype", data={'toggle':'modal', 'target':'#pluvtype_modal'})}}
+                            <a title="Eliminar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #f84a4a;" href="#" onclick="eliminar('{{=pluv_type.id}}')">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        </td>
+                    {{pass}}
                 </tr>
             {{pass}}
         </tbody>
