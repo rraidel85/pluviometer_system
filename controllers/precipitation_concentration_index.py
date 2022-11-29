@@ -29,12 +29,16 @@ def to_show_ci_for_selected_pluviometer():
     Returns:
     """
     id_pluviom = request.vars.pluv_select if request.vars.pluv_select else request.args(0, cast=int)
-    pluv_name = db.Pluviometer(id_pluviom).name
-    already_calculated = db(
-        db.PrecipitationConcentrationIndex_By_Pluviometer.id_pluviometer == id_pluviom).select().first()
-    if already_calculated is None:
-        calculate_ci_generic(id_pluviom)
-    pluvs = db(db.PrecipitationConcentrationIndex_By_Pluviometer.id_pluviometer == id_pluviom).select()
+    pluv = db.Pluviometer(id_pluviom)
+    has_registers = db(db.Registers.id_pluviometer == id_pluviom).select().first()
+    pluv_name = pluv.name
+    pluvs = []
+    if has_registers:
+        already_calculated = db(
+            db.PrecipitationConcentrationIndex_By_Pluviometer.id_pluviometer == id_pluviom).select().first()
+        if already_calculated is None:
+            calculate_ci_generic(id_pluviom)
+        pluvs = db(db.PrecipitationConcentrationIndex_By_Pluviometer.id_pluviometer == id_pluviom).select()
 
     # halar también los registros de los meses, por id_pluviometer igualito
     return dict(pluvs=pluvs,pluv_name=pluv_name)
@@ -73,6 +77,9 @@ def to_show_ci_for_selected_area_by_month():
 ################################################
 # Helper functions
 ################################################
+def calculate_ci_for_areas():
+    pass
+
 def calculate_ci_generic(id_element, is_area=None):
     if is_area:
         rows_registers = db(db.Pluviometer_Area.id_area == id_element).select(db.Pluviometer_Area.id_pluviometer)
