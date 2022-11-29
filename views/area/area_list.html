@@ -98,6 +98,19 @@
                             </a>
                          `
                       {{pass}}
+
+                     let generalStatsButtons = `
+                        <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area')}}/${row.id} >Estadísticas generales</a>
+                                <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area_by_month')}}/${row.id} >Estadísticas generales por mes</a>
+                     `
+                      const calc_areas_id = [1656, 858, 945, 855];
+
+                      if(!calc_areas_id.includes(row.id)){
+                          generalStatsButtons = `
+                            <a class="dropdown-item" href="#" onclick="notValidArea()">Estadísticas generales</a>
+                            <a class="dropdown-item" href="#" onclick="notValidArea()">Estadísticas generales por mes</a>
+                     `
+                      }
                           return `
                             <a title="Ubicación" class="botones-iconos btn btn-info btn-rounded btn-icon" style="padding: 9px 14px !important;" href={{=URL('map','ubicacion_area')}}/${row.id}>
                                 <i class="fa fa-map-marker"></i>
@@ -110,8 +123,7 @@
                               </a>
                               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="font-size: .5rem;">
                                 <a class="dropdown-item" href={{=URL('pluviometer','pluv_by_area')}}/${row.id} >Pluviometros</a>
-                                <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area')}}/${row.id} >Estadísticas generales</a>
-                                <a class="dropdown-item" href={{=URL('precipitation_concentration_index','to_show_ci_for_selected_area_by_month')}}/${row.id} >Estadísticas generales por mes</a>
+                                ${generalStatsButtons}
                               </div>
                             </div>
                           `;

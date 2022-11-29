@@ -490,7 +490,18 @@
             confirmButtonText: "Aceptar",
             closeOnConfirm: true,
         })
+    }
 
+    // Stop calculation if area_id is not in valid range
+        function notValidArea(){
+            swal({
+            title: "Error",
+            text: "El área seleccionada no tiene los datos necesarios para ese tipo de cálculo",
+            type: "error",
+            confirmButtonColor: "#54c62b",
+            confirmButtonText: "Aceptar",
+            closeOnConfirm: true,
+        })
     }
 
         // Con este código se establece la configuración por defecto para todos los datatables

@@ -77,8 +77,12 @@ def to_show_ci_for_selected_area_by_month():
 ################################################
 # Helper functions
 ################################################
-def calculate_ci_for_areas():
-    pass
+# def calculate_ci_for_areas():
+#     for area in db(db.Area.id > 0).select():
+#         already_calculated = db(
+#             db.PrecipitationConcentrationIndex_By_Area.id_area == area.id).select().first()
+#         if already_calculated is None:
+#             calculate_ci_generic(area.id, is_area=True)
 
 def calculate_ci_generic(id_element, is_area=None):
     if is_area:
