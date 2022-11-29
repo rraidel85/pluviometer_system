@@ -1,14 +1,18 @@
+@auth.requires(lector_role, otherwise=URL('user', 'no_autorizado'))
 def pluv_list():
     """Returns pluviometer table"""
     return locals()
 
+@auth.requires(editor_role, otherwise=URL('user', 'no_autorizado'))
 def create_pluv():
     return locals()
 
+@auth.requires(editor_role, otherwise=URL('user', 'no_autorizado'))
 def edit_pluv():
     pluvs = db(db.Pluviometer.lat > 0).select()
     return dict(areas=__getAreaNodes(), pluvs= pluvs)
 
+@auth.requires(editor_role, otherwise=URL('user', 'no_autorizado'))
 def remove_pluv():
     pluv = db.Pluviometer(request.args(0, cast=int)) or redirect(URL('pluv_list'))
     pluv_id = pluv.id
@@ -19,7 +23,7 @@ def remove_pluv():
     return dict()
 
 def pluv_by_area():
-    area = db.Area(request.args(0, cast=int)) or redirect('error') #la página error todavia no existe
+    area = db.Area(request.args(0, cast=int)) or redirect(URL('user', 'no_encontrado'))
     area_pluvs = db(db.Pluviometer_Area.id_area==area.id).select(db.Pluviometer_Area.id_pluviometer)
     return locals()
 

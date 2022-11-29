@@ -176,6 +176,7 @@
 'Gestionar areas': 'Gestionar areas',
 'Gestionar pluviometros': 'Gestionar pluviometros',
 'Gestionar áreas': 'Gestionar áreas',
+'Graficar': 'Graficar',
 'Graficos': 'Graficos',
 'Graph Model': 'Modelo en Grafo',
 'Grid Example': 'Grid Example',

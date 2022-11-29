@@ -20,17 +20,19 @@
     </style>
 {{end}}
         <h3 class="encabezado">Pluviómetros</h3>
-        <div class="create-button-box">
-            {{=A(I(_class='fa fa-plus'), ' Nuevo pluviómetro',
-            _class='btn btn-success text-white mb-2 create-button',
-            _target='_blank',
-            _href=URL("pluviometer", "pluv_form"),
-            cid="content-pluv",
-            data={'toggle':'modal', 'target':'#pluv_modal'})}}
-        </div>
+        {{if editor_role:}}
+            <div class="create-button-box">
+                {{=A(I(_class='fa fa-plus'), ' Nuevo pluviómetro',
+                _class='btn btn-success text-white mb-2 create-button',
+                _target='_blank',
+                _href=URL("pluviometer", "pluv_form"),
+                cid="content-pluv",
+                data={'toggle':'modal', 'target':'#pluv_modal'})}}
+            </div>
+        {{pass}}
 
 
-<table id="example" class="display">
+<table id="pluv_table" class="display">
         <thead>
             <tr>
                 <th>Nombre</th>
@@ -90,16 +92,23 @@
                   let stringAnchorTag = '{{=A(I(_class='fa fa-pencil'), _title="Editar", _class='botones-iconos btn btn-info btn-rounded btn-icon',_target='_blank',
                         _style="color:white; background-color: #05e20c;", _href=URL("pluviometer", "pluv_form"), cid="content-pluv", data={'toggle':'modal', 'target':'#pluv_modal'})}}'; //Getting the string representation of the edit button
 
-                  let editButton = appendDataToAnchorTag(stringAnchorTag, '{{=URL("pluviometer", "pluv_form")}}', row.id);
+                  let editButton = ''
+                  let deleteButton = ''
 
+                  {{if editor_role:}}
+                  editButton = appendDataToAnchorTag(stringAnchorTag, '{{=URL("pluviometer", "pluv_form")}}', row.id);
+                  deleteButton = `
+                  <a title="Eliminar" style="background-color: #f84a4a;" href="#" onclick="eliminar(${row.id})" class="botones-iconos btn btn-info btn-rounded btn-icon">
+                    <i class="fa fa-trash"></i>
+                  </a>
+                  `
+                  {{pass}}
                   return `
                   <a title="Ubicación" style="padding: 9px 14px !important;" href={{=URL('map','ubicacion_pluv')}}/${row.id} class="botones-iconos btn btn-info btn-rounded btn-icon">
                     <i class="fa fa-map-marker"></i>
                   </a>
                   ${editButton}
-                  <a title="Eliminar" style="background-color: #f84a4a;" href="#" onclick="eliminar(${row.id})" class="botones-iconos btn btn-info btn-rounded btn-icon">
-                    <i class="fa fa-trash"></i>
-                  </a>
+                  ${deleteButton}
                   <div class="dropdown show" style="display: inline;">
                       <a title="Información" class="botones-iconos btn btn-info btn-rounded btn-icon dropdown-toggle" style="background-color: #0062cc;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-info"></i>

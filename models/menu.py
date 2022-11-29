@@ -28,9 +28,7 @@ response.menu = [
     (T('Tipos de área'), controller("area_type") and function("areatype_list"), URL('area_type', 'areatype_list'), 'ti-layout-grid2', []),
     (T('Tipos de pluviómetro'), controller("pluv_type") and function("pluvtype_list"), URL('pluv_type', 'pluvtype_list'), 'ti-agenda', []),
     (T('Calcular'), controller("math") and function("select_math"), URL('math', 'select_math'), 'ti-stats-down', []),
-    (T('Graficos'), controller("graphics"), '#', 'fa fa-area-chart', [
-        (T('Ind Conc Pluv'), controller("graphics") and function("select_graphic"), URL('graphics', 'select_graphic')),
-    ]),
+    (T('Graficar'), controller("graphics") and function("select_graphic"), URL('graphics', 'select_graphic'), 'fa fa-area-chart', []),
     (T('Usuarios'), controller("user") and function("user_list"), URL('user', 'user_list'),
      'ti-user', []),
 

@@ -14,7 +14,7 @@
                 border-radius: 40px;
                 transition: 0.5s;
             }
-            h3{
+            h4{
                 text-align: center;
                 color: #5a135a;
             }
@@ -32,10 +32,17 @@
                 height: 350px;
                 width: 30rem;
             }
+            h2{
+                font-size: 24px;
+                font-weight: 600;
+                color: #174980;
+                margin-bottom: 28px;
+            }
         </style>
 {{end head}}
 
-        <h3>Seleccione el tipo de gráfico:</h3>
+        <h2>Graficar índice de concentración de precipitaciones</h2>
+        <h4>Seleccione el tipo de gráfico:</h4>
         <div class="graphics-box">
             <a title="Gráfico de barras" href="{{=page_type[page if page else 'pluv']}}/column"><img class="graphic-img" id="img_1" src="{{=URL('static/images', 'bar_chart.png')}}" class="rounded float-left" alt="Gráfico de barras"></a>
             <a title="Gráfico de lineas" href="{{=page_type[page if page else 'pluv']}}/line"><img class="graphic-img" id="img_2" src="{{=URL('static/images', 'line_chart.png')}}" class="rounded float-right" alt="Gráfico de lineas"></a>
