@@ -480,6 +480,19 @@
         )
     }
 
+    // Stop calculation if pluv_id is less than 106
+        function notValidPluviometer(){
+            swal({
+            title: "Error",
+            text: "El pluviómetro seleccionado no tiene los datos necesarios para ese tipo de cálculo",
+            type: "error",
+            confirmButtonColor: "#54c62b",
+            confirmButtonText: "Aceptar",
+            closeOnConfirm: true,
+        })
+
+    }
+
         // Con este código se establece la configuración por defecto para todos los datatables
     $.extend( $.fn.dataTable.defaults, {
           "responsive": true,
