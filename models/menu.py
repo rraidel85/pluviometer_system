@@ -27,12 +27,30 @@ response.menu = [
     ]),
     (T('Tipos de área'), controller("area_type") and function("areatype_list"), URL('area_type', 'areatype_list'), 'ti-layout-grid2', []),
     (T('Tipos de pluviómetro'), controller("pluv_type") and function("pluvtype_list"), URL('pluv_type', 'pluvtype_list'), 'ti-agenda', []),
-    (T('Calcular'), controller("math") and function("select_math"), URL('math', 'select_math'), 'ti-stats-down', []),
+    # (T('Calcular'), controller("math") and function("select_math"), URL('math', 'select_math'), 'ti-stats-down', []),
     (T('Graficar'), controller("graphics") and function("select_graphic"), URL('graphics', 'select_graphic'), 'fa fa-area-chart', []),
     (T('Usuarios'), controller("user") and function("user_list"), URL('user', 'user_list'),
      'ti-user', []),
 
 ]
+
+# Unfinished
+# def menu_visibility():
+#     visibility = {
+#         'Inicio': lector_role,
+#         'Mapa': lector_role,
+#         'Pluviómetros': lector_role,
+#         'Listado': lector_role,
+#         'Crear en el mapa': editor_role,
+#         'Editar en el mapa': editor_role,
+#         'Tipos de área': lector_role,
+#         'Tipos de pluviómetro': lector_role,
+#         'Graficar': lector_role,
+#         'Usuarios': admin_role
+#     }
+#
+#     for item in response.menu:
+#         pass
 
 page_type = {
     'pluv': URL('graphics','c_index_pluviometer_graphic'),

@@ -53,7 +53,7 @@ def year_statistics_api():
             count = db((db.YearStatistics.id_pluviometer == pluv_id) &
                        (db.YearStatistics.year_number.like(f'%{search}%'))).select(count_query,
                                                                                    cache=(cache.ram, None),cacheable=True).first()[count_query]
-            print(count)
+
         except Exception as e:
             print(e)
 
@@ -68,15 +68,3 @@ def year_statistics_api():
 
 
 
-
-
-
-def index():
-    response.flash = T("Hello World, ahora sí")
-    grid = SQLFORM.smartgrid(db.YearStatistics,
-                             searchable=False,
-                             csv=False,
-                             showbuttontext=False,
-                             paginate=False
-                             )
-    return locals()

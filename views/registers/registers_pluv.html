@@ -19,6 +19,7 @@
     </style>
 {{end}}
 <h3 class="encabezado">Registros del pluviómetro: {{=pluv_name}}</h3>
+        {{if editor_role:}}
         <div class="create-button-box">
             {{=A(I(_class='fa fa-plus'), ' Nueva precipitación',
             _class='btn btn-success text-white mb-2 create-button',
@@ -28,6 +29,7 @@
             cid="content-registers",
             data={'toggle':'modal', 'target':'#registers_modal'})}}
         </div>
+        {{pass}}
 <table id="example" class="display">
         <thead>
             <tr>
@@ -97,13 +99,20 @@
 
                     let editUrl = '{{=URL("registers", "registers_form")}}' + '/' + row.id;  //Append the register id to url
 
-                    let editButton = appendDataToAnchorTag(stringAnchorTag, editUrl, 'pluv_id={{=pluv_id}}', '?'); //Append pluviometer id var to url
+                  let editButton = ''
+                      let deleteButton = ''
 
-                      return `
-                        ${editButton}
+                  {{if editor_role:}}
+                    editButton = appendDataToAnchorTag(stringAnchorTag, editUrl, 'pluv_id={{=pluv_id}}', '?'); //Append pluviometer id var to url
+                    deleteButton = `
                         <a title="Eliminar" class="botones-iconos btn btn-info btn-rounded btn-icon" style="background-color: #f84a4a;" href="#" onclick="eliminar(${row.id})">
                             <i class="fa fa-trash"></i>
                         </a>
+                    `
+                  {{pass}}
+                      return `
+                        ${editButton}
+                        ${deleteButton}
                       `;
                     }
                 }

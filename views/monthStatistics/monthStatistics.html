@@ -1,16 +1,18 @@
 {{extend 'plantilla.html'}}
-<h3 class="encabezado">Estadísticas anuales del pluviómetro: {{=pluv.name}}</h3>
-<table id="example" class="display">
+<h3 class="encabezado">Estadísticas mensuales del año: {{=year.year_number}}</h3>
+<table id="example" class="display" width="100%" cellspacing="0">
         <thead>
             <tr>
-                <th>Año</th>
+                <!--<th>Año</th>-->
+                <th>Mes</th>
                 <th>Precipitación total</th>
                 <th>Máximo valor</th>
                 <th>Media diaria</th>
                 <th>Cantidad de días lluviosos</th>
+                <th>Desviación estándar</th>
+                <th>Varianza</th>
                 <th>Cantidad de rachas lluviosas</th>
                 <th>Longitud media de las rachas lluviosas</th>
-                <th>Opciones</th>
             </tr>
         </thead>
 </table>
@@ -22,14 +24,14 @@
         processing: true,
         ajax: function ( data, callback, settings ) {
             console.log(data);
-            axios.get('{{=URL('yearStatistics', 'year_statistics_api')}}',{
+            axios.get('{{=URL('monthStatistics', 'month_statistics_api')}}',{
                 params: {
                     start: data.start,
                     limit: data.length,
                     search: data.search.value,
                     order_column: data.columns[data.order[0].column].data,
                     order_dir: data.order[0].dir,
-                    pluv_id: {{=pluv_id}}
+                    year_id: {{=year_id}}
                 }
             }).then(res=>{
                 callback({
@@ -43,29 +45,16 @@
             })
         },
         columns: [
-            { data: "year_number" },
+            // { data: "id_year" },
+            { data: "month_number"},
             { data: "total_precipit"},
             { data: "max_registered_value"},
             { data: "daily_mean"},
             { data: "rainy_days_count"},
+            { data: "standard_deviation"},
+            { data: "variance"},
             { data: "rainy_streak_count"},
             { data: "rainy_streak_med_long"},
-            {
-              data: null,
-              "class" : "options",
-              "render": function ( data, type, row, meta ) {
-                    return `
-                        <div class="dropdown show" style="display: inline;">
-                      <a title="Información" class="botones-iconos btn btn-info btn-rounded btn-icon dropdown-toggle" style="background-color: #0062cc;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-info"></i>
-                      </a>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="font-size: .5rem;">
-                        <a href={{=URL('monthStatistics','monthStatistics')}}/${row.id} class='dropdown-item'>Estadísticas mensuales</a>
-                      </div>
-                    </div>
-                    `
-              }
-            }
         ],
     });
 {{end datatable}}
