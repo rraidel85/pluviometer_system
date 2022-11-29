@@ -1,6 +1,6 @@
-def registers_list():
-    """Returns Registers table"""
-    return locals()
+# def registers_list():
+#     """Returns Registers table"""
+#     return locals()
 
 def registers_pluv():
     """Expect a pluviometer id and return its registers(the datatable calls 'registers_api')"""

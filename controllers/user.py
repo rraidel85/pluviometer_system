@@ -8,34 +8,6 @@ require_username = [IS_NOT_EMPTY(error_message="El campo Usuario no puede estar 
         db, "auth_user.username",error_message="Ese nombre de usuario ya existe"), IS_LENGTH(20,error_message="El usuario debe tener máximo 20 carácteres")]
 require_email = [IS_EMAIL(error_message="Correo inválido"), IS_NOT_IN_DB(db, "auth_user.email",error_message="Ese correo ya existe")]
 
-# devuelve formulario para iniciar sesion
-# def login():
-#     form = auth.login()
-#     print(f"Formulario vars:{form.vars}")
-#     print(f"Request vars:{request.vars}")
-#     # print(f"Form process:{form.process()}")
-#     if form.errors:
-#         print("Erroressss")
-#         form.errors.username = False
-#         form.errors.password = False
-#         plugin_toastr_message_config('error', T(
-#             'Usuario y/o contraseña incorrectos'))
-#         session.error = True
-#         session.msg = "Existen errores en el formulario"
-#     else:
-#         print("nadaaa")
-#
-#
-#     return dict(form=form)
-
-# def login():
-#     user = auth.login_bare(request.vars.username,request.vars.password)
-#     if not user:
-#         # plugin_toastr_message_config('error', 'Usuario y/o contraseña incorrectos')
-#         print("Usuario o contraseña incorrecto")
-#     else:
-#         redirect(URL('default', 'index'))
-#     return dict()
 
 def login():
     form = SQLFORM.factory(
@@ -145,13 +117,21 @@ def editar_perfil():
 # -------------------------------------------------------------------------
 
 # Devuelve listado de usuarios y su rol, excepto el admin
-# @auth.requires_membership("Administrador")
+@auth.requires(admin_role, otherwise=URL('user', 'no_autorizado'))
 def user_list():
     users = db((db.auth_user.id != auth.user.id) & (db.auth_user.username != "admin")
               & (db.auth_membership.user_id == db.auth_user.id)).select(db.auth_user.ALL, db.auth_membership.ALL)
 
     return locals()
 
+@auth.requires(admin_role, otherwise=URL('user', 'no_autorizado'))
+def remove_user():
+    user = db.auth_user(request.args(0, cast=int)) or redirect(URL('not_found'))
+    db(db.auth_user.id == user.id).delete()
+    plugin_toastr_message_config('success', 'Operación realizada exitosamente')
+    redirect(URL("user_list"))
+
+    return dict()
 
 # Devuelve informacion sobre el usuario logueado actualmente
 @auth.requires_login()
@@ -178,7 +158,7 @@ def detalles():
 
     return locals()
 
-# @auth.requires_membership("Administrador")
+
 def user_form():
     user_id = None
     usuarios = db(db.auth_user.id > 0)
@@ -298,13 +278,6 @@ def cambiar_clave_usuario():
     return dict(form=form, registro=registro)
 
 
-def remove_user():
-    user = db.auth_user(request.args(0, cast=int)) or redirect(URL('not_found'))
-    db(db.auth_user.id == user.id).delete()
-    plugin_toastr_message_config('success', 'Operación realizada exitosamente')
-    redirect(URL("user_list"))
-
-    return dict()
 
 
 
