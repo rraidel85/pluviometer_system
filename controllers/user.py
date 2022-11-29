@@ -230,7 +230,7 @@ def user_form():
 
 # Actualiza la contraseña del usuario logueado
 @auth.requires_login()
-def cambiar_clave():
+def change_password():
     registro = db.auth_user(auth.user.id) or redirect(URL('default', 'index'))
 
     form = SQLFORM.factory(
@@ -241,12 +241,10 @@ def cambiar_clave():
 
     if form.validate():
         db(db.auth_user.id == registro.id).update(**form.vars)
-        session.status = True
-        session.msg = 'Contraseña actualizada correctamente'
-        redirect(URL("perfil", args=registro.id))
+        session.pass_changed = True
+        redirect(URL("default", 'index'))
     elif form.errors:
-        session.error = True
-        session.msg = 'El formulario tiene errores'
+        plugin_toastr_message_config('error', T('Existen errores en el formulario'))
 
     return dict(form=form, registro=registro)
 
@@ -280,41 +278,3 @@ def cambiar_clave_usuario():
 
 
 
-
-# def crear_administrador():
-#     if db(db.auth_user.id > 0).select():
-#         redirect(URL("iniciar_sesion"))
-#
-#     try:
-#         form = SQLFORM.factory(Field("first_name", label=T("Nombre(s)"), requires=IS_NOT_EMPTY()),
-#                                Field("last_name", label=T("Apellidos"),
-#                                      requires=IS_NOT_EMPTY()),
-#                                Field("username", label=T("Nombre de usuario"), default="superadmin",
-#                                      requires=require_username, writable=False),
-#                                Field("email", label=T("Correo electrónico"),
-#                                      requires=require_email),
-#                                Field("ci", label=T(
-#                                    "Carnet de identidad"), default="---------------", requires=[IS_NOT_EMPTY()]),
-#                                Field("cargo", label=T("Cargo"),
-#                                      requires=require_cargo),
-#                                Field("password", "password", label=T(
-#                                    "Contraseña"), requires=[IS_NOT_EMPTY(), CRYPT()]),
-#                                Field("repeat", "password", label=T("Repetir contraseña"), requires=[
-#                                    IS_EQUAL_TO(request.vars.password)]),
-#                                table_name='auth_user'
-#                                )
-#
-#         if form.validate():
-#             user_id = db.auth_user.insert(username="superadmin", **form.vars)
-#             db.auth_membership.insert(user_id=user_id, group_id=1)
-#             raise TypeError
-#
-#         elif form.errors:
-#             session.flash = 'El formulario tiene errores'
-#     except TypeError:
-#         session.flash = 'Usuario creado correctamente'
-#         redirect(URL("usuario", "iniciar_sesion"))
-#     except:
-#         redirect(URL("crear_administrador"))
-#
-#     return dict(form=form)

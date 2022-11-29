@@ -176,8 +176,8 @@
             font-family: sans-serif;
         }
         .navbar-dropdown{
+            width: 186px !important;
             left: 20px;
-            width: calc(100% - 40px);
         }
         .navbar-dropdown .dropdown-item{
             margin-bottom: 0;
@@ -312,7 +312,10 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right navbar-dropdown notify-item"
                                     aria-labelledby="profileDropdown" style="right:0px !important; top:40px !important;">
-                                    <a href="{{=URL('user', 'logout')}}"  class="dropdown-item">
+                                    <a href="{{=URL('user', 'change_password')}}"  class="dropdown-item">
+                                        <i class="fa fa-unlock-alt text-primary"></i>
+                                        Cambiar contraseña
+                                    </a><a href="{{=URL('user', 'logout')}}"  class="dropdown-item">
                                         <i class="fa fa-sign-out text-primary"></i>
                                         Cerrar Sesión
                                     </a>
@@ -559,6 +562,12 @@
     {{if session.page_reload:}}
         showMyNotification('success', 'Operación realizada exitosamente');
         {{session.page_reload = False}}
+    {{pass}}
+
+
+    {{if session.pass_changed:}}
+        showMyNotification('success', 'Operación realizada exitosamente');
+        {{session.pass_changed = False}}
     {{pass}}
 
     let data_table = $('table');

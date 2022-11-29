@@ -267,6 +267,7 @@
 'not authorized': 'not authorized',
 'Not Authorized': 'Not Authorized',
 'not in': 'not in',
+'Nueva Contraseña': 'Nueva Contraseña',
 'Number of entries: **%s**': 'Numero de entradas: **%s**',
 'Object or table name': 'Nombre del objeto o tabla',
 'Old password': 'Contraseña vieja',
