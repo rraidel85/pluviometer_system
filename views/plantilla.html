@@ -231,6 +231,32 @@
         .xButton{
                 font-size: 18px;
         }
+
+        @media (max-width: 600px) {
+            .topbar-x{
+               width: 63%;
+            }
+            .topbar-profile{
+                width: 20%;
+                position: relative;
+                bottom: 12px;
+            }
+            .modal-content{
+                width: 100% !important;
+            }
+            .my-card-parent{
+                flex-direction: column;
+            }
+            .my-card-parent img{
+                width: 100%;
+            }
+            .graphics-box{
+                flex-direction: column;
+            }
+            footer{
+                display: none;
+            }
+        }
     </style>
 </head>
 
@@ -292,7 +318,7 @@
             <div class="header-area">
                 <div class="row align-items-center">
                     <!-- nav and search button -->
-                    <div class="col-md-6 col-sm-8 clearfix">
+                    <div class="col-md-6 col-sm-8 clearfix topbar-x">
                         <div class="nav-btn pull-left">
                             <span></span>
                             <span></span>
@@ -301,7 +327,7 @@
 
                     </div>
                     <!-- profile info & task notification -->
-                    <div class="col-md-6 col-sm-4 clearfix">
+                    <div class="col-md-6 col-sm-4 clearfix topbar-profile">
                         <ul class="notification-area pull-right">
 
                             <li class="nav-item nav-profile dropdown">
