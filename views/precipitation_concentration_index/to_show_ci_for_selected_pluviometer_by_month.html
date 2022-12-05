@@ -1,6 +1,9 @@
 {{extend 'plantilla.html'}}
+        {{block head}}
+            <title>Estadísticas generales de área por mes</title>
+        {{end head}}
         <h3 class="encabezado">Estadísticas generales por mes del pluviómetro: {{=pluv_name}}</h3>
-        <table id="example" class="display" width="100%" cellspacing="0">
+        <table id="example" class="display">
         <thead>
             <tr>
                 <th>Pluviómetro</th>

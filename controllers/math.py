@@ -1,2 +1,2 @@
-def select_math():
-    return locals()
+# def select_math():
+#     return locals()

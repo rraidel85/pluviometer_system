@@ -22,6 +22,7 @@ def remove_pluv():
 
     return dict()
 
+@auth.requires(lector_role, otherwise=URL('user', 'no_autorizado'))
 def pluv_by_area():
     area = db.Area(request.args(0, cast=int)) or redirect(URL('user', 'no_encontrado'))
     area_pluvs = db(db.Pluviometer_Area.id_area==area.id).select(db.Pluviometer_Area.id_pluviometer)

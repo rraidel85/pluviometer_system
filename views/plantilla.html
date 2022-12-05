@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>HidrEx</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Favicon -->
@@ -401,6 +401,8 @@
   <script type="text/javascript" src="{{=URL('static','datatables/plugins/dataTables.buttons.min.js')}}"></script>
   <script type="text/javascript" src="{{=URL('static','datatables/plugins/buttons.html5.min.js')}}"></script>
   <script type="text/javascript" src="{{=URL('static','datatables/plugins/buttons.colVis.min.js')}}"></script>
+  <script type="text/javascript" src="{{=URL('static','datatables/plugins/pdfmake.min.js')}}"></script>
+  <script type="text/javascript" src="{{=URL('static','datatables/plugins/vfs_fonts.js')}}"></script>
 
   <script type="text/javascript" src="{{=URL('static','datatables/plugins/dataTables.select.min.js')}}"></script>
 
@@ -516,22 +518,15 @@
           "scrollX": true,
           "sScrollXInner": "110%",
           // "order": [[0, 'asc']],
-          buttons: [
-          {
-              extend: 'pdfHtml5',
-              className: 'btn btn-primary',
-              text: '{{=T('Exportar a PDF')}}',
-              orientation: 'landscape',
-              pageSize: 'LEGAL',
-              download: 'open',
-              exportOptions: {
-                  modifier: {page: 'all'}
-              },
-          }, {extend:'colvis',
-                    text: '{{=T('Columnas Visibles')}}',
-              collectionLayout: 'fixed two-column'
+          dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'pdfHtml5',
+                text: '<i class="ti-zip"></i> PDF',
+                orientation: 'landscape',
+                pageSize: 'LEGAL'
             }
-          ],
+        ],
 
           language: {
               lengthMenu: "{{=T('Mostrar _MENU_ registros por página')}}",
