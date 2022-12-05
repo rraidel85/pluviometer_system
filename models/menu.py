@@ -34,23 +34,36 @@ response.menu = [
 
 ]
 
-# Unfinished
+# Set logged in user sidebar menu visibility
 # def menu_visibility():
+#
 #     visibility = {
-#         'Inicio': lector_role,
-#         'Mapa': lector_role,
-#         'Pluviómetros': lector_role,
-#         'Listado': lector_role,
-#         'Crear en el mapa': editor_role,
-#         'Editar en el mapa': editor_role,
-#         'Tipos de área': lector_role,
-#         'Tipos de pluviómetro': lector_role,
-#         'Graficar': lector_role,
-#         'Usuarios': admin_role
+#         T('Inicio'): lector_role,
+#         T('Mapa'): lector_role,
+#         T('Pluviómetros'): lector_role,
+#         T('Listado'): lector_role,
+#         T('Crear en el mapa'): editor_role,
+#         T('Editar en el mapa'): editor_role,
+#         T('Tipos de área'): lector_role,
+#         T('Tipos de pluviómetro'): lector_role,
+#         T('Graficar'): lector_role,
+#         T('Usuarios'): admin_role
 #     }
 #
-#     for item in response.menu:
-#         pass
+#     for menu in full_menu:
+#         if not menu[4]:
+#             if visibility[menu[0]]:
+#                 response.menu.append(menu)
+#         else:
+#             response.menu.append(menu)
+#             for sub_index in range(3):
+#                 if visibility[menu[4][sub_index][0]]:
+#                     response.menu[-1][4].append(menu[4][sub_index])
+#
+# if auth.user:
+#     menu_visibility()
+# else:
+#     response.menu = full_menu
 
 page_type = {
     'pluv': URL('graphics','c_index_pluviometer_graphic'),
